@@ -1,0 +1,30 @@
+<configure 
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:browser="http://namespaces.zope.org/browser"
+   xmlns:orpolicy="http://namespaces.zope.com/orpolicy"
+   i18n_domain="zc.extjs">
+
+  <class class=".browser.jsonmethod">
+    <allow attributes="__call__ browserDefault" />
+  </class>
+
+  <class class=".extjs.FormMethod">
+    <allow attributes="__call__ browserDefault" />
+  </class>
+
+  <browser:page
+     for="*"
+     name="dashboard_macros"
+     template="macros.pt"
+     allowed_interface="zope.interface.common.mapping.IItemMapping"
+     permission="zope.Public"
+     />
+
+  <resourceLibrary name="zc.extjs" require="Ext">
+    <directory
+       source="resources"
+       include="util.js"
+       />
+  </resourceLibrary>
+
+</configure>

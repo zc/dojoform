@@ -1,0 +1,62 @@
+<metal:block define-macro="page"><metal:block define-slot="doctype"><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"></metal:block>
+
+<html
+   xmlns="http://www.w3.org/1999/xhtml"
+   tal:define="extjs context/++resource++extjs"
+   xml:lang="en"
+   lang="en"
+   i18n:domain="zc.extjs">
+
+  <head>
+    <title
+       metal:define-slot="title"
+       tal:content="string:Zope ${view/title|nothing}"
+       >Zope Application</title>
+
+    <script
+       type="text/javascript"
+       tal:condition="view/js_module|nothing"
+       tal:content="structure string:
+          <!--
+               Ext.BLANK_IMAGE_URL = '${extjs}/resources/images/default/s.gif';
+               ${view/js_module}.data = (${view/js_data});
+            -->
+          "
+         ><!--
+         Ext.BLANK_IMAGE_URL = '/@@/extjs/resources/images/default/s.gif';
+         --></script>
+
+    <meta http-equiv="Content-Type"
+          content="text/html;charset=utf-8" />
+
+    <metal:block define-slot="script" />
+
+    <link rel="icon" type="image/png"
+          tal:attributes="href context/++resource++favicon.png" />
+  </head>
+
+  <body tal:attributes="onload body_onload | nothing">
+
+    <div id="workspace" metal:define-macro="workspace">
+
+      <div id="header" metal:define-slot="header">
+        <div id="header_wrapper">
+          <h1>Zope</h1>
+          <p id="welcome"
+             tal:condition="python:request.principal.id != 'zope.anybody'"
+             >Welcome
+            <span tal:replace="request/principal/title">bob</span>
+            (<a href="/logout.html">logout</a>)</p>
+        </div> <!-- header_wrapper -->
+      </div> <!-- header -->
+
+      <div id="viewspace" metal:define-slot="viewspace">
+
+      </div> <!-- viewspace -->
+    </div> <!-- workspace -->
+
+  </body>
+
+</html>
+
+</metal:block>
