@@ -12,9 +12,9 @@
 #
 ##############################################################################
 
-import zope.deferredimport
+import zope.interface
+import zope.publisher.interfaces.browser
 
-zope.deferredimport.define(
-    Application = 'zc.extjs.extjs:Application',
-    jsonpage = 'zc.extjs.extjs:jsonpage',
-    )
+class IAjaxRequest(zope.publisher.interfaces.browser.IBrowserRequest):
+    """Ajax requests
+    """

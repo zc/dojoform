@@ -4,21 +4,11 @@
    xmlns:orpolicy="http://namespaces.zope.com/orpolicy"
    i18n_domain="zc.extjs">
 
-  <class class=".browser.jsonmethod">
+  <include package="zc.extjsresource" />
+
+  <class class=".extjs.jsonmethod">
     <allow attributes="__call__ browserDefault" />
   </class>
-
-  <class class=".extjs.FormMethod">
-    <allow attributes="__call__ browserDefault" />
-  </class>
-
-  <browser:page
-     for="*"
-     name="dashboard_macros"
-     template="macros.pt"
-     allowed_interface="zope.interface.common.mapping.IItemMapping"
-     permission="zope.Public"
-     />
 
   <resourceLibrary name="zc.extjs" require="Ext">
     <directory
@@ -26,5 +16,25 @@
        include="util.js"
        />
   </resourceLibrary>
+
+  <adapter
+     factory=".widget.InputBool"
+     provides="zope.app.form.interfaces.IInputWidget"
+     />
+
+  <adapter
+     factory=".widget.InputChoice"
+     provides="zope.app.form.interfaces.IInputWidget"
+     />
+
+  <adapter
+     factory=".widget.InputInt"
+     provides="zope.app.form.interfaces.IInputWidget"
+     />
+
+  <adapter
+     factory=".widget.InputTextLine"
+     provides="zope.app.form.interfaces.IInputWidget"
+     />
 
 </configure>

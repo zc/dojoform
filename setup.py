@@ -11,8 +11,13 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+
+name = 'zc.extjs'
+version = '0.1'
+
 import os
 from setuptools import setup, find_packages
+
 
 entry_points = """
 """
@@ -22,7 +27,7 @@ def read(rname):
                              )).read()
 
 long_description = (
-        read('src/zc/?/README.txt')
+        read('src/%s/README.txt' % ('/'.join(name.split('.'))))
         + '\n' +
         'Download\n'
         '--------\n'
@@ -31,8 +36,8 @@ long_description = (
 open('doc.txt', 'w').write(long_description)
 
 setup(
-    name = '',
-    version = '0.1',
+    name = name,
+    version = version,
     author = 'Jim Fulton',
     author_email = 'jim@zope.com',
     description = '',
@@ -42,7 +47,12 @@ setup(
     packages = find_packages('src'),
     namespace_packages = ['zc'],
     package_dir = {'': 'src'},
-    install_requires = 'setuptools',
+    install_requires = [
+        'setuptools',
+        'simplejson',
+        'zc.extjsresource',
+        'zope.deferredimport',
+        ],
     zip_safe = False,
     entry_points=entry_points,
     )
