@@ -17,6 +17,7 @@ import zope.app.form
 import zope.app.form.interfaces
 import zope.app.form.browser.interfaces
 import zope.interface
+import zope.cachedescriptors.property
 import zope.component
 import zope.schema.interfaces
 
@@ -25,30 +26,43 @@ class Base(zope.app.form.InputWidget):
     zope.interface.implements(zope.app.form.interfaces.IInputWidget)
 
     _error = None
+    xtype = None
+    
     def error(self):
         return self._error
     
-    def js_config(self):
+    def js_config(self, **kw):
         config = dict(
-            widget = self.__class__.__name__,
             fieldLabel = self.label,
             fieldHint = self.hint,
             name = self.name,
-            )
+            id = self.name,
+            **kw)
+
+        if self.xtype:
+            config['xtype'] = self.xtype
+        
+        if self.required:
+            config['itemCls'] = 'zc-required-field'
 
         if self._renderedValueSet():
-            config.value = self._toForm(self._data)
+            value = self._toForm(self._data)
+            if value is not None:
+                config['value'] = value
         
         return config 
 
-    def _toForm(v):
+    def _toForm(self, v):
         return v
 
-    def _toValue(v):
+    def _toValue(self, v):
         return v
 
     def hasInput(self):
         return self.name in self.request.form
+
+    def _is_missing(self, raw):
+        return False
 
     def getInputValue(self):
         if not self.hasInput():
@@ -56,6 +70,13 @@ class Base(zope.app.form.InputWidget):
                 self.name, self.label, None)
 
         raw = self.request.form[self.name]
+        if self._is_missing(raw):
+            if self.required:
+                raise zope.app.form.interfaces.MissingInputError(
+                    self.name, self.label, None)
+            else:
+                return self.context.missing_value
+            
         try:
             value = self._toValue(raw)
         except zope.app.form.interfaces.ConversionError, error:
@@ -66,10 +87,15 @@ class Base(zope.app.form.InputWidget):
         try:
             self.context.validate(value)
         except zope.schema.interfaces.ValidationError, v:
-            self._error = WidgetInputError(
+            self._error = zope.app.form.interfaces.WidgetInputError(
                 self.context.__name__, self.label, v)
             raise self._error
+
+        return value
  
+    @zope.cachedescriptors.property.readproperty
+    def required(self):
+        return self.context.required
 
 class InputBool(Base):
 
@@ -77,6 +103,15 @@ class InputBool(Base):
         zope.schema.interfaces.IBool,
         zc.extjs.interfaces.IAjaxRequest,
         )
+
+    xtype = 'checkbox'
+    required = False
+
+    def hasInput(self):
+        return True
+        
+    def getInputValue(self):
+        return self.request.form.get(self.name, '') == 'on'
 
     def _toForm(self, v):
         return bool(v)
@@ -90,8 +125,12 @@ class InputChoice(Base):
 
     zope.interface.implements(zope.app.form.interfaces.IInputWidget)
 
+    def _is_missing(self, raw):
+        return not raw
+
     def js_config(self):
-        result = Base.js_config(self)
+        result = Base.js_config(
+            self, widget_constructor='zc.extjs.widgets.InputChoice')
         terms = zope.component.getMultiAdapter(
             (self.context.source, self.request),
             zope.app.form.browser.interfaces.ITerms,
@@ -100,6 +139,9 @@ class InputChoice(Base):
             [term.token, term.title]
             for term in (terms.getTerm(v) for v in self.context.source)
             ]
+        
+        if self.required:
+            result['allowBlank'] = False
 
         return result
 
@@ -109,6 +151,22 @@ class InputInt(Base):
         zope.schema.interfaces.IInt,
         zc.extjs.interfaces.IAjaxRequest,
         )
+
+    def js_config(self):
+        config = Base.js_config(
+            self, widget_constructor='zc.extjs.widgets.InputInt')
+
+        if self.required:
+            config['allowBlank'] = False
+        
+        if self.context.min is not None:
+            config['field_min'] = self.context.min
+        if self.context.max is not None:
+            config['field_max'] = self.context.max
+        return config
+
+    def _is_missing(self, raw):
+        return not raw
 
     def _toValue(self, v):
         try:
@@ -124,4 +182,20 @@ class InputTextLine(Base):
         zope.schema.interfaces.ITextLine,
         zc.extjs.interfaces.IAjaxRequest,
         )
+
+    xtype = 'textfield'
+
+    def _is_missing(self, raw):
+        return (not raw) and (self.min_length > 0)
     
+    def js_config(self):
+        config = Base.js_config(self)
+        if self.context.min_length is not None:
+            config['minLength'] = self.context.min_length
+            if self.context.min_length > 0 and self.required:
+                config['allowBlank'] = False
+
+        if self.context.max_length is not None:
+            config['maxLength'] = self.context.max_length
+            
+        return config

@@ -35,6 +35,17 @@ def page(func):
 def json(func):
     return lambda *a, **k: simplejson.dumps(func(*a, **k))
 
+def result(data):
+    if not data:
+        data = dict(success=True)
+    elif isinstance(data, basestring):
+        data = dict(success=False, error=data)
+    elif isinstance(data, dict) and not 'success' in data:
+        data['success'] = not (('error' in data)
+                                 or ('errors' in data))
+
+    return simplejson.dumps(data)
+
 class jsonmethod:
 
     zope.interface.implementsOnly(
@@ -47,17 +58,7 @@ class jsonmethod:
         self.im_func = func
 
     def __call__(self, *a, **k):
-
-        result = self.im_func(self.im_self, *a, **k)
-        if not result:
-            result = dict(success=True)
-        elif isinstance(result, basestring):
-            result = dict(success=False, error=result)
-        elif isinstance(result, dict) and not 'success' in result:
-            result['success'] = not (('error' in result)
-                                     or ('errors' in result))
-            
-        return simplejson.dumps(result)
+        return result(self.im_func(self.im_self, *a, **k))
 
     def browserDefault(self, request):
         return self, ()
@@ -104,6 +105,8 @@ class Application(zope.publisher.browser.BrowserView):
             ):
             zope.interface.directlyProvides(request,
                                             zc.extjs.interfaces.IAjaxRequest)
+            
+            
             return result
         raise zope.publisher.interfaces.NotFound(self, name, request)
 

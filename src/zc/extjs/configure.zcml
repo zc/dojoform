@@ -10,30 +10,38 @@
     <allow attributes="__call__ browserDefault" />
   </class>
 
+  <class class=".form.Action">
+    <allow attributes="__call__ browserDefault" />
+  </class>
+
+  <class class=".form.Form">
+    <allow attributes="__call__ browserDefault publishTraverse" />
+  </class>
+
   <resourceLibrary name="zc.extjs" require="Ext">
     <directory
        source="resources"
-       include="util.js"
+       include="util.js widgets.js util.css"
        />
   </resourceLibrary>
 
   <adapter
-     factory=".widget.InputBool"
+     factory=".widgets.InputBool"
      provides="zope.app.form.interfaces.IInputWidget"
      />
 
   <adapter
-     factory=".widget.InputChoice"
+     factory=".widgets.InputChoice"
      provides="zope.app.form.interfaces.IInputWidget"
      />
 
   <adapter
-     factory=".widget.InputInt"
+     factory=".widgets.InputInt"
      provides="zope.app.form.interfaces.IInputWidget"
      />
 
   <adapter
-     factory=".widget.InputTextLine"
+     factory=".widgets.InputTextLine"
      provides="zope.app.form.interfaces.IInputWidget"
      />
 
