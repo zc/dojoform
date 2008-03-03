@@ -199,3 +199,7 @@ class InputTextLine(Base):
             config['maxLength'] = self.context.max_length
             
         return config
+
+class Hidden(Base):
+
+    xtype = 'hidden'
