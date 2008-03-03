@@ -145,23 +145,3 @@ class Application(zope.publisher.browser.BrowserView):
         if library is not None:
             zc.resourcelibrary.need(library)
         return self.template()
-
-class Unauthorized(zope.app.exception.browser.unauthorized.Unauthorized):
-
-    zope.component.adapts(zope.interface.Interface,
-                          zc.extjs.interfaces.IAjaxRequest)
-
-    def __call__(self):
-        return simplejson.dumps(dict(
-            session_expired = True,
-            ))
-
-class UserError(zope.publisher.browser.BrowserPage):
-
-    zope.component.adapts(zope.interface.Interface,
-                          zc.extjs.interfaces.IAjaxRequest)
-
-    def __call__(self):
-        return simplejson.dumps(dict(
-            error = str(self.context),
-            ))
