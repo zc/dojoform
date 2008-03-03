@@ -14,8 +14,8 @@ zc.extjs.util = function() {
                 if (! success)
                 {
                     system_error(args.task);
-                    if (on_fail)
-                        on_fail({});
+                    if (args.failure)
+                        args.failure({});
                 }
                 else
                 {
@@ -67,7 +67,7 @@ zc.extjs.util = function() {
                     form.getForm().submit({
                         url: url,
                         waitMsg: '...',
-                        failure: zc.extjs.form_failure,
+                        failure: zc.extjs.util.form_failure,
                         success: args.after
                     });
                 }
