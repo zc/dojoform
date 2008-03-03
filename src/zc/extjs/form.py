@@ -95,14 +95,17 @@ class Form(_FormBase):
 
         raise zope.publisher.interfaces.NotFound(self, name, request)
 
-    def getObjectData(self, ob):
+    def getObjectData(self, ob, extra):
         widgets = zope.formlib.form.setUpWidgets(
             self.form_fields, self.prefix, self.context, self.request,
             ignore_request=True)
 
         result = {}
         for widget in widgets:
-            result[widget.name] = widget.context.get(ob)
+            if widget.name in extra:
+                result[widget.name] = extra[widget.name]
+            else:
+                result[widget.name] = widget.context.get(ob)
 
         return result
 
