@@ -88,6 +88,7 @@ zc.extjs.util = function() {
             }        
             call_server({
                 url: args.url,
+                params: args.params,
                 task: "Loading form definition",
                 success: function (result) {
 
@@ -129,6 +130,8 @@ zc.extjs.util = function() {
                     };
                     if (args.window_config)
                         config = Ext.apply(config, args.window_config);
+                    if (result.definition.title)
+                        config.title = result.definition.title;
                     dialog = new Ext.Window(config);
                     dialog.show();
                     form_reset(dialog.initialConfig.items[0], result.data);
