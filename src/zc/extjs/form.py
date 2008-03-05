@@ -52,15 +52,12 @@ class Form(_FormBase):
     def request(self):
         return self.page.request
 
-    def __call__(self, data=None, json=True):
-        """Return rendered js widget configs
-        """
-
+    def get_definition(self):
         widgets = zope.formlib.form.setUpWidgets(
             self.form_fields, self.prefix, self.context, self.request,
             ignore_request=True)
 
-        result = dict(definition=dict(
+        return dict(
             widgets = [widget.js_config() for widget in widgets],
             actions = [dict(label=action.label,
                             url="%s/%s" % (self.prefix,
@@ -69,13 +66,12 @@ class Form(_FormBase):
                             name=action.__name__,
                             )
                        for action in self.actions],
-            data = data,
-            ))
-
-        if json:
-            result = zc.extjs.extjs.result(result)
-
-        return result
+            )
+        
+    def __call__(self):
+        """Return rendered js widget configs
+        """
+        return zc.extjs.extjs.result(dict(definition=self.get_definition()))
     
     def browserDefault(self, request):
         return self, ()
