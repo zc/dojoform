@@ -17,4 +17,5 @@ import zope.deferredimport
 zope.deferredimport.define(
     Application = 'zc.extjs.extjs:Application',
     jsonpage = 'zc.extjs.extjs:jsonpage',
+    page = 'zc.extjs.extjs:page',
     )
