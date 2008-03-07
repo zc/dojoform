@@ -8,36 +8,46 @@ zc.extjs.util = function() {
 
     function call_server (args)
     {
-        server_connection.request({
-            url: args.url, params: args.params,
-            callback: function (options, success, response) {
-                if (! success)
+        var callback = function (options, success, response) {
+            if (! success)
+            {
+                system_error(args.task);
+                if (args.failure)
+                    args.failure({});
+            }
+            else
+            {
+                result = eval("("+response.responseText+")");
+                if (result.session_expired)
+                    return session_expired();
+
+                if (result.error)
                 {
-                    system_error(args.task);
+                    Ext.MessageBox.alert(args.task+' failed',
+                                         result.error);
                     if (args.failure)
-                        args.failure({});
+                        args.failure(result);
                 }
                 else
                 {
-                    result = eval("("+response.responseText+")");
-                    if (result.session_expired)
-                        return session_expired();
-
-                    if (result.error)
-                    {
-                        Ext.MessageBox.alert(args.task+' failed',
-                                             result.error);
-                        if (args.failure)
-                            args.failure(result);
-                    }
-                    else
-                    {
-                        if (args.success)
-                            args.success(result);
-                    }
+                    if (args.success)
+                        args.success(result);
                 }
             }
-        });
+        };
+
+        if (args.jsonData)
+        {
+//             YAHOO.util.Connect.setDefaultPostHeader(false);
+            server_connection.request({
+                url: args.url, jsonData: args.jsonData, method: 'POST',
+                callback: callback});
+//             YAHOO.util.Connect.setDefaultPostHeader(true);
+        }
+        else
+            server_connection.request({
+                url: args.url, params: args.params,
+                callback: callback});
     }
 
     function new_form(args)
@@ -134,6 +144,14 @@ zc.extjs.util = function() {
                         config.title = result.definition.title;
                     dialog = new Ext.Window(config);
                     dialog.show();
+                    
+                    if (data)
+                    {
+                        if (result.data)
+                            result.data = Ext.apply(result.data, data);
+                        else
+                            result.data = data;
+                    }
                     form_reset(dialog.initialConfig.items[0], result.data);
                 }
             });
