@@ -129,7 +129,7 @@ class Application(zope.publisher.browser.BrowserView):
         return self.initial_data()
 
     def template(self):
-        return ('<html><head><title>%s</title</head><body>\n'
+        return ('<html><head><title>%s</title></head><body>\n'
                 '<div id="app-header">'
                 '<img src='
                 '"http://zope4zc.cachefly.net/zopedotcom/zopeRoadway.gif"'
