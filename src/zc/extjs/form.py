@@ -49,6 +49,15 @@ class Form(_FormBase):
         return self.page.context
 
     @zope.cachedescriptors.property.Lazy
+    def base(self):
+        base = getattr(self.page, 'base', None)
+        if base is not None:
+            base += '/'
+        else:
+            base = ''
+        return base+self.__class__.__name__
+
+    @zope.cachedescriptors.property.Lazy
     def request(self):
         return self.page.request
 
@@ -60,9 +69,9 @@ class Form(_FormBase):
         return dict(
             widgets = [widget.js_config() for widget in widgets],
             actions = [dict(label=action.label,
-                            url="%s/%s" % (self.prefix,
-                                           action.__name__.split('.')[-1],
-                                           ),
+                            url="%s/%s" % (base,
+                                          action.__name__.split('.')[-1],
+                                          ),
                             name=action.__name__,
                             )
                        for action in self.actions],
