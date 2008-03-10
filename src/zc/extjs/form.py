@@ -69,9 +69,9 @@ class Form(_FormBase):
         return dict(
             widgets = [widget.js_config() for widget in widgets],
             actions = [dict(label=action.label,
-                            url="%s/%s" % (base,
-                                          action.__name__.split('.')[-1],
-                                          ),
+                            url="%s/%s" % (self.base,
+                                           action.__name__.split('.')[-1],
+                                           ),
                             name=action.__name__,
                             )
                        for action in self.actions],
