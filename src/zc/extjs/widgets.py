@@ -115,15 +115,20 @@ class InputBool(Base):
 
     def _toForm(self, v):
         return bool(v)
+
+
     
-class InputChoice(Base):
+class InputChoiceIterable(Base):
 
     zope.component.adapts(
         zope.schema.interfaces.IChoice,
+        zope.schema.interfaces.IIterableSource,
         zc.extjs.interfaces.IAjaxRequest,
         )
 
-    zope.interface.implements(zope.app.form.interfaces.IInputWidget)
+    def __init__(self, context, source, request):
+        Base.__init__(self, context, request)
+        self.source = source
 
     def _is_missing(self, raw):
         return not raw
@@ -131,13 +136,15 @@ class InputChoice(Base):
     def js_config(self):
         result = Base.js_config(
             self, widget_constructor='zc.extjs.widgets.InputChoice')
+
         terms = zope.component.getMultiAdapter(
-            (self.context.source, self.request),
+            (self.source, self.request),
             zope.app.form.browser.interfaces.ITerms,
             )
+
         result['values'] = [
             [term.token, term.title]
-            for term in (terms.getTerm(v) for v in self.context.source)
+            for term in (terms.getTerm(v) for v in self.source)
             ]
         
         if self.required:
@@ -145,6 +152,52 @@ class InputChoice(Base):
 
         return result
 
+    def _toForm(self, v):
+        if v is None and v not in self.source:
+            return v
+        terms = zope.component.getMultiAdapter(
+            (self.source, self.request),
+            zope.app.form.browser.interfaces.ITerms,
+            )
+        return terms.getTerm(v).token
+
+    def _toValue(self, v):
+        terms = zope.component.getMultiAdapter(
+            (self.source, self.request),
+            zope.app.form.browser.interfaces.ITerms,
+            )
+        return terms.getValue(v)
+    
+class InputChoiceTokenized(InputChoiceIterable):
+
+    zope.component.adapts(
+        zope.schema.interfaces.IChoice,
+        zope.schema.interfaces.IVocabularyTokenized,
+        zc.extjs.interfaces.IAjaxRequest,
+        )
+
+    def js_config(self):
+        result = Base.js_config(
+            self, widget_constructor='zc.extjs.widgets.InputChoice')
+
+        result['values'] = [
+            [term.token, term.title or unicode(term.value)]
+            for term in self.source
+            ]
+        
+        if self.required:
+            result['allowBlank'] = False
+
+        return result
+
+    def _toForm(self, v):
+        if v is None and v not in self.source:
+            return v
+        return self.source.getTerm(v).token
+
+    def _toValue(self, v):
+        return self.source.getTermByToken(v).value
+            
 class InputInt(Base):
 
     zope.component.adapts(
@@ -186,7 +239,7 @@ class InputTextLine(Base):
     xtype = 'textfield'
 
     def _is_missing(self, raw):
-        return (not raw) and (self.min_length > 0)
+        return (not raw) and (self.context.min_length > 0)
     
     def js_config(self):
         config = Base.js_config(self)
@@ -199,6 +252,15 @@ class InputTextLine(Base):
             config['maxLength'] = self.context.max_length
             
         return config
+
+class InputText(InputTextLine):
+
+    zope.component.adapts(
+        zope.schema.interfaces.IText,
+        zc.extjs.interfaces.IAjaxRequest,
+        )
+
+    xtype = 'textarea'
 
 class Hidden(Base):
 

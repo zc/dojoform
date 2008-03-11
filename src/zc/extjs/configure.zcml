@@ -31,7 +31,12 @@
      />
 
   <adapter
-     factory=".widgets.InputChoice"
+     factory=".widgets.InputChoiceIterable"
+     provides="zope.app.form.interfaces.IInputWidget"
+     />
+
+  <adapter
+     factory=".widgets.InputChoiceTokenized"
      provides="zope.app.form.interfaces.IInputWidget"
      />
 
@@ -42,6 +47,11 @@
 
   <adapter
      factory=".widgets.InputTextLine"
+     provides="zope.app.form.interfaces.IInputWidget"
+     />
+
+  <adapter
+     factory=".widgets.InputText"
      provides="zope.app.form.interfaces.IInputWidget"
      />
 
