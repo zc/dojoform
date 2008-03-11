@@ -73,14 +73,38 @@ class jsonpage(object):
             return self
         return jsonmethod(inst, self.func)
 
-class Application(zope.publisher.browser.BrowserView):
+class PageTraversable(object):
+
+    zope.interface.implements(
+        zope.publisher.interfaces.browser.IBrowserPublisher)
+
+    __Security_checker__ = zope.security.checker.NamesChecker((
+        'browserDefault', 'publishTraverse'))
+
+    def publishTraverse(self, request, name):
+        name = name.replace('.', '_')
+        result = getattr(self, name, None)
+        if (result is not None
+            and
+            (zope.publisher.interfaces.browser.IBrowserPublisher.providedBy(
+                result)
+             or
+             getattr(result, '__is_page__', None)
+             or
+             getattr(getattr(result, 'im_func', None), '__is_page__', None)
+             )
+            ):
+            zope.interface.directlyProvides(request,
+                                            zc.extjs.interfaces.IAjaxRequest)
+            return result
+        raise zope.publisher.interfaces.NotFound(self, name, request)    
+
+class Application(PageTraversable):
 
     zope.component.adapts(
         zope.traversing.interfaces.IContainmentRoot,
         zope.publisher.interfaces.browser.IBrowserRequest,
         )
-    zope.interface.implementsOnly(
-        zope.publisher.interfaces.browser.IBrowserPublisher)
 
     trusted = True
     
@@ -92,24 +116,6 @@ class Application(zope.publisher.browser.BrowserView):
 
     def browserDefault(self, request):
         return self, ('index.html', )
-
-    def publishTraverse(self, request, name):
-        name = name.replace('.', '_')
-        result = getattr(self, name, None)
-        if (result is not None
-            and
-            (getattr(result, '__is_page__', None)
-             or
-             getattr(getattr(result, 'im_func', None), '__is_page__', None)
-             )
-            ):
-            zope.interface.directlyProvides(request,
-                                            zc.extjs.interfaces.IAjaxRequest)
-            
-            
-            return result
-        raise zope.publisher.interfaces.NotFound(self, name, request)
-
 
     def title(self):
         return self.__class__.__name__
@@ -130,11 +136,6 @@ class Application(zope.publisher.browser.BrowserView):
 
     def template(self):
         return ('<html><head><title>%s</title></head><body>\n'
-                '<div id="app-header">'
-                '<img src='
-                '"http://zope4zc.cachefly.net/zopedotcom/zopeRoadway.gif"'
-                ' height="190" />'
-                '</div>\n'
                 '</body></html>\n'
                 % cgi.escape(self.title())
                 )
