@@ -23,7 +23,7 @@ params (optional)
 
 task
     A string to be used in failure messages.
-   
+
     The task string should describe what you're doing, such as
     "Saving".
 
@@ -93,7 +93,7 @@ window_config
 form_config
     configuration parameters to be passed when creating a form
     panel within the dialog
-  
+
 
 after (optional)
     A Callback function to call when a form has been successfully
@@ -106,7 +106,7 @@ used to initialize the form.
 Example::
 
    add_button = new Ext.Button({
-       text: '+', 
+       text: '+',
        handler: zc.extjs.form_dialog({
           url: 'add_slot_form',
           window_config: {title: 'Add slot', width: 500},
