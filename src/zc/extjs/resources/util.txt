@@ -150,7 +150,7 @@ form_valid(form_panel)
 Do client-side validation.  If there is a problem, pop up an alert
 with a generic message.
 
-A boolian value is returned indicating whether the form is valid.
+A boolean value is returned indicating whether the form is valid.
 
 This would typically be used in a button handler before submitting a
 form::
