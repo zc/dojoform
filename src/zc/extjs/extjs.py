@@ -146,3 +146,30 @@ class Application(PageTraversable):
         if library is not None:
             zc.resourcelibrary.need(library)
         return self.template()
+
+class traverser(object):
+
+    def __init__(self, func, inst=None):
+        self.func = func
+        self.inst = inst
+    
+    def __get__(self, inst, cls):
+        if inst is None:
+            return self
+        return traverser(self.func, inst)
+
+    zope.interface.implements(
+        zope.publisher.interfaces.browser.IBrowserPublisher)
+
+    __Security_checker__ = zope.security.checker.NamesChecker((
+        'publishTraverse', ))
+
+    def publishTraverse(self, request, name):
+        return self.func(self.inst, request, name)
+
+    def __call__(self, *args, **kw):
+        if self.inst is None:
+            return self.func(*args, **kw)
+        else:
+            return self.func(self.inst, *args, **kw)
+            
