@@ -12,7 +12,7 @@
 #
 ##############################################################################
 
-import zc.slots.interfaces
+import zc.extjs.interfaces
 import zope.app.form
 import zope.app.form.interfaces
 import zope.app.form.browser.interfaces
