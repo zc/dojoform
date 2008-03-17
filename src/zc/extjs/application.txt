@@ -1,0 +1,103 @@
+Application support
+===================
+
+The zc.extjs.application module provides support for writing AJAX
+[#ajax]_ applications.  This framework started out as an experiment in
+simplifying writing applications with Zope 3.  I was frustrated with
+ZCML situps and generally too much indirection.  I ended up with a
+model that I'm pretty happy with.  It might not be for everybody. :)
+
+The basic idea is that an application can be provided using a single
+Zope 3 view plus necessary resource-library definitions.  This view
+has a URL.  It typically provides many AJAX method whose URLs have the
+view URL as a base.
+
+Many applications can be implemented using a simple class that can be
+registered as a view.
+
+Let's look at a simple stupid application. :)
+
+    >>> import zc.extjs.application
+    >>> class Calculator(zc.extjs.application.Trusted,
+    ...                  zc.extjs.application.Application):
+    ...
+    ...     resource_library_name = None
+    ...
+    ...     @zc.extjs.application.jsonpage
+    ...     dev value(self):
+    ...         return getattr(self.context, 'calculator_value', 0)
+    ...
+    ...     @zc.extjs.application.jsonpage
+    ...     dev add(self, value):
+    ...         value += getattr(self.context, 'calculator_value', 0)
+    ...         self.context.calculator_value = 
+    ...         return self.context.calculator_value = 
+
+We subclass zc.extjs.application.Trusted. This is a minimal
+base class that provides a constructor that takes a context and a
+request and removes the security proxy from the context.  It
+overrides the constructor from zc.extjs.application.Application.
+
+We also subclass zc.extjs.application.Application.  This is a base
+class that provides:
+
+- a basic constructor that takes context and request arguments and sets
+  corresponding attributes,
+
+- traversal to attributes that provide IBrowserPublisher with
+  conversion of dots to underscores,
+
+- a default "page" named index.html,
+
+- a template method that returns an HTML page with an empty head.
+
+- an index_html method that loads a resource library and calls the
+  template,
+
+- an interface declaration that it provides IBrowserPublisher, and
+
+- an adapter declaration that adapts
+  zope.traversing.interfaces.IContainmentRoot and
+  zope.publisher.interfaces.browser.IBrowserRequest.
+
+The main goals of this base class are to make it easy to load
+javascript and to make it easy to define Ajax methods to support the
+Javascript. For that reason, we provide a traverser that traverses to
+object attributes that provide IBrowserPublisher.  The
+zc.extjs.application.jsonpage decorator is also an important part of
+this. It makes methods accessible and automatically marshals their
+result to JSON.  There's also a zc.extjs.application.page decorator
+that makes methods accessable without the automatic marshalling.  The
+use of a default page, rather than just a __call__ method is to cause
+the URL base to be the view, rather than the view's context.  This
+allows the Javascript code to use relative URLs to refer to the AJAX
+methods.
+
+The class expects subclasses to define a resource_library_name
+attribute [#missing_resource_library_name]_.  For these applications,
+you pretty much always want to use an associated Javascript file and
+other resources (supporting JS, CSS, etc.).  You can suppress the use
+of the resource library by setting the value to None.
+
+For applications that build pages totally in Javascript, which ExtJS
+makes easy to do, the default template is adequate for most
+applications.  For applications that need to support
+non-Javascript-enabled browsers or that want to provide some
+Javascript data during the initial page load, a custom template can be
+provided by simply overriding the template method with a page template
+or a method that calls one.
+
+
+
+
+
+
+
+
+
+.. [#ajax] Technically, these aren't really AJAX applications, since
+we rarely. if ever, use XML as a serialization format.
+
+.. [#missing_resource_library_name] A custom attribute error message
+   is used if this attribute is missing that tries to be more
+   informative than the default attribute error.
