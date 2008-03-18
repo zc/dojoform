@@ -23,6 +23,8 @@ import zc.resourcelibrary
 import zope.app.exception.browser.unauthorized
 import zope.app.pagetemplate
 import zope.component
+import zope.exceptions.interfaces
+import zope.interface
 import zope.publisher.browser
 import zope.publisher.interfaces.browser
 import zope.security.proxy
@@ -31,8 +33,6 @@ import zope.traversing.interfaces
 def result(data):
     if not data:
         data = dict(success=True)
-    elif isinstance(data, basestring):
-        data = dict(success=False, error=data)
     elif isinstance(data, dict) and not 'success' in data:
         data['success'] = not (('error' in data)
                                  or ('errors' in data))
@@ -58,7 +58,7 @@ class _method(object):
     def browserDefault(self, request):
         return self, ()
 
-class _jsonmethod(method):
+class _jsonmethod(_method):
 
     def __call__(self, *a, **k):
         return result(self.im_func(self.im_self, *a, **k))
@@ -162,3 +162,19 @@ class traverser(object):
         else:
             return self.func(self.inst, *args, **kw)
             
+
+class UserError:
+
+    zope.interface.implements(
+        zope.publisher.interfaces.browser.IBrowserPublisher)
+    zope.component.adapts(zope.exceptions.interfaces.IUserError,
+                          zc.extjs.interfaces.IAjaxRequest)
+
+    def __init__(self, context, request):
+        self.context = context
+
+    def __call__(self):
+        return simplejson.dumps(dict(
+            success = False,
+            error = str(self.context),
+            ))

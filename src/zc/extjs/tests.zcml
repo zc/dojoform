@@ -1,0 +1,17 @@
+<configure 
+   xmlns="http://namespaces.zope.org/zope"
+   package="zc.extjs"
+   >
+
+  <include package="zope.app.zcmlfiles" file="meta.zcml" /> <!-- Gaaaah -->
+  <include file="session.zcml" />
+  <include package="zc.extjs" />
+  <include package="zope.app.zcmlfiles" /> <!-- Gaaaah -->
+  <include package="zope.formlib" />
+
+  <utility factory=".testing.DumbAuth" />
+  <securityPolicy component=".testing.AuthenticatedAllowed" />
+
+  <include file="calculator_test.zcml" />
+
+</configure>

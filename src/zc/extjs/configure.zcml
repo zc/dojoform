@@ -1,22 +1,13 @@
 <configure 
    xmlns="http://namespaces.zope.org/zope"
    xmlns:browser="http://namespaces.zope.org/browser"
-   xmlns:orpolicy="http://namespaces.zope.com/orpolicy"
-   i18n_domain="zc.extjs">
+   >
 
   <include package="zc.extjsresource" />
+  <include file="widgets.zcml" />
+  <include file="extjs.zcml" /> <!-- Die! -->
 
-  <class class=".extjs.jsonmethod">
-    <allow attributes="__call__ browserDefault" />
-  </class>
-
-  <class class=".form.Action">
-    <allow attributes="__call__ browserDefault" />
-  </class>
-
-  <class class=".form.Form">
-    <allow attributes="__call__ browserDefault publishTraverse" />
-  </class>
+  <adapter factory=".application.UserError" name="index.html" />
 
   <resourceLibrary name="zc.extjs" require="Ext">
     <directory
@@ -25,34 +16,8 @@
        />
   </resourceLibrary>
 
-  <adapter
-     factory=".widgets.InputBool"
-     provides="zope.app.form.interfaces.IInputWidget"
-     />
-
-  <adapter
-     factory=".widgets.InputChoiceIterable"
-     provides="zope.app.form.interfaces.IInputWidget"
-     />
-
-  <adapter
-     factory=".widgets.InputChoiceTokenized"
-     provides="zope.app.form.interfaces.IInputWidget"
-     />
-
-  <adapter
-     factory=".widgets.InputInt"
-     provides="zope.app.form.interfaces.IInputWidget"
-     />
-
-  <adapter
-     factory=".widgets.InputTextLine"
-     provides="zope.app.form.interfaces.IInputWidget"
-     />
-
-  <adapter
-     factory=".widgets.InputText"
-     provides="zope.app.form.interfaces.IInputWidget"
-     />
+  <class class=".form.Action">
+    <allow attributes="__call__ browserDefault" />
+  </class>
 
 </configure>

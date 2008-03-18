@@ -1,0 +1,7 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+  <include package="zope.app.component" file="meta.zcml" />
+  <adapter name='index.html'
+           factory="zc.extjs.calculator_test.Calculator"
+           permission="zope.View"
+           />
+</configure>

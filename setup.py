@@ -53,6 +53,9 @@ setup(
         'zc.extjsresource',
         'zope.deferredimport',
         ],
+    extras_require = dict(
+        test=['zope.app.zcmlfiles',
+              'zope.testbrowser']),
     zip_safe = False,
     entry_points=entry_points,
     )
