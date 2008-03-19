@@ -131,7 +131,6 @@ class Action:
             self.page.request,
             ignore_request=True)
         data = {}
-        import pdb; pdb.set_trace()
         errors = zope.formlib.form.getWidgetsData(
             widgets, self.page.prefix, data)
         if errors:
