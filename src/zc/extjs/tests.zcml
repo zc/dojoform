@@ -12,6 +12,7 @@
   <utility factory=".testing.DumbAuth" />
   <securityPolicy component=".testing.AuthenticatedAllowed" />
 
-  <include file="calculator_test.zcml" />
+  <include file="calculator_example.zcml" />
+  <include file="form_example.zcml" />
 
 </configure>

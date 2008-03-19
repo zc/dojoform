@@ -35,7 +35,7 @@ class Test(zope.app.testing.functional.ZCMLLayer):
 
 def test_suite():
     return unittest.TestSuite((
-        Test()('application.txt', 'session.txt'),
+        Test()('application.txt', 'session.txt', 'form.txt'),
         ))
 
 if __name__ == '__main__':
