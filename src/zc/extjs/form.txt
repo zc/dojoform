@@ -211,6 +211,11 @@ calling get_definition.
                   'name': 'ExampleForm.age',
                   'widget_constructor': 'zc.extjs.widgets.InputInt'}]}
 
+Note that we had to stamp the request with IAjaxRequest.  This is done
+during application traversal.  We need it som widgets can get looked
+up.
+
+
 Base and prefix
 ---------------
 
