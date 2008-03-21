@@ -129,6 +129,10 @@ class Application(PageTraversable):
     def initial_data(self):
         return {}
 
+    @property
+    def base_href(self):
+        return self.base                # BBB
+
     @page
     @json
     def js_data(self):
