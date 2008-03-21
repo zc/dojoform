@@ -35,6 +35,7 @@ class Test(zope.app.testing.functional.ZCMLLayer):
 
 def test_suite():
     return unittest.TestSuite((
+        doctest.DocFileSuite('widgets.txt'),
         Test()('application.txt', 'session.txt', 'form.txt'),
         ))
 

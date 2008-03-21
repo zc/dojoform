@@ -23,9 +23,10 @@ import zope.schema.interfaces
 
 class Base(zope.app.form.InputWidget):
 
-    zope.interface.implements(zope.app.form.interfaces.IInputWidget)
+    zope.interface.implements(zc.extjs.interfaces.IInputWidget)
 
     xtype = None
+    widget_constructor = None
     
     def js_config(self, **kw):
         config = dict(
@@ -37,6 +38,12 @@ class Base(zope.app.form.InputWidget):
 
         if self.xtype:
             config['xtype'] = self.xtype
+        elif not self.widget_constructor:
+            raise ValueError(
+                'Neither xtype nor widget_constructor are defined.')
+
+        if self.widget_constructor:
+            config['widget_constructor'] = self.widget_constructor
         
         if self.required:
             config['itemCls'] = 'zc-required-field'
@@ -84,7 +91,7 @@ class Base(zope.app.form.InputWidget):
             
         return value
  
-    @zope.cachedescriptors.property.readproperty
+    @zope.cachedescriptors.property.Lazy
     def required(self):
         return self.context.required
 
@@ -117,6 +124,8 @@ class InputChoiceIterable(Base):
         zc.extjs.interfaces.IAjaxRequest,
         )
 
+    widget_constructor = 'zc.extjs.widgets.InputChoice'
+
     def __init__(self, context, source, request):
         Base.__init__(self, context, request)
         self.source = source
@@ -125,8 +134,7 @@ class InputChoiceIterable(Base):
         return not raw
 
     def js_config(self):
-        result = Base.js_config(
-            self, widget_constructor='zc.extjs.widgets.InputChoice')
+        result = Base.js_config(self)
 
         terms = zope.component.getMultiAdapter(
             (self.source, self.request),
@@ -168,8 +176,7 @@ class InputChoiceTokenized(InputChoiceIterable):
         )
 
     def js_config(self):
-        result = Base.js_config(
-            self, widget_constructor='zc.extjs.widgets.InputChoice')
+        result = Base.js_config(self)
 
         result['values'] = [
             [term.token, term.title or unicode(term.value)]
@@ -196,9 +203,10 @@ class InputInt(Base):
         zc.extjs.interfaces.IAjaxRequest,
         )
 
+    widget_constructor = 'zc.extjs.widgets.InputInt'
+
     def js_config(self):
-        config = Base.js_config(
-            self, widget_constructor='zc.extjs.widgets.InputInt')
+        config = Base.js_config(self)
 
         if self.required:
             config['allowBlank'] = False

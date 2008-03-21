@@ -12,9 +12,33 @@
 #
 ##############################################################################
 
+import zope.app.form.interfaces
 import zope.interface
 import zope.publisher.interfaces.browser
 
 class IAjaxRequest(zope.publisher.interfaces.browser.IBrowserRequest):
     """Ajax requests
     """
+
+class IInputWidget(zope.app.form.interfaces.IInputWidget):
+    """Ajax widgets
+
+    Ajax widgets work much like browser widgets except that rather
+    than rendering HTML, they render ExtJS widget configurations.    
+    """
+
+    def js_config(self):
+        """Return an ExtJS widget configuration
+
+        The return value is a dictionary containing data needed to
+        create an ExtJS field.
+
+        The resule may contain a widget_constructor property
+        containing the name of a Javascript to be used to build the
+        widget, in which case the data is passed to the Javascript function.
+
+        If rendered data have been set, the output should contain a
+        value property.
+
+        The output must contain name and id properties.
+        """
