@@ -88,8 +88,11 @@ class PageTraversable(object):
         result = getattr(self, name, None)
         if zope.publisher.interfaces.browser.IBrowserPublisher.providedBy(
             result):
-            zope.interface.directlyProvides(request,
-                                            zc.extjs.interfaces.IAjaxRequest)
+            zope.interface.directlyProvides(
+                request,
+                zc.extjs.interfaces.IAjaxRequest,
+                zope.interface.directlyProvidedBy(object),
+                )
             return result
         raise zope.publisher.interfaces.NotFound(self, name, request)    
 
