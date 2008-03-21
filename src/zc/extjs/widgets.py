@@ -25,11 +25,7 @@ class Base(zope.app.form.InputWidget):
 
     zope.interface.implements(zope.app.form.interfaces.IInputWidget)
 
-    _error = None
     xtype = None
-    
-    def error(self):
-        return self._error
     
     def js_config(self, **kw):
         config = dict(
@@ -77,20 +73,15 @@ class Base(zope.app.form.InputWidget):
             else:
                 return self.context.missing_value
             
-        try:
-            value = self._toValue(raw)
-        except zope.app.form.interfaces.ConversionError, error:
-            self._error = error
-            raise self._error
-
+        value = self._toValue(raw)
+        
         # value must be valid per the field constraints
         try:
             self.context.validate(value)
         except zope.schema.interfaces.ValidationError, v:
-            self._error = zope.app.form.interfaces.WidgetInputError(
+            raise zope.app.form.interfaces.WidgetInputError(
                 self.context.__name__, self.label, v)
-            raise self._error
-
+            
         return value
  
     @zope.cachedescriptors.property.readproperty
@@ -239,7 +230,7 @@ class InputTextLine(Base):
     xtype = 'textfield'
 
     def _is_missing(self, raw):
-        return (not raw) and (self.context.min_length > 0)
+        return (not raw) and self.required
     
     def js_config(self):
         config = Base.js_config(self)
