@@ -29,7 +29,7 @@ class IPerson(zope.interface.Interface):
 
 class FormExample(zc.extjs.application.Application):
 
-    class Form(zc.extjs.form.Form):
+    class ExampleForm(zc.extjs.form.Form):
         
         form_fields = zope.formlib.form.Fields(IPerson)
 
@@ -37,7 +37,8 @@ class FormExample(zc.extjs.application.Application):
         def register(self, action, data):
             return dict(
                 data = data,
-                form_name = self.__class__.__name__,
-                page_name = self.page.__class__.__name__,
-                context_name = self.context.__class__.__name__,
+                self_class_name = self.__class__.__name__,
+                self_context_class_name = self.context.__class__.__name__,
+                self_context_context_class_name =
+                self.context.context.__class__.__name__,
                 )

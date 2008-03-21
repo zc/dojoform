@@ -12,7 +12,9 @@
 #
 ##############################################################################
 
-import zc.extjs.extjs
+import zc.extjs.application
+import zope.app.form.browser.interfaces
+import zope.app.form.interfaces
 import zope.cachedescriptors.property
 import zope.formlib.form
 import zope.publisher.interfaces.browser
@@ -29,47 +31,43 @@ _FormBase = FormType('_FormBase', (object, ), {})
 
 class Form(_FormBase):
 
-    zope.interface.implementsOnly(
+    zope.interface.implements(
         zope.publisher.interfaces.browser.IBrowserPublisher)
-
-    __is_page__ = True
 
     __Security_checker__ = zope.security.checker.NamesChecker((
         '__call__', 'browserDefault', 'publishTraverse'))
 
-    def __init__(self, page):
-        self.page = page
+    def __init__(self, context, request=None):
+        self.context = context
+        if request is None:
+            request = context.request
+        self.request = request
 
     @zope.cachedescriptors.property.Lazy
     def prefix(self):
-        return self.__class__.__name__
+        return self.base_href.replace('/', '.')
 
     @zope.cachedescriptors.property.Lazy
-    def context(self):
-        return self.page.context
-
-    @zope.cachedescriptors.property.Lazy
-    def base(self):
-        base = getattr(self.page, 'base', None)
-        if base is not None:
-            base += '/'
+    def base_href(self):
+        base_href = getattr(self.context, 'base_href', None)
+        if base_href is not None:
+            base_href += '/'
         else:
-            base = ''
-        return base+self.__class__.__name__
-
-    @zope.cachedescriptors.property.Lazy
-    def request(self):
-        return self.page.request
+            base_href = ''
+        return base_href+self.__class__.__name__
 
     def get_definition(self):
         widgets = zope.formlib.form.setUpWidgets(
-            self.form_fields, self.prefix, self.context, self.request,
+            self.form_fields, self.prefix, self.context.context, self.request,
             ignore_request=True)
 
         return dict(
             widgets = [widget.js_config() for widget in widgets],
+            widget_names = dict((widget.name, i)
+                                for (i, widget) in enumerate(widgets)
+                                ),
             actions = [dict(label=action.label,
-                            url="%s/%s" % (self.base,
+                            url="%s/%s" % (self.base_href,
                                            action.__name__.split('.')[-1],
                                            ),
                             name=action.__name__,
@@ -80,29 +78,22 @@ class Form(_FormBase):
     def __call__(self):
         """Return rendered js widget configs
         """
-        return zc.extjs.extjs.result(dict(definition=self.get_definition()))
+        return zc.extjs.application.result(
+            dict(definition=self.get_definition()))
+
+    def publishTraverse(self, request, name):
+        result = getattr(self, name, None)
+        if isinstance(result, zope.formlib.form.Action):
+            return Action(self, result)
+
+        raise zope.publisher.interfaces.NotFound(self, name, request)
     
     def browserDefault(self, request):
         return self, ()
 
-    def publishTraverse(self, request, name):
-        name = name.replace('.', '_')
-        result = getattr(self, name, None)
-        if (result is not None):
-            if (getattr(result, '__is_page__', None)
-                or
-                getattr(getattr(result, 'im_func', None), '__is_page__', None)
-                ):
-                return result
-            elif isinstance(result, zope.formlib.form.Action):
-                return Action(self, result)
-        
-
-        raise zope.publisher.interfaces.NotFound(self, name, request)
-
     def getObjectData(self, ob, extra):
         widgets = zope.formlib.form.setUpWidgets(
-            self.form_fields, self.prefix, self.context, self.request,
+            self.form_fields, self.prefix, self.context.context, self.request,
             ignore_request=True)
 
         result = {}
@@ -114,47 +105,58 @@ class Form(_FormBase):
 
         return result
 
-class Action:
+class Action(object):
 
     zope.interface.implementsOnly(
         zope.publisher.interfaces.browser.IBrowserPublisher)
 
-    def __init__(self, page, action):
-        self.page = page
+    def __init__(self, form, action):
+        self.form = form
         self.action = action
 
     def __call__(self):
         widgets = zope.formlib.form.setUpWidgets(
-            self.page.form_fields,
-            self.page.prefix,
-            self.page.context,
-            self.page.request,
+            self.form.form_fields,
+            self.form.prefix,
+            self.form.context,
+            self.form.request,
             ignore_request=True)
         data = {}
-        errors = zope.formlib.form.getWidgetsData(
-            widgets, self.page.prefix, data)
-        if errors:
-            errors = {}
-            for widget in widgets:
-                error = widget.error()
-                if not error:
+        field_errors = {}
+
+        for input, widget in widgets.__iter_input_and_widget__():
+            if (input and
+                zope.app.form.interfaces.IInputWidget.providedBy(widget)
+                ):
+                if (not widget.hasInput()) and not widget.required:
                     continue
-                
-                if not isinstance(error, basestring):
-                    view = zope.component.getMultiAdapter(
-                        (error, self.page.request),
-                        zope.app.form.browser.interfaces.IWidgetInputErrorView,
-                        )
-                    title = getattr(error, 'widget_title', None) # duck typing
-                    error = view.snippet()
+
+                name = widget.name
+                if name.startswith(self.form.prefix+'.'):
+                    name = name[len(self.form.prefix)+1:]
+
+                try:
+                    data[name] = widget.getInputValue()
+                except zope.app.form.interfaces.InputErrors, error:
+
+                    if not isinstance(error, basestring):
+                        view = zope.component.getMultiAdapter(
+                            (error, self.form.request),
+                            zope.app.form.browser.interfaces.
+                            IWidgetInputErrorView,
+                            )
+                        error = view.snippet()
                     
-                errors[widget.name] = error
+                    field_errors[widget.name] = error
 
-            return zc.extjs.extjs.result(dict(errors=errors))
+        if field_errors:
+            return zc.extjs.application.result(dict(errors=field_errors))
 
+
+        # XXX invariants and action conditions
         # XXX action validator and failure handlers
 
-        return zc.extjs.extjs.result(self.action.success(data))
+        return zc.extjs.application.result(self.action.success(data))
 
     def browserDefault(self, request):
         return self, ()

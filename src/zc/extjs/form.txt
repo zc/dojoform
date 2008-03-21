@@ -44,44 +44,48 @@ Let's try accessing our form:
     >>> from zc.extjs.testing import print_form
     >>> browser = zope.testbrowser.testing.Browser()
     >>> browser.addHeader('Authorization', 'Basic bob:123')
-    >>> print_form(browser, 'http://localhost/form.html/Form')
+    >>> print_form(browser, 'http://localhost/form.html/ExampleForm')
     ... # doctest: +NORMALIZE_WHITESPACE
     {u'definition': {u'actions': [{u'label': u'Register',
-                                   u'name': u'Form.actions.register',
-                                   u'url': u'Form/register'}],
+                                   u'name': u'ExampleForm.actions.register',
+                                   u'url': u'ExampleForm/register'}],
+                     u'widget_names': {u'ExampleForm.age': 3,
+                                       u'ExampleForm.favorite_color': 2,
+                                       u'ExampleForm.first_name': 0,
+                                       u'ExampleForm.last_name': 1},
                      u'widgets': [{u'fieldHint': u'Given name.',
                                    u'fieldLabel': u'First name',
-                                   u'id': u'Form.first_name',
+                                   u'id': u'ExampleForm.first_name',
                                    u'itemCls': u'zc-required-field',
                                    u'minLength': 0,
-                                   u'name': u'Form.first_name',
+                                   u'name': u'ExampleForm.first_name',
                                    u'xtype': u'textfield'},
                                   {u'fieldHint': u'Family name.',
                                    u'fieldLabel': u'Last name',
-                                   u'id': u'Form.last_name',
+                                   u'id': u'ExampleForm.last_name',
                                    u'itemCls': u'zc-required-field',
                                    u'minLength': 0,
-                                   u'name': u'Form.last_name',
+                                   u'name': u'ExampleForm.last_name',
                                    u'xtype': u'textfield'},
                                   {u'fieldHint': u'',
                                    u'fieldLabel': u'Favorite color',
-                                   u'id': u'Form.favorite_color',
+                                   u'id': u'ExampleForm.favorite_color',
                                    u'minLength': 0,
-                                   u'name': u'Form.favorite_color',
+                                   u'name': u'ExampleForm.favorite_color',
                                    u'xtype': u'textfield'},
                                   {u'allowBlank': False,
                                    u'fieldHint': u'Age in years',
                                    u'fieldLabel': u'Age',
                                    u'field_min': 0,
-                                   u'id': u'Form.age',
+                                   u'id': u'ExampleForm.age',
                                    u'itemCls': u'zc-required-field',
-                                   u'name': u'Form.age',
+                                   u'name': u'ExampleForm.age',
                                    u'widget_constructor':
                                     u'zc.extjs.widgets.InputInt'}]},
      u'success': True}
 
 Our application is at: "http://localhost/form.html". The form is
-exposed as an ajax method named "Form", which comes from the attribute
+exposed as an ajax method named "ExampleForm", which comes from the attribute
 name in the class definition.
 
 The form definition contains both action definitions and widget
@@ -94,15 +98,194 @@ The're an action definition for each action defined in the form.  The
 action information includes the url to post the result to, reletive to
 the application.  
 
+Note that the name of the form class is used as the form prefix and
+that the form prefix is used as the prefix for widget and action names
+and ids [#actionids]_.
+
+The widget_names property helps the Javascript code to access the
+widgets by name, which is useful when doing custon form layouts.
+
 Let's post a result back:
 
     >>> browser.handleErrors = False
-    >>> print_form(browser, 'http://localhost/form.html/Form/register',
-    ...            {'Form.first_name': 'Bob', 
-    ...             'Form.last_name': 'Zope',
-    ...             'Form.favorite_color': '',
-    ...             'Form.age': '',
+    >>> print_form(browser, 'http://localhost/form.html/ExampleForm/register',
+    ...            {'ExampleForm.first_name': 'Bob', 
+    ...             'ExampleForm.last_name': '',
+    ...             'ExampleForm.favorite_color': '',
+    ...             'ExampleForm.age': '-1',
     ...             })
+    ... # doctest: +NORMALIZE_WHITESPACE
+    {u'errors': {u'ExampleForm.age':
+                 u'<span class="error">Value is too small</span>',
+                 u'ExampleForm.last_name': u'<span class="error"></span>'},
+     u'success': False}
+
+The result had 2 problems:
+
+- We didn't provide a last name, which was required, and 
+
+- We specified an invalid age.
+
+(Note that both of these errors would have been caught on the client,
+but we also validate on the server.)
+
+Let's pass valid data:
+
+    >>> print_form(browser, 'http://localhost/form.html/ExampleForm/register',
+    ...            {'ExampleForm.first_name': 'Bob', 
+    ...             'ExampleForm.last_name': 'Zope',
+    ...             'ExampleForm.favorite_color': '',
+    ...             'ExampleForm.age': '11',
+    ...             })
+    {u'data': {u'age': 11,
+               u'favorite_color': u'',
+               u'first_name': u'Bob',
+               u'last_name': u'Zope'},
+     u'self_class_name': u'ExampleForm',
+     u'self_context_class_name': u'FormExample',
+     u'self_context_context_class_name': u'Folder',
+     u'success': True}
+
+Here we get a successful result.  Our contrived action in the example
+simply echoed back the data it was passed,  Note, in particular that:
+
+- the data keys have the form profix removed, and that
+
+- the value of the age key is an integer, since the field was an
+  integer field.
+
+The action also prints out the classes of it's self argument, and it's
+contexts.  Actions are methods of forms so their self argument is the
+form. The form context is the page it's accessed through.
+
+Getting definitions from Python
+-------------------------------
+
+Sometimes, we want to get form definitions from Python.  The form
+__call__ method returns a JSON string.  We can get Python data from
+calling get_definition.  
+
+    >>> import zc.extjs.form_example
+    >>> import zope.publisher.browser
+    >>> request = zope.publisher.browser.TestRequest()
+    >>> import zc.extjs.interfaces
+    >>> import zope.interface
+    >>> zope.interface.alsoProvides(request, 
+    ...                                 zc.extjs.interfaces.IAjaxRequest)
+    >>> ex = zc.extjs.form_example.FormExample(None, request)
+    >>> from pprint import pprint
+    >>> pprint(ex.ExampleForm.get_definition(), width=1)
+    {'actions': [{'label': 'Register',
+                  'name': u'ExampleForm.actions.register',
+                  'url': u'ExampleForm/register'}],
+     'widget_names': {'ExampleForm.age': 3,
+                      'ExampleForm.favorite_color': 2,
+                      'ExampleForm.first_name': 0,
+                      'ExampleForm.last_name': 1},
+     'widgets': [{'fieldHint': u'Given name.',
+                  'fieldLabel': u'First name',
+                  'id': 'ExampleForm.first_name',
+                  'itemCls': 'zc-required-field',
+                  'minLength': 0,
+                  'name': 'ExampleForm.first_name',
+                  'xtype': 'textfield'},
+                 {'fieldHint': u'Family name.',
+                  'fieldLabel': u'Last name',
+                  'id': 'ExampleForm.last_name',
+                  'itemCls': 'zc-required-field',
+                  'minLength': 0,
+                  'name': 'ExampleForm.last_name',
+                  'xtype': 'textfield'},
+                 {'fieldHint': u'',
+                  'fieldLabel': u'Favorite color',
+                  'id': 'ExampleForm.favorite_color',
+                  'minLength': 0,
+                  'name': 'ExampleForm.favorite_color',
+                  'xtype': 'textfield'},
+                 {'allowBlank': False,
+                  'fieldHint': u'Age in years',
+                  'fieldLabel': u'Age',
+                  'field_min': 0,
+                  'id': 'ExampleForm.age',
+                  'itemCls': 'zc-required-field',
+                  'name': 'ExampleForm.age',
+                  'widget_constructor': 'zc.extjs.widgets.InputInt'}]}
+
+Base and prefix
+---------------
+
+Forms have base_href and prefix variables.  The base_href is used to compute
+URLs for form actions.  A form's base_href defaults to it's class name.
+The form's base_href also includes the base_href of it's page, if it's page has
+a base_href. This is useful for sub-application. Let's give our sample
+application a base_href attribute as if it was a sub-application:
+
+    >>> ex = zc.extjs.form_example.FormExample(None, request)
+    >>> ex.base_href = 'sample'
+    >>> ex.ExampleForm.base_href
+    'sample/ExampleForm'
+
+    >>> pprint(ex.ExampleForm.get_definition(), width=1)
+    {'actions': [{'label': 'Register',
+                  'name': u'sample.ExampleForm.actions.register',
+                  'url': u'sample/ExampleForm/register'}],
+     'widget_names': {'sample.ExampleForm.age': 3,
+                      'sample.ExampleForm.favorite_color': 2,
+                      'sample.ExampleForm.first_name': 0,
+                      'sample.ExampleForm.last_name': 1},
+     'widgets': [{'fieldHint': u'Given name.',
+                  'fieldLabel': u'First name',
+                  'id': 'sample.ExampleForm.first_name',
+                  'itemCls': 'zc-required-field',
+                  'minLength': 0,
+                  'name': 'sample.ExampleForm.first_name',
+                  'xtype': 'textfield'},
+                 {'fieldHint': u'Family name.',
+                  'fieldLabel': u'Last name',
+                  'id': 'sample.ExampleForm.last_name',
+                  'itemCls': 'zc-required-field',
+                  'minLength': 0,
+                  'name': 'sample.ExampleForm.last_name',
+                  'xtype': 'textfield'},
+                 {'fieldHint': u'',
+                  'fieldLabel': u'Favorite color',
+                  'id': 'sample.ExampleForm.favorite_color',
+                  'minLength': 0,
+                  'name': 'sample.ExampleForm.favorite_color',
+                  'xtype': 'textfield'},
+                 {'allowBlank': False,
+                  'fieldHint': u'Age in years',
+                  'fieldLabel': u'Age',
+                  'field_min': 0,
+                  'id': 'sample.ExampleForm.age',
+                  'itemCls': 'zc-required-field',
+                  'name': 'sample.ExampleForm.age',
+                  'widget_constructor': 'zc.extjs.widgets.InputInt'}]}
+
+Note that the action URL now includes "sample/" as a prefix.  Also
+note that the widget and action names have "sample." as a prefix.  The
+form prefix is simply it's base with "/"s converted to "."s.
+
+    >>> ex.ExampleForm.prefix
+    'sample.ExampleForm'
+
+
+To-do (maybe)
+-------------
+
+More widgets!
+
+Interface invariants
+
+Actions:
+
+- conditions
+
+- validators
+
+- failure handlers
+
+
 
 
 
@@ -111,3 +294,6 @@ Let's post a result back:
 .. [#form_classes_are_descriptors] Form classes are also
    descriptors. They get called with the instance they're accessed
    through.
+
+.. [#actionids] The Javascript code that sets up action buttons uses
+   action name as the button's ID.
