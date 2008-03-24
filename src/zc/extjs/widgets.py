@@ -27,7 +27,7 @@ class Base(zope.app.form.InputWidget):
 
     xtype = None
     widget_constructor = None
-    
+
     def js_config(self, **kw):
         config = dict(
             fieldLabel = self.label,
@@ -49,14 +49,16 @@ class Base(zope.app.form.InputWidget):
             config['itemCls'] = 'zc-required-field'
 
         if self._renderedValueSet():
-            value = self._toForm(self._data)
+            value = self.formValue(self._data)
             if value is not None:
                 config['value'] = value
         
         return config 
 
-    def _toForm(self, v):
-        return v
+    def formValue(self, v):
+        if v == self.context.missing_value:
+            return None
+        return unicode(v)
 
     def _toValue(self, v):
         return v
@@ -67,12 +69,15 @@ class Base(zope.app.form.InputWidget):
     def _is_missing(self, raw):
         return False
 
+    def _get_raw(self):
+        return self.request.form[self.name]
+
     def getInputValue(self):
         if not self.hasInput():
             raise zope.app.form.interfaces.MissingInputError(
                 self.name, self.label, None)
 
-        raw = self.request.form[self.name]
+        raw = self._get_raw()
         if self._is_missing(raw):
             if self.required:
                 raise zope.app.form.interfaces.MissingInputError(
@@ -103,7 +108,6 @@ class InputBool(Base):
         )
 
     xtype = 'checkbox'
-    required = False
 
     def hasInput(self):
         return True
@@ -111,7 +115,9 @@ class InputBool(Base):
     def getInputValue(self):
         return self.request.form.get(self.name, '') == 'on'
 
-    def _toForm(self, v):
+    def formValue(self, v):
+        if v == self.context.missing_value:
+            return None
         return bool(v)
 
 
@@ -133,8 +139,15 @@ class InputChoiceIterable(Base):
     def _is_missing(self, raw):
         return not raw
 
+    def _get_raw(self):
+        return self.request.form[self.name+'.value']
+
+    def hasInput(self):
+        return self.name+'.value' in self.request.form
+
     def js_config(self):
         result = Base.js_config(self)
+        result['hiddenName'] = result['name']+'.value'
 
         terms = zope.component.getMultiAdapter(
             (self.source, self.request),
@@ -151,9 +164,9 @@ class InputChoiceIterable(Base):
 
         return result
 
-    def _toForm(self, v):
-        if v is None and v not in self.source:
-            return v
+    def formValue(self, v):
+        if v == self.context.missing_value:
+            return None
         terms = zope.component.getMultiAdapter(
             (self.source, self.request),
             zope.app.form.browser.interfaces.ITerms,
@@ -177,6 +190,7 @@ class InputChoiceTokenized(InputChoiceIterable):
 
     def js_config(self):
         result = Base.js_config(self)
+        result['hiddenName'] = result['name']+'.value'
 
         result['values'] = [
             [term.token, term.title or unicode(term.value)]
@@ -188,9 +202,9 @@ class InputChoiceTokenized(InputChoiceIterable):
 
         return result
 
-    def _toForm(self, v):
-        if v is None and v not in self.source:
-            return v
+    def formValue(self, v):
+        if v == self.context.missing_value:
+            return None
         return self.source.getTerm(v).token
 
     def _toValue(self, v):

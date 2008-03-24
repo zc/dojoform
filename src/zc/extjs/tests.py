@@ -35,7 +35,10 @@ class Test(zope.app.testing.functional.ZCMLLayer):
 
 def test_suite():
     return unittest.TestSuite((
-        doctest.DocFileSuite('widgets.txt'),
+        doctest.DocFileSuite('widgets.txt',
+                             setUp=zope.app.testing.placelesssetup.setUp,
+                             tearDown=zope.app.testing.placelesssetup.tearDown,
+                             ),
         Test()('application.txt', 'session.txt', 'form.txt'),
         ))
 

@@ -56,15 +56,19 @@ zc.extjs.widgets = function() {
 
             if (config.values)
                 config.store = new Ext.data.SimpleStore({
-                    fields: [{name: 'data', mapping: 1}],
+                    fields: [{name: 'value', mapping: 0},
+                             {name: 'display', mapping: 1}
+                            ],
                     id: 0,
                     data: config.values
                 });
             config = Ext.apply(config, {
-                displayField: 'data',
+                valueField: 'value',
+                displayField: 'display',
                 triggerAction: 'all',
                 selectOnFocus:true,
                 editable: false,
+                forceSelection: true,
                 mode: 'local'
             });
             return config;

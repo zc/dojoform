@@ -42,3 +42,11 @@ class IInputWidget(zope.app.form.interfaces.IInputWidget):
 
         The output must contain name and id properties.
         """
+
+    def formValue(v):
+        """Return a value suitable to passing to a Ext field setValue method
+
+        This will typically be a string.  None may be returned if the
+        value passed in is a missing value.
+        """
+
