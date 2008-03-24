@@ -84,6 +84,7 @@ class PageTraversable(object):
     def publishTraverse(self, request, name):
         name = name.replace('.', '_')
         result = getattr(self, name, None)
+        
         if (result is not None
             and
             (zope.publisher.interfaces.browser.IBrowserPublisher.providedBy(
@@ -98,6 +99,10 @@ class PageTraversable(object):
                                             zc.extjs.interfaces.IAjaxRequest)
             return result
         raise zope.publisher.interfaces.NotFound(self, name, request)    
+
+    @property
+    def base_href(self):
+        return self.base                # BBB
 
 class Application(PageTraversable):
 
@@ -128,10 +133,6 @@ class Application(PageTraversable):
 
     def initial_data(self):
         return {}
-
-    @property
-    def base_href(self):
-        return self.base                # BBB
 
     @page
     @json
