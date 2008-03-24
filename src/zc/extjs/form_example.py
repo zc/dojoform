@@ -27,6 +27,16 @@ class IPerson(zope.interface.Interface):
         min = 0,
         )
 
+class Person:
+
+    zope.interface.implements(IPerson)
+
+    def __init__(self, first_name, last_name, favorite_color, age):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.favorite_color = favorite_color
+        self.age = age
+
 class FormExample(zc.extjs.application.Application):
 
     class ExampleForm(zc.extjs.form.Form):

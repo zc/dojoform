@@ -274,6 +274,35 @@ form prefix is simply it's base with "/"s converted to "."s.
     >>> ex.ExampleForm.prefix
     'sample.ExampleForm'
 
+Form data
+---------
+
+Ajax forms are a bit different from normal web forms because the data
+and the form definition can be fetched separately.  For example, we
+may use the same form to edit multiple objects.  Form objects have a
+getObjectData method that returns adta suitable for etting form field
+values.  Let's create a person and use out form to get data for them:
+
+    >>> bob = zc.extjs.form_example.Person('bob', 'smith', None, 11)
+    >>> pprint(ex.ExampleForm.getObjectData(bob), width=1)
+    {'sample.ExampleForm.age': u'11',
+     'sample.ExampleForm.first_name': u'bob',
+     'sample.ExampleForm.last_name': u'smith'}
+
+We didn't set the favorite_color for the person, so it is ommitted
+from the data.
+
+We can pass in a dictionary of values that take precedence over object
+data: 
+
+    >>> pprint(ex.ExampleForm.getObjectData(
+    ...            bob, {'sample.ExampleForm.age': u'1'}),
+    ...        width=1)
+    {'sample.ExampleForm.age': u'1',
+     'sample.ExampleForm.first_name': u'bob',
+     'sample.ExampleForm.last_name': u'smith'}
+   
+    
 
 To-do (maybe)
 -------------

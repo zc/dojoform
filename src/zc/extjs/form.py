@@ -91,7 +91,7 @@ class Form(_FormBase):
     def browserDefault(self, request):
         return self, ()
 
-    def getObjectData(self, ob, extra):
+    def getObjectData(self, ob, extra=()):
         widgets = zope.formlib.form.setUpWidgets(
             self.form_fields, self.prefix, self.context.context, self.request,
             ignore_request=True)
@@ -101,7 +101,9 @@ class Form(_FormBase):
             if widget.name in extra:
                 result[widget.name] = extra[widget.name]
             else:
-                result[widget.name] = widget.context.get(ob)
+                v = widget.formValue(widget.context.get(ob))
+                if v is not None:
+                    result[widget.name] = v
 
         return result
 
