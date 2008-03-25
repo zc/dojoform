@@ -1,7 +1,7 @@
 Application support
 ===================
 
-The zc.extjs.application module provides support for writing AJAX
+The zc.extjs.application module provides support for writing ajax
 [#ajax]_ applications.  This framework started out as an experiment in
 simplifying writing applications with Zope 3.  I was frustrated with
 ZCML situps and generally too much indirection.  I ended up with a
@@ -9,7 +9,7 @@ model that I'm pretty happy with.  It might not be for everybody. :)
 
 The basic idea is that an application can be provided using a single
 Zope 3 view plus necessary resource-library definitions.  This view
-has a URL.  It typically provides many AJAX method whose URLs have the
+has a URL.  It typically provides many ajax method whose URLs have the
 view URL as a base.
 
 Many applications can be implemented using a simple class that can be
@@ -48,33 +48,33 @@ class that provides:
   zope.publisher.interfaces.browser.IBrowserRequest.
 
 The main goals of this base class are to make it easy to load
-javascript and to make it easy to define Ajax methods to support the
+Javascript and to make it easy to define ajax methods to support the
 Javascript. For that reason, we provide a traverser that traverses to
 object attributes that provide IBrowserPublisher.  The
 zc.extjs.application.jsonpage decorator is also an important part of
 this. It makes methods accessible and automatically marshals their
-result to JSON.  There's also a zc.extjs.application.page decorator
-that makes methods accessable without the automatic marshalling.  The
-use of a default page, rather than just a __call__ method is to cause
-the URL base to be the view, rather than the view's context.  This
-allows the Javascript code to use relative URLs to refer to the AJAX
-methods.
+result to JSON [#jsoninput]_.  There's also a
+zc.extjs.application.page decorator that makes methods accessable
+without the automatic marshalling.  The use of a default page, rather
+than just a __call__ method is to cause the URL base to be the view,
+rather than the view's context.  This allows the Javascript code to
+use relative URLs to refer to the ajax methods.
 
 The class expects subclasses to define a resource_library_name
 attribute [#missing_resource_library_name]_.  For these applications,
 you pretty much always want to use an associated Javascript file and
 other resources (supporting JS, CSS, etc.).  You can suppress the use
-of the resource library by setting the value to None. In the example
-above, we just used zc.extjs.  We'd normally create a custom resource
-library that required zc.extjs and use that.
+of the resource library by setting the value of this attribute to
+None. In the example above, we just used zc.extjs.  We'd normally
+create a custom resource library that required zc.extjs and use that.
 
 For applications that build pages totally in Javascript, which ExtJS
-makes easy to do, the default template is adequate for most
-applications.  For applications that need to support
-non-Javascript-enabled browsers or that want to provide some
-Javascript data during the initial page load, a custom template can be
-provided by simply overriding the template method with a page template
-or a method that calls one.
+makes easy to do, the default template is adequate.  For applications
+that need to support non-Javascript-enabled browsers, that want to
+support search-engine optimization [#sso]_, or that want to
+provide some Javascript data during the initial page load, a custom
+template can be provided by simply overriding the template method with
+a page template or a method that calls one.
 
 The view can be registered with a simple adapter registration:
 
@@ -135,7 +135,7 @@ unauthorized.  Let's login:
 
 We registered our view as calculator.html. Because of the way it sets the
 browser default page for itself, it becomes the base href for the
-page.  This allows us to access AJAX methods using relative URLs.
+page.  This allows us to access ajax methods using relative URLs.
 
 Our calculator view provides a value method.  It uses the
 zc.extjs.application.jsonpage decorator. This does 2 things:
@@ -145,12 +145,12 @@ zc.extjs.application.jsonpage decorator. This does 2 things:
 - marshals the result to JSON.
 
 The way results are marshalled to JSON deserves some
-explanation. ExtJS generally expects objects to be returned from Ajax
+explanation. ExtJS generally expects objects to be returned from ajax
 calls.  The ExtJS form framework expects results to have a success
 property indicating whether a form was successfully processed. If
 success is false, it also expects an errors property that is an object
-mapping field names to errors to be displayed under each field.  The
-zc.extjs packge provides an AJAX helper, named call_server that follows a
+mapping field names to errors to be displayed with error fields.  The
+zc.extjs packge provides an ajax helper, named call_server that follows a
 similar convention.  If a result has a false success propery and an
 error property containing an error message, it displays an alert with
 the error message.  There's also a form helper that displays an alert
@@ -205,9 +205,9 @@ Testing support
 ===============
 
 zc.extjs.testing has some helper functions to make it easier to test
-AJAX calls.  
+ajax calls.  
 
-The call_form function makes an AJAX call, marshaling input data and
+The call_form function makes an ajax call, marshaling input data and
 de-marshaling output data. It's called call_form because it marshals
 input data as form variables.  Data can be given as a dictionary
 positional argument or as keyword parameters:
@@ -235,7 +235,6 @@ data whose keys are not valid Python identifiers.
 
 Data can be unicode, strings, integers, floats, boolean, or lists. 
 
-    >>> browser.handleErrors = False
     >>> pprint(zc.extjs.testing.call_form(
     ...     browser, '/calculator.html/echo_form',
     ...     {'a': 1.0}, b=[1, 2, 3], c=True, d='d', e=u'e\u1234'
@@ -276,16 +275,50 @@ The function print_form combines pprint and call_form:
 In the future, there will be versions of these functions that send
 data as JSON.
 
+.. Edge case: we can't traverse to undecorated methods:
 
-XXX in edge-case tests, need to show that one can't traverse to
-arbitrary attrs.
+    >>> zc.extjs.testing.print_form(browser, '/calculator.html/do_add',
+    ...                             value=1)
+    Traceback (most recent call last):
+    ...
+    httperror_seek_wrapper: HTTP Error 404: Not Found
+
+Nested applications
+
 
 XXX need to talk about traversal support and nested applications.
 
 
 .. [#ajax] Technically, these aren't really AJAX applications, since
-   we rarely. if ever, use XML as a serialization format.
+   we rarely. if ever, use XML as a serialization format.  To
+   emphasize this I'll use lower-case "ajax" to refer to the generic
+   approach of making low-level calls from Javascript rather than
+   doing page loads.
+
+.. [#jsoninput] In the near future, there will also be support for
+   JSON method input.  This will provide a number of benefits:
+
+   - It will provide more automatic marshaling of non-string
+     data. Now, we either have to de-marshal in the server application
+     code or embed marshaling data into parameter names in client
+     code.
+
+   - It will allow richer data structures than is practical with form data.
+
+   - It will probably allow faster ajax requests because:
+
+     - Server-side de-marshalling is done with highly optimized code
+       in simplejson.
+
+     - We will assume that data passed are valid method arguments and
+       avoid method introspection.
 
 .. [#missing_resource_library_name] A custom attribute error message
    is used if this attribute is missing that tries to be more
    informative than the default attribute error.
+
+.. [#sso]  For search-engine optimization, one generally wants a
+   content page to actuially contain it's content.  If one depends on
+   Javascript-enabled browsers, one can improve performance and
+   search-engine optimization by adding ancilary data in Javascript,
+   so as not to dilute the content.
