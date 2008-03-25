@@ -14,5 +14,5 @@
 
   <include file="calculator_example.zcml" />
   <include file="form_example.zcml" />
-
+  <include file="calculator_subapplication_example.zcml" />
 </configure>

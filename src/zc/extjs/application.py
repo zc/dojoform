@@ -78,7 +78,7 @@ class page(object):
 class jsonpage(page):
     _method_class = _jsonmethod
 
-class PageTraversable(object):
+class AttributeTraversable(object):
 
     zope.interface.implements(
         zope.publisher.interfaces.browser.IBrowserPublisher)
@@ -103,11 +103,11 @@ class PublicTraversable(object):
 
 class Trusted(object):
     
-    def __init__(self, context, request):
+    def __init__(self, context, *a, **kw):
         context = zope.security.proxy.removeSecurityProxy(context)
-        super(Trusted, self).__init__(context, request)
+        super(Trusted, self).__init__(context, *a, **kw)
 
-class Application(PageTraversable):
+class Application(AttributeTraversable):
 
     zope.component.adapts(
         zope.traversing.interfaces.IContainmentRoot,
@@ -138,6 +138,15 @@ class Application(PageTraversable):
         if library is not None:
             zc.resourcelibrary.need(library)
         return self.template()
+
+class SubApplication(AttributeTraversable):
+
+    def __init__(self, context, request, base_href=None):
+        self.context = context
+        self.request = request
+        if base_href is not None:
+            self.base_href = base_href
+        
 
 class traverser(object):
 

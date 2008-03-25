@@ -1,19 +1,26 @@
 import zc.extjs.application
 import zope.exceptions
 
-class Calculator(zc.extjs.application.Trusted,
-                 zc.extjs.application.Application):
+class Container(zc.extjs.application.Application):
 
     resource_library_name = 'zc.extjs'
 
-    @zc.extjs.application.jsonpage
-    def about(self):
-        return 'Calculator 1.0'
+    @property
+    def calc(self):
+        return Calculator(self.context, self.request, base_href='calc')
+
+
+class Calculator(zc.extjs.application.Trusted,
+                 zc.extjs.application.SubApplication,
+                 zc.extjs.application.PublicTraversable,
+                 ):
 
     @zc.extjs.application.jsonpage
     def operations(self):
-        return ['add', "subtract"]
-
+        return [['add', self.base_href+'/add'],
+                ['add', self.base_href+'/subtract'],
+                ]
+                
     @zc.extjs.application.jsonpage
     def value(self):
         return dict(value=getattr(self.context, 'calculator_value', 0))
@@ -35,16 +42,4 @@ class Calculator(zc.extjs.application.Trusted,
             raise zope.exceptions.UserError(
                 "The value must be an integer!")
         return self.do_add(-value)
-
-    @zc.extjs.application.jsonpage
-    def noop(self):
-        pass
-
-    @zc.extjs.application.page
-    def none(self):
-        return "null"
-
-    @zc.extjs.application.jsonpage
-    def echo_form(self):
-        return dict(self.request.form)
 

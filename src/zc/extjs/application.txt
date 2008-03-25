@@ -183,7 +183,7 @@ method, no success attribute is added:
 
     >>> browser.open('http://localhost/@@calculator.html/operations')
     >>> print browser.contents
-    ["add"]
+    ["add", "subtract"]
 
 If you want to marshal JSON yourself, you can use the
 zc.extjs.application.jsonpage decorator:
@@ -212,16 +212,14 @@ de-marshaling output data. It's called call_form because it marshals
 input data as form variables.  Data can be given as a dictionary
 positional argument or as keyword parameters:
 
-    >>> import zc.extjs.testing
+    >>> from zc.extjs.testing import call_form, print_form
     >>> from pprint import pprint
-    >>> pprint(zc.extjs.testing.call_form(browser, '/calculator.html/add',
-    ...                                 {'value': 1}), width=1)
+    >>> pprint(call_form(browser, '/calculator.html/add',
+    ...        {'value': 1}), width=1)
     {u'success': True,
      u'value': 1}
 
-    >>> pprint(zc.extjs.testing.call_form(
-    ...        browser, '/calculator.html/add', value=1),
-    ...        width=1)
+    >>> pprint(call_form(browser, '/calculator.html/add', value=1), width=1)
     {u'success': True,
      u'value': 2}
 
@@ -235,10 +233,9 @@ data whose keys are not valid Python identifiers.
 
 Data can be unicode, strings, integers, floats, boolean, or lists. 
 
-    >>> pprint(zc.extjs.testing.call_form(
-    ...     browser, '/calculator.html/echo_form',
-    ...     {'a': 1.0}, b=[1, 2, 3], c=True, d='d', e=u'e\u1234'
-    ...     ), width=1)
+    >>> pprint(call_form(browser, '/calculator.html/echo_form',
+    ...                  {'a': 1.0}, b=[1, 2, 3], c=True, d='d', e=u'e\u1234'
+    ...        ), width=1)
     {u'a': 1.0,
      u'b': [1,
             2,
@@ -250,19 +247,17 @@ Data can be unicode, strings, integers, floats, boolean, or lists.
 
 The function print_form combines pprint and call_form:
 
-    >>> zc.extjs.testing.print_form(browser, '/calculator.html/add',
-    ...                             {'value': 1})
+    >>> print_form(browser, '/calculator.html/add', {'value': 1})
     {u'success': True,
      u'value': 3}
 
-    >>> zc.extjs.testing.print_form(browser, '/calculator.html/add', value=1)
+    >>> print_form(browser, '/calculator.html/add', value=1)
     {u'success': True,
      u'value': 4}
 
-    >>> zc.extjs.testing.print_form(
-    ...     browser, '/calculator.html/echo_form',
-    ...     {'a': 1.0}, b=[1, 2, 3], c=True, d='d', e=u'e\u1234'
-    ...     )
+    >>> print_form(browser, '/calculator.html/echo_form',
+    ...            {'a': 1.0}, b=[1, 2, 3], c=True, d='d', e=u'e\u1234'
+    ...            )
     {u'a': 1.0,
      u'b': [1,
             2,
@@ -277,16 +272,147 @@ data as JSON.
 
 .. Edge case: we can't traverse to undecorated methods:
 
-    >>> zc.extjs.testing.print_form(browser, '/calculator.html/do_add',
-    ...                             value=1)
+    >>> print_form(browser, '/calculator.html/do_add', value=1)
     Traceback (most recent call last):
     ...
     httperror_seek_wrapper: HTTP Error 404: Not Found
 
-Nested applications
+
+"Library" applications
+======================
+
+The "application" model described above is pretty appealing in it's
+simplicity -- at least to me. :)  Usually, we'd like to make out
+applications a bit more flexible in their use.  In particular, we
+often want to assemble applications together. At the Javascript level,
+this often means having an application return a panel that can be used
+in some higher-level layout.  At the server level, we need to provide
+a way to access application logic within some larger context.  There
+are two parts to this:
+
+1. The containing application needs to support traversal to the
+   sub-application.  
+
+2. The subapplication needs to know how it was traversed to, at least
+   if it generates URLs.  For example, the form machinery [#forms]_
+   generates URLs for action handlers.
+
+Sub-application should expose the URL needed to access then as a
+base_href attribute. This is usually a relative URL relative to the base
+application. 
+
+There are a number of classes defined in zc.extjs.application that
+help with creating sub-applications:
+
+SubApplication
+    This class, which Application subclasses provides traversal to
+    attributes that provide IBrowserPublisher.  It also stamps
+    IAjaxRequest on the request object when an object is traversed.
+
+    (Maybe this request stamping should be done further down the
+    traversal chain or perhaps only done if X-Requested-With is
+    xmlhttprequest.)
+
+PublicTraversable
+    This class provides security declarations that allow objects to be
+    traversable publically.  This is appropriate for sub-applications
+    that want the same protections as the object being traversed.
+
+Let's look at our calculator example as a subapplication:
+
+.. include:: calculator_subapplication_example.py
+   :literal:
+
+Here, we've defined a container application that simply provides
+traversal to a calculator subapplication as a static property.  It
+creates the calculator with the application's context and request.  It
+passes a base_href as a keyword argument, which SubApplication's
+constructor accepts.  Our ZCML configuration is pretty simple:
+
+.. include:: calculator_subapplication_example.zcml
+   :literal:
+
+Using the container application, we access the calculator via the
+container:
+
+    >>> print_form(browser, 'http://localhost/@@container.html/calc/add',
+    ...            value=1)
+    {u'success': True,
+     u'value': 5}
+
+We've updated the operations method to include the URL for each
+operation, which is computed based on the base_href:
+
+    >>> print_form(browser, 'http://localhost/@@container.html/calc/operations')
+    [[u'add',
+      u'calc/add'],
+     [u'add',
+      u'calc/subtract']]
 
 
-XXX need to talk about traversal support and nested applications.
+Note that we didn't make any security declarations for the Calculator
+class.  We're relying on the protection for the container.  If we
+restart the browser, we see, indeed, that we can't access the
+calculator:
+
+    >>> browser = zope.testbrowser.testing.Browser()
+    >>> print_form(browser, 'http://localhost/@@container.html/calc/operations')
+    {u'session_expired': True,
+     u'success': False}
+
+Dynamic Traversal
+=================
+
+In the previous example, we traversed to a sub-application using a
+static property.  Sometimes, we need to traverse dynamically.  We
+might have a container application with a variable number of
+subapplications. Examples include a portlet container and a system for
+managing user-defined data types.  In the later case, as users define
+new data types, one or more applications get defined for each type.
+
+zc.extjs.application provides a helper descriptor that allows custom
+traversers to be implemented with simple Python methods.  Let's look
+at a simple example.
+
+    >>> import zc.extjs.application   
+    >>> class Foo:
+    ...     def __str__(self):
+    ...         return 'a '+self.__class__.__name__
+    ...
+    ...     @zc.extjs.application.traverser
+    ...     def demo_traverse(self, request, name):
+    ...         return "traverse: %s %s %s" % (self, request, name)
+
+This is a rather silly traverser for demonstration purposes that just
+returnes a transformed name.
+
+    >>> foo = Foo()
+    >>> foo.demo_traverse.publishTraverse("a request", "xxx")
+    'traverse: a Foo a request xxx'
+
+We can still call the method:
+
+    >>> foo.demo_traverse("a request", "xxx")
+    'traverse: a Foo a request xxx'
+
+The method provides IBrowserPublisher:
+
+    >>> import zope.publisher.interfaces.browser
+    >>> zope.publisher.interfaces.browser.IBrowserPublisher.providedBy(
+    ...     foo.demo_traverse)
+    True
+
+The descriptor has a security declaration that allows it to be
+traversed but not called from untrusted code:
+
+    >>> import zope.security.checker
+    >>> checker = zope.security.checker.getChecker(
+    ...     zope.security.checker.ProxyFactory(foo.demo_traverse))
+    >>> checker.get_permissions
+    {'publishTraverse': Global(CheckerPublic,zope.security.checker)}
+
+    >>> checker.set_permissions
+    {}
 
 
 .. [#ajax] Technically, these aren't really AJAX applications, since
@@ -322,3 +448,5 @@ XXX need to talk about traversal support and nested applications.
    Javascript-enabled browsers, one can improve performance and
    search-engine optimization by adding ancilary data in Javascript,
    so as not to dilute the content.
+
+.. [#forms] See form.txt.
