@@ -250,13 +250,7 @@ class InputDecimal(Base):
         zope.schema.interfaces.IDecimal,
         zc.extjs.interfaces.IAjaxRequest)
 
-    def js_config(self):
-        config = Base.js_config(
-            self, widget_constructor='zc.extjs.widgets.InputDecimal')
-
-        if self.required:
-            config['allowBlank'] = False
-        return config
+    widget_constructor = 'zc.extjs.widgets.InputDecimal'
 
     def _is_missing(self, raw):
         return not raw
