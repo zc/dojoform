@@ -114,7 +114,7 @@ zc.extjs.util = function() {
                         text: 'Cancel',
                         handler: function ()
                         {
-                            dialog.hide();
+                            form_reset(form_config.form, result.data);
                         }
                     }]
                 };
@@ -139,8 +139,7 @@ zc.extjs.util = function() {
                 });
 
                 form_reset(formpanel, result.data);
-                dialog.add(formpanel);
-                dialog.doLayout();
+                callback(formpanel);
             }
         });
     }
