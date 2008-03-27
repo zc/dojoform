@@ -154,7 +154,7 @@ simply echoed back the data it was passed,  Note, in particular that:
 - the value of the age key is an integer, since the field was an
   integer field.
 
-The action also prints out the classes of it's self argument, and it's
+The action also prints out the classes of its self argument, and its
 contexts.  Actions are methods of forms so their self argument is the
 form. The form context is the page it's accessed through.
 
@@ -220,8 +220,8 @@ Base and prefix
 ---------------
 
 Forms have base_href and prefix variables.  The base_href is used to compute
-URLs for form actions.  A form's base_href defaults to it's class name.
-The form's base_href also includes the base_href of it's page, if it's page has
+URLs for form actions.  A form's base_href defaults to its class name.
+The form's base_href also includes the base_href of its page, if its page has
 a base_href. This is useful for sub-application. Let's give our sample
 application a base_href attribute as if it was a sub-application:
 
@@ -269,7 +269,7 @@ application a base_href attribute as if it was a sub-application:
 
 Note that the action URL now includes "sample/" as a prefix.  Also
 note that the widget and action names have "sample." as a prefix.  The
-form prefix is simply it's base with "/"s converted to "."s.
+form prefix is simply its base with "/"s converted to "."s.
 
     >>> ex.ExampleForm.prefix
     'sample.ExampleForm'
