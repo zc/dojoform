@@ -104,7 +104,8 @@ zc.extjs.util = function() {
         // to some container.  Remember to call container.doLayout()
         // after adding the component.
         call_server({
-            url: 'rateparam_form',
+            url: args.url,
+            params: args.params,
             task: "Loading form definition",
             success: function (result) {
                 var form_config = {
@@ -126,7 +127,7 @@ zc.extjs.util = function() {
                     form_config = ext.apply(form_config, args.form_config);
                 }
 
-                var formpanel = zc.extjs.util.form({
+                var formpanel = zc.extjs.util.new_form({
                     definition: result.definition,
                     config: form_config,
                     after: function (form, action)
@@ -271,7 +272,7 @@ zc.extjs.util = function() {
 
     return {
         call_server: call_server,
-        form: new_form,
+        new_form: new_form,
         get_form_config: get_form_config,
         form_dialog: form_dialog,
         form_panel: form_panel,
