@@ -9,7 +9,7 @@ model that I'm pretty happy with.  It might not be for everybody. :)
 
 The basic idea is that an application can be provided using a single
 Zope 3 view plus necessary resource-library definitions.  This view
-has a URL.  It typically provides many ajax method whose URLs have the
+has a URL.  It typically provides many ajax methods whose URLs have the
 view URL as a base.
 
 Many applications can be implemented using a simple class that can be
