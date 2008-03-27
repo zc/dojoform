@@ -61,20 +61,22 @@ class Form(_FormBase):
             self.form_fields, self.prefix, self.context.context, self.request,
             ignore_request=True)
 
+        for widget in widgets:
+            # A programmer's check to make sure that we have the right
+            # type of widget.
+            assert hasattr(widget, 'js_config'), widget.name
+
         return dict(
-            widgets = [widget.js_config() for widget in widgets],
+            widgets=[widget.js_config() for widget in widgets],
             widget_names = dict((widget.name, i)
-                                for (i, widget) in enumerate(widgets)
-                                ),
-            actions = [dict(label=action.label,
-                            url="%s/%s" % (self.base_href,
-                                           action.__name__.split('.')[-1],
-                                           ),
-                            name=action.__name__,
-                            )
-                       for action in self.actions],
+                                for (i, widget) in enumerate(widgets)),
+            actions=[dict(label=action.label,
+                          url="%s/%s" % (self.base,
+                                         action.__name__.split('.')[-1]),
+                          name=action.__name__)
+                     for action in self.actions]
             )
-        
+
     def __call__(self):
         """Return rendered js widget configs
         """
