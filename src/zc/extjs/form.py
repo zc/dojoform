@@ -71,7 +71,7 @@ class Form(_FormBase):
             widget_names = dict((widget.name, i)
                                 for (i, widget) in enumerate(widgets)),
             actions=[dict(label=action.label,
-                          url="%s/%s" % (self.base,
+                          url="%s/%s" % (self.base_href,
                                          action.__name__.split('.')[-1]),
                           name=action.__name__)
                      for action in self.actions]
