@@ -305,7 +305,7 @@ There are a number of classes defined in zc.extjs.application that
 help with creating sub-applications:
 
 SubApplication
-    This class, which Application subclasses provides traversal to
+    This class, which Application subclasses, provides traversal to
     attributes that provide IBrowserPublisher.  It also stamps
     IAjaxRequest on the request object when an object is traversed.
 
