@@ -157,7 +157,7 @@ simply echoed back the data it was passed,  Note, in particular that:
 The action also prints out the classes of its self argument, its page
 and its context. Actions are methods of forms so their `self` argument is the
 form. The form's `page` is the page through which it is accessed and
-`context` is the object that is being edited.
+`context` is the page's context.
 
 
 Getting definitions from Python
