@@ -37,11 +37,12 @@ class Form(_FormBase):
     __Security_checker__ = zope.security.checker.NamesChecker((
         '__call__', 'browserDefault', 'publishTraverse'))
 
-    def __init__(self, context, request=None):
-        self.context = context
+    def __init__(self, page, request=None):
+        self.page = page
         if request is None:
-            request = context.request
+            request = page.request
         self.request = request
+        self.context = page.context
 
     @zope.cachedescriptors.property.Lazy
     def prefix(self):
@@ -49,7 +50,7 @@ class Form(_FormBase):
 
     @zope.cachedescriptors.property.Lazy
     def base_href(self):
-        base_href = getattr(self.context, 'base_href', None)
+        base_href = getattr(self.page, 'base_href', None)
         if base_href is not None:
             base_href += '/'
         else:
@@ -58,7 +59,7 @@ class Form(_FormBase):
 
     def get_definition(self):
         widgets = zope.formlib.form.setUpWidgets(
-            self.form_fields, self.prefix, self.context.context, self.request,
+            self.form_fields, self.prefix, self.context, self.request,
             ignore_request=True)
 
         for widget in widgets:
@@ -95,7 +96,7 @@ class Form(_FormBase):
 
     def getObjectData(self, ob, extra=()):
         widgets = zope.formlib.form.setUpWidgets(
-            self.form_fields, self.prefix, self.context.context, self.request,
+            self.form_fields, self.prefix, self.context, self.request,
             ignore_request=True)
 
         result = {}
@@ -108,6 +109,7 @@ class Form(_FormBase):
                     result[widget.name] = v
 
         return result
+
 
 class Action(object):
 
@@ -150,12 +152,11 @@ class Action(object):
                             IWidgetInputErrorView,
                             )
                         error = view.snippet()
-                    
+
                     field_errors[widget.name] = error
 
         if field_errors:
             return zc.extjs.application.result(dict(errors=field_errors))
-
 
         # XXX invariants and action conditions
         # XXX action validator and failure handlers

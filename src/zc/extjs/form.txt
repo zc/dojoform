@@ -94,9 +94,9 @@ or name a widget_constructor, which is a Javascript helper provided by
 the zc.extjs resource library that provides additional information,
 like Javascript validators, that can't be expressed in JSON.
 
-The're an action definition for each action defined in the form.  The
-action information includes the url to post the result to, reletive to
-the application.  
+There is an action definition for each action defined in the form.  The
+action information includes the url to post the result to, relative to
+the application.
 
 Note that the name of the form class is used as the form prefix and
 that the form prefix is used as the prefix for widget and action names
@@ -142,28 +142,30 @@ Let's pass valid data:
                u'first_name': u'Bob',
                u'last_name': u'Zope'},
      u'self_class_name': u'ExampleForm',
-     u'self_context_class_name': u'FormExample',
-     u'self_context_context_class_name': u'Folder',
+     u'self_context_class_name': u'Folder',
+     u'self_page_class_name': u'FormExample',
      u'success': True}
 
 Here we get a successful result.  Our contrived action in the example
 simply echoed back the data it was passed,  Note, in particular that:
 
-- the data keys have the form profix removed, and that
+- the data keys have the form prefix removed, and
 
 - the value of the age key is an integer, since the field was an
   integer field.
 
-The action also prints out the classes of its self argument, and its
-contexts.  Actions are methods of forms so their self argument is the
-form. The form context is the page it's accessed through.
+The action also prints out the classes of its self argument, its page
+and its context. Actions are methods of forms so their `self` argument is the
+form. The form's `page` is the page through which it is accessed and
+`context` is the object that is being edited.
+
 
 Getting definitions from Python
 -------------------------------
 
-Sometimes, we want to get form definitions from Python.  The form
-__call__ method returns a JSON string.  We can get Python data from
-calling get_definition.  
+Sometimes we want to get form definitions from Python.  The form
+__call__ method returns a JSON string.  We can get Python data by
+calling get_definition.
 
     >>> import zc.extjs.form_example
     >>> import zope.publisher.browser
@@ -274,13 +276,14 @@ form prefix is simply its base with "/"s converted to "."s.
     >>> ex.ExampleForm.prefix
     'sample.ExampleForm'
 
+
 Form data
 ---------
 
 Ajax forms are a bit different from normal web forms because the data
 and the form definition can be fetched separately.  For example, we
 may use the same form to edit multiple objects.  Form objects have a
-getObjectData method that returns adta suitable for etting form field
+getObjectData method that returns data suitable for editing form field
 values.  Let's create a person and use out form to get data for them:
 
     >>> bob = zc.extjs.form_example.Person('bob', 'smith', None, 11)
@@ -292,8 +295,7 @@ values.  Let's create a person and use out form to get data for them:
 We didn't set the favorite_color for the person, so it is ommitted
 from the data.
 
-We can pass in a dictionary of values that take precedence over object
-data: 
+We can pass in a dictionary of values that take precedence over object data:
 
     >>> pprint(ex.ExampleForm.getObjectData(
     ...            bob, {'sample.ExampleForm.age': u'1'}),
@@ -301,8 +303,7 @@ data:
     {'sample.ExampleForm.age': u'1',
      'sample.ExampleForm.first_name': u'bob',
      'sample.ExampleForm.last_name': u'smith'}
-   
-    
+
 
 To-do (maybe)
 -------------
