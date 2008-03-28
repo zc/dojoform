@@ -48,6 +48,6 @@ class FormExample(zc.extjs.application.Application):
             return dict(
                 data = data,
                 self_class_name = self.__class__.__name__,
-                self_page_class_name = self.page.__class__.__name__,
+                self_app_class_name = self.app.__class__.__name__,
                 self_context_class_name = self.context.__class__.__name__
                 )

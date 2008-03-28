@@ -33,9 +33,10 @@ Note that we've nested our form definition in an application.  We can
 define the form class elsewhere and use it, but if a form is only used
 in an application, then it's often easiest to define it within an
 application class.  Forms are instantiated by calling them with a
-single argument.  This argument becomes the form's page attribute.
-Form classes are automatically instantiated when a form class is
-assigned to an attribute in a class and accessed through an instance
+single argument.  This argument, the application, becomes the form's `app`
+attribute.  The application's context becomes the form's context.  Form
+classes are automatically instantiated when a form class is assigned to
+an attribute in a class and accessed through an instance
 [#form_classes_are_descriptors]_.
 
 Let's try accessing our form:
@@ -141,9 +142,9 @@ Let's pass valid data:
                u'favorite_color': u'',
                u'first_name': u'Bob',
                u'last_name': u'Zope'},
+     u'self_app_class_name': u'FormExample',
      u'self_class_name': u'ExampleForm',
      u'self_context_class_name': u'Folder',
-     u'self_page_class_name': u'FormExample',
      u'success': True}
 
 Here we get a successful result.  Our contrived action in the example
@@ -154,10 +155,10 @@ simply echoed back the data it was passed,  Note, in particular that:
 - the value of the age key is an integer, since the field was an
   integer field.
 
-The action also prints out the classes of its self argument, its page
+The action also prints out the classes of its self argument, its app
 and its context. Actions are methods of forms so their `self` argument is the
-form. The form's `page` is the page through which it is accessed and
-`context` is the page's context.
+form. The form's `app` is the app through which it is accessed and
+`context` is the app's context.
 
 
 Getting definitions from Python
@@ -223,7 +224,7 @@ Base and prefix
 
 Forms have base_href and prefix variables.  The base_href is used to compute
 URLs for form actions.  A form's base_href defaults to its class name.
-The form's base_href also includes the base_href of its page, if its page has
+The form's base_href also includes the base_href of its app, if its app has
 a base_href. This is useful for sub-applications. Let's give our sample
 application a base_href attribute as if it were a sub-application:
 
@@ -319,8 +320,6 @@ Actions:
 - validators
 
 - failure handlers
-
-
 
 
 

@@ -37,12 +37,12 @@ class Form(_FormBase):
     __Security_checker__ = zope.security.checker.NamesChecker((
         '__call__', 'browserDefault', 'publishTraverse'))
 
-    def __init__(self, page, request=None):
-        self.page = page
+    def __init__(self, app, request=None):
+        self.app = app
         if request is None:
-            request = page.request
+            request = app.request
         self.request = request
-        self.context = page.context
+        self.context = app.context
 
     @zope.cachedescriptors.property.Lazy
     def prefix(self):
@@ -50,7 +50,7 @@ class Form(_FormBase):
 
     @zope.cachedescriptors.property.Lazy
     def base_href(self):
-        base_href = getattr(self.page, 'base_href', None)
+        base_href = getattr(self.app, 'base_href', None)
         if base_href is not None:
             base_href += '/'
         else:
