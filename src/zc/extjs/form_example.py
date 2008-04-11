@@ -39,6 +39,8 @@ class Person:
 
 class FormExample(zc.extjs.application.Application):
 
+    resource_library_name = None
+
     class ExampleForm(zc.extjs.form.Form):
 
         form_fields = zope.formlib.form.Fields(IPerson)

@@ -18,7 +18,6 @@ import os
 import unittest
 import zope.app.testing.functional
 
-
 class Test(zope.app.testing.functional.ZCMLLayer):
 
     def __init__(self):

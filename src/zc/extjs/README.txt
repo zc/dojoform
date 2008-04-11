@@ -1,6 +1,6 @@
-====================
+********************
 Zope 3 + Ext Support
-====================
+********************
 
 The zc.extjs package provides framework to support:
 
@@ -8,4 +8,6 @@ The zc.extjs package provides framework to support:
 
 - Nested-application support
 
-- Integration with formlib
+- Integration with zope.formlib
+
+.. contents::

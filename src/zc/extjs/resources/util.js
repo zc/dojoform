@@ -38,11 +38,9 @@ zc.extjs.util = function() {
 
         if (args.jsonData)
         {
-//             YAHOO.util.Connect.setDefaultPostHeader(false);
             server_connection.request({
                 url: args.url, jsonData: args.jsonData, method: 'POST',
                 callback: callback});
-//             YAHOO.util.Connect.setDefaultPostHeader(true);
         }
         else
             server_connection.request({
@@ -93,28 +91,21 @@ zc.extjs.util = function() {
         return form;
     }
 
-    function form_panel(args, callback)
+    function form_panel(args)
     {
-        // Create a form panel by loading a description of the fields.
-        // `args` is a dict of options; make sure to specify `url`.
-        //
-        // This function is asynchonous!  It returns immediately, and
-        // calls `callback` with the newly constructed form panel only
-        // when it is ready.  Normally the callback would add the panel
-        // to some container.  Remember to call container.doLayout()
-        // after adding the component.
         call_server({
             url: args.url,
             params: args.params,
             task: "Loading form definition",
             success: function (result) {
+                var formpanel;
                 var form_config = {
                     autoHeight: true,
                     buttons: [{
                         text: 'Cancel',
                         handler: function ()
                         {
-                            form_reset(form_config.form, result.data);
+                            form_reset(formpanel, result.data);
                         }
                     }]
                 };
@@ -127,19 +118,18 @@ zc.extjs.util = function() {
                     form_config = Ext.apply(form_config, args.form_config);
                 }
 
-                var formpanel = zc.extjs.util.new_form({
+                formpanel = zc.extjs.util.new_form({
                     definition: result.definition,
                     config: form_config,
                     after: function (form, action)
                     {
-                        dialog.hide();
                         if (args.after)
                             args.after(form, action);
                     }
                 });
 
                 form_reset(formpanel, result.data);
-                callback(formpanel);
+                args.callback(formpanel);
             }
         });
     }
@@ -152,7 +142,7 @@ zc.extjs.util = function() {
             {
                 form_reset(dialog.initialConfig.items[0], data);
                 return dialog.show();
-            }        
+            }
             call_server({
                 url: args.url,
                 params: args.params,
@@ -272,7 +262,6 @@ zc.extjs.util = function() {
     return {
         call_server: call_server,
         new_form: new_form,
-        get_form_config: get_form_config,
         form_dialog: form_dialog,
         form_panel: form_panel,
         form_failure: form_failure,

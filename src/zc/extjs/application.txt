@@ -54,7 +54,7 @@ object attributes that provide IBrowserPublisher.  The
 zc.extjs.application.jsonpage decorator is also an important part of
 this. It makes methods accessible and automatically marshals their
 result to JSON [#jsoninput]_.  There's also a
-zc.extjs.application.page decorator that makes methods accessable
+zc.extjs.application.page decorator that makes methods accessible
 without the automatic marshalling.  The use of a default page, rather
 than just a __call__ method is to cause the URL base to be the view,
 rather than the view's context.  This allows the Javascript code to
@@ -65,8 +65,7 @@ attribute [#missing_resource_library_name]_.  For these applications,
 you pretty much always want to use an associated Javascript file and
 other resources (supporting JS, CSS, etc.).  You can suppress the use
 of the resource library by setting the value of this attribute to
-None. In the example above, we just used zc.extjs.  We'd normally
-create a custom resource library that required zc.extjs and use that.
+None.
 
 For applications that build pages totally in Javascript, which ExtJS
 makes easy to do, the default template is adequate.  For applications
@@ -82,7 +81,7 @@ The view can be registered with a simple adapter registration:
    :literal:
 
 If we wanted to register it for an object other than the an
-IContainmentRoot, we could just provide specificy adapted interfaces
+IContainmentRoot, we could just provide specifically adapted interfaces
 or classes in the registration.
 
 Let's access the calculator with a test browser
@@ -92,34 +91,33 @@ Let's access the calculator with a test browser
     >>> browser.open('http://localhost/')
     Traceback (most recent call last):
     ...
-    httperror_seek_wrapper: HTTP Error 401: Unauthorized
+    HTTPError: HTTP Error 401: Unauthorized
 
 Because our view was registered to require zope.View, the request was
-unauthorized.  Let's login:
+unauthorized.  Let's login. In the demo setup, we login by just
+providing a login form variable. 
 
-    >>> browser.addHeader('Authorization', 'Basic bob:123')
-    >>> browser.open('http://localhost/calculator.html')
-    >>> print browser.contents # doctest: +REPORT_NDIFF
+    >>> browser.open('http://localhost/calculator.html?login')
+    >>> print browser.contents # doctest: +NORMALIZE_WHITESPACE
     <html><head>
     <base href="http://localhost/calculator.html/index.html" />
     <BLANKLINE>
-        <script src="http://localhost/@@/Ext/adapter/yui/yui-utilities.js" 
+        <script
+            src="http://localhost/@@/Ext-ext-adapter/adapter/ext/ext-base.js" 
             type="text/javascript">
         </script>
-        <script src="http://localhost/@@/Ext/adapter/yui/ext-yui-adapter.js" 
-            type="text/javascript">
-        </script>
-        <script src="http://localhost/@@/Ext/ext-all.js" 
-            type="text/javascript">
-        </script>
-        <script src="http://localhost/@@/Ext/set_blank_image.js" 
+        <script
+            src="http://localhost/@@/Ext-support/set_blank_image.js" 
             type="text/javascript">
         </script>
         <style type="text/css" media="all">
           <!--
-            @import url("http://localhost/@@/Ext/resources/css/ext-all.css");
+       @import url("http://localhost/@@/Ext-support/resources/css/ext-all.css");
           -->
         </style>
+        <script src="http://localhost/@@/Ext-library/ext-all.js" 
+            type="text/javascript">
+        </script>
         <script src="http://localhost/@@/zc.extjs/util.js" 
             type="text/javascript">
         </script>
@@ -131,6 +129,10 @@ unauthorized.  Let's login:
             @import url("http://localhost/@@/zc.extjs/util.css");
           -->
         </style>
+        <script
+            src="http://localhost/@@/zc.extjs.calculator_example/calculator_example.js" 
+            type="text/javascript">
+        </script>
     </head></html>
 
 We registered our view as calculator.html. Because of the way it sets the
@@ -176,7 +178,7 @@ is returned:
     >>> simplejson.loads(browser.contents)
     {u'success': True}
 
-If something other than a dictionary is returened from a Python
+If something other than a dictionary is returned from a Python
 method, no success attribute is added:
 
     >>> browser.open('http://localhost/@@calculator.html/about')
@@ -277,7 +279,7 @@ data as JSON.
     >>> print_form(browser, '/calculator.html/do_add', value=1)
     Traceback (most recent call last):
     ...
-    httperror_seek_wrapper: HTTP Error 404: Not Found
+    HTTPError: HTTP Error 404: Not Found
 
 
 "Library" applications
@@ -309,7 +311,8 @@ help with creating sub-applications:
 SubApplication
     This class, which Application subclasses, provides traversal to
     attributes that provide IBrowserPublisher.  It also stamps
-    IAjaxRequest on the request object when an object is traversed.
+    IAjaxRequest on the request object when an object is traversed
+    [#iajaxrequest]_ .
 
     (Maybe this request stamping should be done further down the
     traversal chain or perhaps only done if X-Requested-With is
@@ -452,3 +455,36 @@ traversed but not called from untrusted code:
    so as not to dilute the content.
 
 .. [#forms] See form.txt.
+
+.. [#iajaxrequest] Traversing into a subapplication adds IAjaxRequest to the
+   list of interfaces provided by the request.
+
+    >>> import zc.extjs.application
+    >>> import zc.extjs.interfaces
+    >>> import zope.publisher.browser
+    >>> request = zope.publisher.browser.TestRequest()
+    >>> class SubApp(zc.extjs.application.SubApplication):
+    ...      @zc.extjs.application.jsonpage
+    ...      def foo(self):
+    ...          return 'bar'
+    >>> subapp = SubApp(object(), request)
+
+  Now let's try traversing into the subapplication:
+
+    >>> zc.extjs.interfaces.IAjaxRequest.providedBy(request)
+    False
+    >>> subapp.publishTraverse(request, 'foo')()
+    '"bar"'
+    >>> zc.extjs.interfaces.IAjaxRequest.providedBy(request)
+    True
+
+  Note that the request keeps any provided interfaces:
+
+    >>> request = zope.publisher.browser.TestRequest()
+    >>> class IMyInterface(zope.interface.Interface):
+    ...     pass
+    >>> zope.interface.directlyProvides(request, IMyInterface)
+    >>> subapp.publishTraverse(request, 'foo')()
+    '"bar"'
+    >>> IMyInterface.providedBy(request)
+    True

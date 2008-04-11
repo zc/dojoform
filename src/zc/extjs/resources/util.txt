@@ -43,8 +43,8 @@ Exammple::
 
 The function doesn't return anything.
 
-form(config)
-============
+new_form(config)
+================
 
 Create a form panel using a form definition loaded from a formlib-based
 server form.
@@ -94,7 +94,6 @@ form_config
     configuration parameters to be passed when creating a form
     panel within the dialog
 
-
 after (optional)
     A Callback function to call when a form has been successfully
     submitted without errors.
@@ -105,22 +104,81 @@ used to initialize the form.
 
 Example::
 
-   add_button = new Ext.Button({
-       text: '+',
-       handler: zc.extjs.form_dialog({
+   var show_dialog = zc.extjs.util.form_dialog({
           url: 'add_slot_form',
           window_config: {title: 'Add slot', width: 500},
           after: function () {
               slot_tree.getRootNode().reload();
           }
-       })
+       });
+   var add_button = new Ext.Button({
+       text: '+',
+       handler: function () {show_dialog()}
    });
 
+Notice that we didn't use show_dialog as a handler directly.  If we
+had, it would have been passed a button, which it wouldn't have
+expected.  We could have used createDelegate instead:
+
+   var add_button = new Ext.Button({
+       text: '+',
+       handler: zc.extjs.util.form_dialog({
+          url: 'add_slot_form',
+          window_config: {title: 'Add slot', width: 500},
+          after: function () {
+              slot_tree.getRootNode().reload();
+          }
+       }).createDelegate(this, [])
+   });
+
+form_panel(config)
+==================
+
+Asynchronously create a form panel by loading formlib-based form definitions
+from a server.
+
+The arguments are given as a configuration argument with items:
+
+url
+  The URL to load the definitions from.
+
+window_config
+  A configuration object giving extra window configuration data.  This
+  should generally include:
+
+  title
+     The window title
+
+  width
+     The window width
+
+     Ext seems to be able to calculate the window height OK, but not
+     the window width.
+
+form_config
+    configuration parameters to be passed when creating a form
+    panel within the dialog
+
+after (optional)
+    A Callback function to call when a form has been successfully
+    submitted without errors.
+
+callback
+    Function to call after the form panel has been created.
+
+This function does not return a form panel.  Instead, it submits
+an asynchronous request of the form definition to the server.
+When a reply is received, the actual form panel is created, and
+the provided callback is invoked with the new form panel as an argument.
+Normally the callback would add the panel to a container.
+
+Remember to invoke container.doLayout() if you add the form panel to a
+component that may already be visible.
 
 form_failure(form, action)
 ==========================
 
-This is a generic failure handler that can be used to failed form submissions.
+This is a generic failure handler that can be used for failed form submissions.
 
 If the action.result object has a true session_expired attribute, it
 will display a notification to the user that they need to log in again

@@ -5,11 +5,10 @@
 
   <include package="zc.extjsresource" />
   <include file="widgets.zcml" />
-  <include file="extjs.zcml" /> <!-- Die! -->
 
   <adapter factory=".application.UserError" name="index.html" />
 
-  <resourceLibrary name="zc.extjs" require="Ext">
+  <resourceLibrary name="zc.extjs">
     <directory
        source="resources"
        include="util.js widgets.js util.css"

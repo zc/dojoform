@@ -16,11 +16,14 @@ import base64
 import pprint
 import simplejson
 import urllib
-import zope.interface
+import zc.extjs.session
+import zope.app.exception.browser.unauthorized
 import zope.app.security.interfaces
+import zope.formlib.namedtemplate
+import zope.interface
+import zope.security.checker
 import zope.security.interfaces
 import zope.security.simplepolicies
-import zope.security.checker
 
 def _marshal_scalar(n, v):
     if not isinstance(v, str):
@@ -81,27 +84,51 @@ class UnauthenticatedPrincipal:
 
 unauthenticatedPrincipal = UnauthenticatedPrincipal()
 
+class Login:
+
+    def __init__(self, context, request):
+        pass
+
+    def logout(self):
+        """<html><body>
+        Unauthorized! Add ?logged-in=name to log in. :)
+        </body></html>
+        """
+
 class DumbAuth:
 
     zope.interface.implements(zope.app.security.interfaces.IAuthentication)
 
     def authenticate(self, request):
-        if request._auth:
-            if request._auth.lower().startswith(u'basic '):
-                credentials = request._auth.split()[-1]
-                login, password = base64.decodestring(credentials).split(':')
-                return Principal(login)
+        if request.get('logout') is not None:
+            return None
+
+        if not 'login' in request:
+            return None
+
+        if 'login' in request.form:
+            request.response.setCookie('login', '')
+
+        return Principal('user')
 
     def unauthenticatedPrincipal(self):
         return unauthenticatedPrincipal
 
     def unauthorized(self, id, request):
-        request.response.setHeader("WWW-Authenticate", 'basic realm="test"',
-                                   literal=True)
+        request.response.expireCookie('login')
         request.response.setStatus(401)
+        return 
 
     def getPrincipal(self, id):
         return Principal(id)
+
+unauth_template = zope.formlib.namedtemplate.NamedTemplateImplementation(
+    lambda inst: """<html><body>
+        Unauthorized! Add ?login to log in. :)
+        </body></html>
+        """,
+    zc.extjs.session.Unauthorized)
+
 
 class AuthenticatedAllowed(zope.security.simplepolicies.ParanoidSecurityPolicy):
 

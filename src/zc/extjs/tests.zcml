@@ -1,7 +1,4 @@
-<configure 
-   xmlns="http://namespaces.zope.org/zope"
-   package="zc.extjs"
-   >
+<configure xmlns="http://namespaces.zope.org/zope" package="zc.extjs">
 
   <include package="zope.app.zcmlfiles" file="meta.zcml" /> <!-- Gaaaah -->
   <include file="session.zcml" />
@@ -11,8 +8,10 @@
 
   <utility factory=".testing.DumbAuth" />
   <securityPolicy component=".testing.AuthenticatedAllowed" />
+  <adapter factory=".testing.unauth_template" name="default" />
 
   <include file="calculator_example.zcml" />
   <include file="form_example.zcml" />
   <include file="calculator_subapplication_example.zcml" />
+
 </configure>

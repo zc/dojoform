@@ -4,7 +4,7 @@ import zope.exceptions
 class Calculator(zc.extjs.application.Trusted,
                  zc.extjs.application.Application):
 
-    resource_library_name = 'zc.extjs'
+    resource_library_name = 'zc.extjs.calculator_example'
 
     @zc.extjs.application.jsonpage
     def about(self):

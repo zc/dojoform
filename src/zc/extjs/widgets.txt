@@ -1,7 +1,7 @@
 Ajax widgets
 ============
 
-The zc.extjs.form module provides s ajax form support based on the
+The zc.extjs.form module provides ajax form support based on the
 ExtJS form framework.
 
 Widgets are looked up for fields and requests providing
@@ -36,7 +36,7 @@ are:
       Convert an application value to a value that can be marshaled to
       JSON and used to initialize the Ext widget.
 
-  _toValue(v)
+  value(v)
       Convert a raw value sent from the client to an application value.
   
   _is_missing(self, v)
@@ -115,7 +115,7 @@ Let's add some data to the request:
 
 Let's try overriding some methods:
 
-    >>> w._toValue = lambda raw: raw+' cooked'
+    >>> w.value = lambda raw: raw+' cooked'
     >>> w.formValue = lambda v: v[:-7]
     >>> w._is_missing = lambda raw: raw == u'xxx'
 
@@ -589,6 +589,49 @@ of values is included in the Javascript config:
     >>> w.getInputValue()
     u'C'
 
+Decimals
+--------
+
+    >>> request = zope.publisher.browser.TestRequest()
+    >>> f = zope.schema.Decimal(
+    ...    __name__='f', title=u'label', description=u'hint')
+    >>> w = zc.extjs.widgets.InputDecimal(f, request)
+    >>> pprint(w.js_config(), width=1)
+    {'allowBlank': False,
+     'fieldHint': u'hint',
+     'fieldLabel': u'label',
+     'id': 'field.f',
+     'itemCls': 'zc-required-field',
+     'name': 'field.f',
+     'widget_constructor': 'zc.extjs.widgets.InputDecimal'}
+
+Note that we use a custom widget constructor, which provides
+decimal-specific validation on the client.
+
+    >>> import decimal
+    >>> w.formValue(None), w.formValue(decimal.Decimal("42.1"))
+    (None, u'42.1')
+
+    >>> w.required, w.hasInput(), w.hasValidInput()
+    (True, False, False)
+    >>> w.getInputValue()
+    Traceback (most recent call last):
+    ...
+    MissingInputError: ('field.f', u'label', None)
+
+    >>> request.form['field.f'] = u'xxx'
+    >>> w.required, w.hasInput(), w.hasValidInput()
+    (True, True, False)
+    >>> w.getInputValue()
+    Traceback (most recent call last):
+    ...
+    ConversionError: (u"Invalid decimal: u'xxx'", None)
+
+    >>> request.form['field.f'] = u'33.1'
+    >>> w.required, w.hasInput(), w.hasValidInput()
+    (True, True, True)
+    >>> w.getInputValue()
+    Decimal("33.1")
 
 Hidden fields
 -------------

@@ -44,7 +44,8 @@ Let's try accessing our form:
     >>> import zope.testbrowser.testing
     >>> from zc.extjs.testing import print_form
     >>> browser = zope.testbrowser.testing.Browser()
-    >>> browser.addHeader('Authorization', 'Basic bob:123')
+    >>> browser.handleErrors = False
+    >>> browser.open('http://localhost/form.html?login')
     >>> print_form(browser, 'http://localhost/form.html/ExampleForm')
     ... # doctest: +NORMALIZE_WHITESPACE
     {u'definition': {u'actions': [{u'label': u'Register',
