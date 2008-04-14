@@ -22,6 +22,7 @@ import zc.extjs.interfaces
 import zc.resourcelibrary
 import zope.app.exception.browser.unauthorized
 import zope.app.pagetemplate
+import zope.cachedescriptors.property
 import zope.component
 import zope.exceptions.interfaces
 import zope.interface
@@ -95,6 +96,10 @@ class AttributeTraversable(object):
                 )
             return result
         raise zope.publisher.interfaces.NotFound(self, name, request)    
+
+    @zope.cachedescriptors.property.Lazy
+    def __parent__(self):
+        return self.context
 
 class PublicTraversable(object):
     

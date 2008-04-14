@@ -419,6 +419,26 @@ traversed but not called from untrusted code:
     >>> checker.set_permissions
     {}
 
+Acquisition
+===========
+
+Applications and sub-applications have __parent__ properties that
+return their context.  This is to support frameworks that ise
+__parent__ to perform acquisition.
+
+   >>> class MyApp(zc.extjs.application.Application):
+   ...     pass
+
+   >>> myapp = MyApp(foo, None)
+   >>> myapp.__parent__ is foo
+   True
+
+   >>> class MySubApp(zc.extjs.application.SubApplication):
+   ...     pass
+
+   >>> mysubapp = MySubApp(foo, None)
+   >>> mysubapp.__parent__ is foo
+   True
 
 .. [#ajax] Technically, these aren't really AJAX applications, since
    we rarely. if ever, use XML as a serialization format.  To

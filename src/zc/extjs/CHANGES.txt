@@ -16,6 +16,12 @@ Future work
   results as people refine searches.
 
 
+0.3.0 (2008-04-14)
+==================
+
+Gave applications and subapplications __parent__ attributes so they
+can acquire security settings.
+
 0.2.0 (2008-04-03)
 ==================
 
