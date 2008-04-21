@@ -285,7 +285,7 @@ data as JSON.
 "Library" applications
 ======================
 
-The "application" model described above is pretty appealing in it's
+The "application" model described above is pretty appealing in its
 simplicity -- at least to me. :)  Usually, we'd like to make out
 applications a bit more flexible in their use.  In particular, we
 often want to assemble applications together. At the Javascript level,
@@ -469,7 +469,7 @@ __parent__ to perform acquisition.
    informative than the default attribute error.
 
 .. [#sso]  For search-engine optimization, one generally wants a
-   content page to actuially contain it's content.  If one depends on
+   content page to actually contain its content.  If one depends on
    Javascript-enabled browsers, one can improve performance and
    search-engine optimization by adding ancilary data in Javascript,
    so as not to dilute the content.

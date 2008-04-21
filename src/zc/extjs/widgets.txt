@@ -474,7 +474,7 @@ Choices from simple vocabularies are supported:
     ...    values=['red', 'green', 'blue', 1, 2, 3])
     >>> w = zc.extjs.widgets.InputChoiceTokenized(f, f.source, request)
 
-Note that we passed the field, it's source, and the request. This is
+Note that we passed the field, its source, and the request. This is
 because InputChoiceTokenized adapts a choice field, a simple
 vocabulary, and a request.
 
