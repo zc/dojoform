@@ -226,10 +226,12 @@ class InputTimeZone(InputChoiceTokenized):
         zc.extjs.interfaces.IAjaxRequest
         )
 
+    _timezones = sorted([(tzname, pytz.timezone(tzname))
+                        for tzname in pytz.all_timezones])
+
     def __init__(self, context, source, request):
-        timezones = sorted([(tzname, pytz.timezone(tzname))
-                            for tzname in pytz.all_timezones])
-        source = zope.schema.vocabulary.SimpleVocabulary.fromItems(timezones)
+        source = zope.schema.vocabulary.SimpleVocabulary.fromItems(
+                                                            self._timezones)
         InputChoiceIterable.__init__(self, context, source, request)
 
 
