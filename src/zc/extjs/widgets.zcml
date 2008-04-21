@@ -16,6 +16,11 @@
      />
 
   <adapter
+     factory=".widgets.InputTimeZone"
+     provides="zope.app.form.interfaces.IInputWidget"
+     />
+
+  <adapter
      factory=".widgets.InputInt"
      provides="zope.app.form.interfaces.IInputWidget"
      />

@@ -13,7 +13,10 @@
 ##############################################################################
 
 import decimal
+import pytz
 import zc.extjs.interfaces
+import zc.form.interfaces
+import zc.sourcefactory.basic
 import zope.app.form
 import zope.app.form.browser.interfaces
 import zope.app.form.interfaces
@@ -213,7 +216,23 @@ class InputChoiceTokenized(InputChoiceIterable):
 
     def value(self, v):
         return self.source.getTermByToken(v).value
-            
+
+
+class InputTimeZone(InputChoiceTokenized):
+
+    zope.component.adapts(
+        zope.schema.interfaces.IChoice,
+        zc.form.interfaces.AvailableTimeZones,
+        zc.extjs.interfaces.IAjaxRequest
+        )
+
+    def __init__(self, context, source, request):
+        timezones = sorted([(tzname, pytz.timezone(tzname))
+                            for tzname in pytz.all_timezones])
+        source = zope.schema.vocabulary.SimpleVocabulary.fromItems(timezones)
+        InputChoiceIterable.__init__(self, context, source, request)
+
+
 class InputInt(Base):
 
     zope.component.adapts(

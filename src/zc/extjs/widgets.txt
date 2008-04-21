@@ -589,6 +589,50 @@ of values is included in the Javascript config:
     >>> w.getInputValue()
     u'C'
 
+Timezones
+---------
+
+    >>> f = zope.schema.Choice(
+    ...     __name__='tz',
+    ...     title=u'Timezone',
+    ...     description=u'Some timezone',
+    ...     source=zc.form.interfaces.AvailableTimeZones())
+    >>> w = zc.extjs.widgets.InputTimeZone(f,  'ignored source', request)
+
+    >>> pprint(w.js_config(), width=1) # doctest: +ELLIPSIS
+    {'allowBlank': False,
+     'fieldHint': u'Some timezone',
+     'fieldLabel': u'Timezone',
+     'hiddenName': 'field.tz.value',
+     'id': 'field.tz',
+     'itemCls': 'zc-required-field',
+     'name': 'field.tz',
+     'values': [['Africa/Abidjan',
+                 u'Africa/Abidjan'],
+                ...
+                ['posixrules',
+                 u'posixrules']],
+     'widget_constructor': 'zc.extjs.widgets.InputChoice'}
+
+    >>> print w.formValue(None)
+    None
+    >>> import pytz
+    >>> w.formValue(pytz.utc)
+    'UTC'
+
+    >>> w.required, w.hasInput(), w.hasValidInput()
+    (True, False, False)
+    >>> w.getInputValue()
+    Traceback (most recent call last):
+    ...
+    MissingInputError: ('field.tz', u'Timezone', None)
+
+    >>> request.form['field.tz.value'] = u'UTC'
+    >>> w.required, w.hasInput(), w.hasValidInput()
+    (True, True, True)
+    >>> w.getInputValue()
+    <UTC>
+
 Decimals
 --------
 
