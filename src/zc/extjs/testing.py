@@ -53,7 +53,7 @@ def call_form(browser, url, __params=(), **params):
             else:
                 query.append(_marshal_scalar(n, v))
 
-        browser.open(url, '&'.join(query))
+        browser.post(url, '&'.join(query))
     else:
         browser.open(url)
 
