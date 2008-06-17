@@ -63,6 +63,7 @@ setup(
         'setuptools',
         'simplejson',
         'zc.extjsresource',
+        'zc.form',
         'zope.deferredimport',
         ],
     extras_require = dict(
