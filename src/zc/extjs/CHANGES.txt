@@ -16,6 +16,20 @@ Future work
   results as people refine searches.
 
 
+0.4.0 (2008-06-18)
+==================
+
+Testing support changes:
+
+There's a new API fro calling ajax methods that:
+
+  - Is a little cleaner
+
+  - Makes Zope form marshalling optional
+
+  - Supports file upload
+
+
 0.3.0 (2008-04-14)
 ==================
 
