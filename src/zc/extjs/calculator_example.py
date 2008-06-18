@@ -46,5 +46,16 @@ class Calculator(zc.extjs.application.Trusted,
 
     @zc.extjs.application.jsonpage
     def echo_form(self):
-        return dict(self.request.form)
+        def maybe_file(v):
+            if hasattr(v, 'read'):
+                return ("<File upload name=%r content-type=%r size=%r>"
+                        % (v.filename, v.headers['content-type'], len(v.read()))
+                        )
+            else:
+                return v
+        
+        return dict(
+            (name, maybe_file(v))
+            for (name, v) in self.request.form.items()
+            )
 

@@ -211,35 +211,40 @@ Testing support
 zc.extjs.testing has some helper functions to make it easier to test
 ajax calls.
 
-The call_form function makes an ajax call, marshaling input data and
-de-marshaling output data. It's called call_form because it marshals
-input data as form variables.  Data can be given as a dictionary
-positional argument or as keyword parameters:
+The zc.extjs.testing.FormServer class provides some convenience for
+making ajax calls in which data are sent as form data and returned as
+JSON.  The class takes a browser and returns an object that can be
+called to make server calls:
 
-    >>> from zc.extjs.testing import call_form, print_form
-    >>> from pprint import pprint
-    >>> pprint(call_form(browser, '/calculator.html/add',
-    ...        {'value': 1}), width=1)
-    {u'success': True,
-     u'value': 1}
+    >>> import zc.extjs.testing, pprint
+    >>> server = zc.extjs.testing.FormServer(browser)
 
-    >>> pprint(call_form(browser, '/calculator.html/add', value=1), width=1)
-    {u'success': True,
-     u'value': 2}
+    >>> pprint.pprint(server('/calculator.html/echo_form',
+    ...               {'a': 1.0}, b=[1, 2, 3], c=True, d='d', e=u'e\u1234'
+    ...               ), width=1)
+    {u'a': u'1.0',
+     u'b': [u'1',
+            u'2',
+            u'3'],
+     u'c': u'1',
+     u'd': u'd',
+     u'e': u'e\u1234',
+     u'success': True}
 
-The methods called are assumed to return JSON and the resulting data
-is converted back into Python.
+When we call the server, we pass a URL to invoke, which may be
+relative, a optional dictionary of parameter values, and optional
+keyword arguments.  
 
-The first two arguments are a test browser and a URL.
+Note that the application will recieve data as strings, which is what
+we see echoed back in the example above.
 
-Keyword arguments are convenient, but sometimes, we need to pass form
-data whose keys are not valid Python identifiers.
+If the application is written using Zope, then we can enable Zope form
+marshalling, by passing a True value when we create the server:
 
-Data can be unicode, strings, integers, floats, boolean, or lists. 
-
-    >>> pprint(call_form(browser, '/calculator.html/echo_form',
-    ...                  {'a': 1.0}, b=[1, 2, 3], c=True, d='d', e=u'e\u1234'
-    ...        ), width=1)
+    >>> server = zc.extjs.testing.FormServer(browser, True)
+    >>> pprint.pprint(server('/calculator.html/echo_form',
+    ...               {'a': 1.0}, b=[1, 2, 3], c=True, d='d', e=u'e\u1234'
+    ...               ), width=1)
     {u'a': 1.0,
      u'b': [1,
             2,
@@ -249,19 +254,30 @@ Data can be unicode, strings, integers, floats, boolean, or lists.
      u'e': u'e\u1234',
      u'success': True}
 
-The function print_form combines pprint and call_form:
+    >>> pprint.pprint(server('/calculator.html/add', {'value': 1}), width=1)
+    {u'success': True,
+     u'value': 1}
 
-    >>> print_form(browser, '/calculator.html/add', {'value': 1})
+    >>> pprint.pprint(server('/calculator.html/add', value=1), width=1)
+    {u'success': True,
+     u'value': 2}
+
+The methods called are assumed to return JSON and the resulting data
+is converted back into Python.
+
+The function pprint method combines pprint and calling:
+
+    >>> server.pprint('/calculator.html/add', {'value': 1})
     {u'success': True,
      u'value': 3}
 
-    >>> print_form(browser, '/calculator.html/add', value=1)
+    >>> server.pprint('/calculator.html/add', value=1)
     {u'success': True,
      u'value': 4}
 
-    >>> print_form(browser, '/calculator.html/echo_form',
-    ...            {'a': 1.0}, b=[1, 2, 3], c=True, d='d', e=u'e\u1234'
-    ...            )
+    >>> server.pprint('/calculator.html/echo_form',
+    ...               {'a': 1.0}, b=[1, 2, 3], c=True, d='d', e=u'e\u1234'
+    ...               )
     {u'a': 1.0,
      u'b': [1,
             2,
@@ -274,9 +290,24 @@ The function print_form combines pprint and call_form:
 In the future, there will be versions of these functions that send
 data as JSON.
 
+We can include file-upload data by including a 3-tuple with a file
+name, a content type, and a data string:
+
+    >>> server.pprint('/calculator.html/echo_form',
+    ...               b=[1, 2, 3], c=True, d='d',
+    ...               file=('foo.xml', 'test/xml', '<foo></foo>'), 
+    ...               )
+    {u'b': [1,
+            2,
+            3],
+     u'c': True,
+     u'd': u'd',
+     u'file': u"<File upload name=u'foo.xml' content-type='test/xml' size=11>",
+     u'success': True}
+
 .. Edge case: we can't traverse to undecorated methods:
 
-    >>> print_form(browser, '/calculator.html/do_add', value=1)
+    >>> server.pprint('/calculator.html/do_add', value=1)
     Traceback (most recent call last):
     ...
     HTTPError: HTTP Error 404: Not Found
@@ -340,15 +371,14 @@ constructor accepts.  Our ZCML configuration is pretty simple:
 Using the container application, we access the calculator via the
 container:
 
-    >>> print_form(browser, 'http://localhost/@@container.html/calc/add',
-    ...            value=1)
+    >>> server.pprint('http://localhost/@@container.html/calc/add', value=1)
     {u'success': True,
      u'value': 5}
 
 We've updated the operations method to include the URL for each
 operation, which is computed based on the base_href:
 
-    >>> print_form(browser, 'http://localhost/@@container.html/calc/operations')
+    >>> server.pprint('http://localhost/@@container.html/calc/operations')
     [[u'add',
       u'calc/add'],
      [u'add',
@@ -360,8 +390,8 @@ class.  We're relying on the protection for the container.  If we
 restart the browser, we see, indeed, that we can't access the
 calculator:
 
-    >>> browser = zope.testbrowser.testing.Browser()
-    >>> print_form(browser, 'http://localhost/@@container.html/calc/operations')
+    >>> server = zc.extjs.testing.FormServer(zope.testbrowser.testing.Browser())
+    >>> server.pprint('http://localhost/@@container.html/calc/operations')
     {u'session_expired': True,
      u'success': False}
 

@@ -13,8 +13,10 @@
 ##############################################################################
 
 import base64
+import ClientForm
 import pprint
 import simplejson
+import StringIO
 import urllib
 import zc.extjs.session
 import zope.app.exception.browser.unauthorized
@@ -25,38 +27,7 @@ import zope.security.checker
 import zope.security.interfaces
 import zope.security.simplepolicies
 
-def _marshal_scalar(n, v):
-    if not isinstance(v, str):
-        if isinstance(v, bool):
-            return "%s:boolean=%s" % (n, v and '1' or '')
-        if isinstance(v, int):
-            return "%s:int=%s" % (n, v)
-        if isinstance(v, float):
-            return "%s:float=%s" % (n, v)
-        if isinstance(v, unicode):
-            return "%s=%s" % (n, urllib.quote(v.encode('utf-8')))
-        raise ValueError("can't marshal %r" % v)
-    return "%s=%s" % (n, urllib.quote(v.encode('ascii')))
-    
-def call_form(browser, url, __params=(), **params):
-
-    browser.addHeader('X-Requested-With', 'XMLHTTPRequest')
-    if params or __params:
-        params = params.copy()
-        params.update(__params)
-        query = []
-        for n, v in params.items():
-            if isinstance(v, list):
-                n += ':list'
-                for vv in v:
-                    query.append(_marshal_scalar(n, vv))
-            else:
-                query.append(_marshal_scalar(n, v))
-
-        browser.post(url, '&'.join(query))
-    else:
-        browser.open(url)
-
+def _result(browser):
     # XXX TestBrowser needs a removeHeader
     browser.mech_browser.addheaders[:] = [
         header for header in browser.mech_browser.addheaders
@@ -64,9 +35,105 @@ def call_form(browser, url, __params=(), **params):
 
     return simplejson.loads(browser.contents)
 
+def call_form(browser, url, __params=(), __use_zope_type_decorators=True,
+              **params):
+
+    browser.addHeader('X-Requested-With', 'XMLHTTPRequest')
+    if not (params or __params):
+        browser.open(url)
+        return _result(browser)
+
+    
+    params = params.copy()
+    params.update(__params)
+
+    pairs = []
+    for n, v in params.items():
+        if isinstance(v, list):
+            if __use_zope_type_decorators:
+                n += ':list'
+            for vv in v:
+                pairs.append((n, vv))
+        else:
+            pairs.append((n, v))
+
+    multipart = False
+    marshalled_pairs = []
+    for n, v in pairs:
+        if isinstance(v, str):
+            v = v.encode('ascii')
+        elif isinstance(v, bool):
+            if __use_zope_type_decorators:
+                n += ':boolean'
+            v = v and '1' or ''
+        elif isinstance(v, int):
+            if __use_zope_type_decorators:
+                n += ':int'
+            v = str(v)
+        elif isinstance(v, float):
+            if __use_zope_type_decorators:
+                n += ':float'
+            v = str(v)
+        elif isinstance(v, unicode):
+            v = v.encode('utf-8')
+        elif isinstance(v, tuple):
+            multipart = True
+        else:
+            raise ValueError("can't marshal %r" % v)
+
+        marshalled_pairs.append((n, v))
+
+    if not multipart:
+        browser.post(url,
+                     '&'.join((n+'='+urllib.quote(v))
+                              for (n, v)
+                              in marshalled_pairs
+                              )
+                     )
+        return _result(browser)
+
+    body = StringIO.StringIO()
+    headers = []
+    mw = ClientForm.MimeWriter(body, headers)
+    mw.startmultipartbody("form-data", add_to_http_hdrs=True, prefix=0)
+    for n, v in marshalled_pairs:
+        mw2 = mw.nextpart()
+        if isinstance(v, tuple):
+            filename, contenttype, data = v
+            mw2.addheader("Content-disposition",
+                          'form-data; name="%s"; filename="%s"'
+                          % (n, filename))
+            f = mw2.startbody(contenttype, prefix=0)
+            f.write(data)
+        else:
+            mw2.addheader("Content-disposition", 'form-data; name="%s"' % n)
+            f = mw2.startbody(prefix=0)
+            f.write(v)
+
+    mw.lastpart()
+    body = body.getvalue()
+    [[n, content_type]] = headers
+    assert n.lower() == 'content-type'
+    browser.post(url, body, content_type)
+    return _result(browser)
+
+
 def print_form(*a, **kw):
     pprint.pprint(call_form(*a, **kw), width=1)
 
+class FormServer:
+
+    def __init__(self, browser, zope_form_marshalling=False):
+        self.browser = browser
+        self._zope_marshalling = zope_form_marshalling
+
+    def __call__(self, method, __params=(), **params):
+        return call_form(self.browser, method, __params,
+                         __use_zope_type_decorators = self._zope_marshalling,
+                         **params)
+
+    def pprint(self, *a, **k):
+        return pprint.pprint(self(*a, **k), width=1)
 
 class Principal:
 
