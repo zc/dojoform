@@ -305,6 +305,30 @@ name, a content type, and a data string:
      u'file': u"<File upload name=u'foo.xml' content-type='test/xml' size=11>",
      u'success': True}
 
+as a convenience, you can pass a URL string to the server constructor,
+which will create a browser for you that has opened that URL.  You can
+also omit the brower and an unopened browser will be created.
+
+
+    >>> server = zc.extjs.testing.FormServer(
+    ...     'http://localhost/calculator.html?login')
+    >>> server.browser.url
+    'http://localhost/calculator.html?login'
+
+    >>> server.pprint('/calculator.html/echo_form', x=1)
+    {u'success': True,
+     u'x': u'1'}
+
+    >>> server = zc.extjs.testing.FormServer(zope_form_marshalling=True)
+    >>> server.browser.open('http://localhost/calculator.html?login')
+    >>> server.pprint('/calculator.html/echo_form', x=1)
+    {u'success': True,
+     u'x': 1}
+
+In the example above, we didn't provide a browser, but we provided the
+zope_form_marshalling flag as a keyword option.
+
+
 .. Edge case: we can't traverse to undecorated methods:
 
     >>> server.pprint('/calculator.html/do_add', value=1)
@@ -390,7 +414,7 @@ class.  We're relying on the protection for the container.  If we
 restart the browser, we see, indeed, that we can't access the
 calculator:
 
-    >>> server = zc.extjs.testing.FormServer(zope.testbrowser.testing.Browser())
+    >>> server = zc.extjs.testing.FormServer()
     >>> server.pprint('http://localhost/@@container.html/calc/operations')
     {u'session_expired': True,
      u'success': False}

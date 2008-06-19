@@ -26,6 +26,7 @@ import zope.interface
 import zope.security.checker
 import zope.security.interfaces
 import zope.security.simplepolicies
+import zope.testbrowser.testing
 
 def _result(browser):
     # XXX TestBrowser needs a removeHeader
@@ -123,7 +124,14 @@ def print_form(*a, **kw):
 
 class FormServer:
 
-    def __init__(self, browser, zope_form_marshalling=False):
+    def __init__(self, browser=None, zope_form_marshalling=False):
+        if browser is None:
+            browser = zope.testbrowser.testing.Browser()
+        elif isinstance(browser, str):
+            url = browser
+            browser = zope.testbrowser.testing.Browser()
+            browser.open(url)
+            
         self.browser = browser
         self._zope_marshalling = zope_form_marshalling
 
