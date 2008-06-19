@@ -508,7 +508,7 @@ System Errors
     HTTPError: HTTP Error 500: Internal Server Error
 
     >>> pprint.pprint(simplejson.loads(server.browser.contents), width=1)
-    {u'error': u'Doh!',
+    {u'error': u'TypeError: Doh!',
      u'success': False}
 
 .. [#ajax] Technically, these aren't really AJAX applications, since

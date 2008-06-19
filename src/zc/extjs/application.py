@@ -204,4 +204,7 @@ class ExceptionView(UserError):
 
     def __call__(self):
         self.request.response.setStatus(500)
-        return UserError.__call__(self)
+        return simplejson.dumps(dict(
+            success = False,
+            error = "%s: %s" % (self.context.__class__.__name__, self.context),
+            ))
