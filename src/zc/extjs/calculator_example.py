@@ -59,3 +59,8 @@ class Calculator(zc.extjs.application.Trusted,
             for (name, v) in self.request.form.items()
             )
 
+
+    @zc.extjs.application.jsonpage
+    def doh(self):
+        raise TypeError("Doh!")
+    

@@ -494,6 +494,23 @@ __parent__ to perform acquisition.
    >>> mysubapp.__parent__ is foo
    True
 
+
+System Errors
+=============
+
+    System errors will be rendered as json.
+
+    >>> server = zc.extjs.testing.FormServer(
+    ...     'http://localhost/calculator.html?login')
+    >>> server('/calculator.html/doh')
+    Traceback (most recent call last):
+    ...
+    HTTPError: HTTP Error 500: Internal Server Error
+
+    >>> pprint.pprint(simplejson.loads(server.browser.contents), width=1)
+    {u'error': u'Doh!',
+     u'success': False}
+
 .. [#ajax] Technically, these aren't really AJAX applications, since
    we rarely. if ever, use XML as a serialization format.  To
    emphasize this I'll use lower-case "ajax" to refer to the generic
@@ -562,3 +579,4 @@ __parent__ to perform acquisition.
     '"bar"'
     >>> IMyInterface.providedBy(request)
     True
+

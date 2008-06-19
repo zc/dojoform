@@ -189,9 +189,19 @@ class UserError:
 
     def __init__(self, context, request):
         self.context = context
+        self.request = request
 
     def __call__(self):
         return simplejson.dumps(dict(
             success = False,
             error = str(self.context),
             ))
+
+class ExceptionView(UserError):
+
+    zope.component.adapts(Exception,
+                          zc.extjs.interfaces.IAjaxRequest)
+
+    def __call__(self):
+        self.request.response.setStatus(500)
+        return UserError.__call__(self)
