@@ -9,6 +9,7 @@
   <adapter factory=".application.UserError" name="index.html" />
   <adapter factory=".application.ExceptionView" name="index.html" />
 
+
   <resourceLibrary name="zc.extjs">
     <directory
        source="resources"

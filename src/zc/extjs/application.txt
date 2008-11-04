@@ -580,3 +580,36 @@ System Errors
     >>> IMyInterface.providedBy(request)
     True
 
+
+System Error Logging
+====================
+
+When an error is generated, zope.app.publishing checks to see if the
+error handler provides the System Error interface. If so, zope.app.publishing
+logs the error.
+
+Rather than use this indirect method of logging, there is an explicit
+statement in ExceptionView that imports the logging module and logs and error
+itself. We can test this with the zope.testing.loggingsupport functions.
+
+    First we set up loggingsupport. This keeps track of all error messages
+    written via the module passed as the parameter. In this case, zc.extjs.
+
+    >>> import logging
+    >>> import zope.testing.loggingsupport
+    >>> log_handler = zope.testing.loggingsupport.InstalledHandler('zc.extjs')
+
+    Then we create an error.
+
+    >>> server = zc.extjs.testing.FormServer(
+    ...     'http://localhost/calculator.html?login')
+    >>> server('/calculator.html/doh')
+    Traceback (most recent call last):
+    ...
+    HTTPError: HTTP Error 500: Internal Server Error
+
+    ...And check to see that it was logged.
+
+    >>> print log_handler
+    zc.extjs.application ERROR
+      SysError created by zc.extjs

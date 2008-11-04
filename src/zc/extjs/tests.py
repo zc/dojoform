@@ -26,6 +26,7 @@ class Test(zope.app.testing.functional.ZCMLLayer):
     allow_teardown = False
     config_file = os.path.join(os.path.dirname(__file__), 'tests.zcml')
     __name__ = config_file
+    product_config = None
 
     def __call__(self, *args, **kw):
         test = doctest.DocFileSuite(*args, **kw)

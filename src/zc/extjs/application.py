@@ -17,6 +17,7 @@
 """
 
 import cgi
+import logging
 import simplejson
 import zc.extjs.interfaces
 import zc.resourcelibrary
@@ -204,6 +205,11 @@ class ExceptionView(UserError):
 
     def __call__(self):
         self.request.response.setStatus(500)
+
+        logger = logging.getLogger(__name__)
+        logger.exception(
+            'SysError created by zc.extjs'
+            )
         return simplejson.dumps(dict(
             success = False,
             error = "%s: %s" % (self.context.__class__.__name__, self.context),

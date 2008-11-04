@@ -609,9 +609,7 @@ Timezones
      'name': 'field.tz',
      'values': [['Africa/Abidjan',
                  u'Africa/Abidjan'],
-                ...
-                ['posixrules',
-                 u'posixrules']],
+                ...],
      'widget_constructor': 'zc.extjs.widgets.InputChoice'}
 
     >>> print w.formValue(None)
