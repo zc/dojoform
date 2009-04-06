@@ -165,7 +165,7 @@ zc.extjs.util = function() {
                             args.form_config.buttons = (
                                 args.form_config.buttons.concat(
                                     form_config.buttons));
-                        form_config = ext.apply(form_config, args.form_config);
+                        form_config = Ext.apply(form_config, args.form_config);
                     }
 
                     var config = {
