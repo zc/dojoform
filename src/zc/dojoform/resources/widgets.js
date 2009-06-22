@@ -1,6 +1,6 @@
-Ext.namespace('zc.extjs');
+Ext.namespace('zc.dojoform');
 
-zc.extjs.widgets = function() {
+zc.dojoform.widgets = function() {
     return {
         Field: function (widget)
         {

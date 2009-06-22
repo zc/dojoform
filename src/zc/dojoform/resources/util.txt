@@ -2,7 +2,7 @@
 ExtJS Utility Functions
 =======================
 
-The zc.extjs.util Java Script module contains a collection of utility
+The zc.dojoform.util Java Script module contains a collection of utility
 functions found useful.  This is a work in progress and perhaps
 someday they will further organized into separate modules.
 
@@ -35,7 +35,7 @@ faulure (optional)
 
 Exammple::
 
-   zc.extjs.util.call_server({
+   zc.dojoform.util.call_server({
        url: 'Updating',
        params: {login: login, email: email},
        task: "Updating user information"
@@ -104,7 +104,7 @@ used to initialize the form.
 
 Example::
 
-   var show_dialog = zc.extjs.util.form_dialog({
+   var show_dialog = zc.dojoform.util.form_dialog({
           url: 'add_slot_form',
           window_config: {title: 'Add slot', width: 500},
           after: function () {
@@ -122,7 +122,7 @@ expected.  We could have used createDelegate instead:
 
    var add_button = new Ext.Button({
        text: '+',
-       handler: zc.extjs.util.form_dialog({
+       handler: zc.dojoform.util.form_dialog({
           url: 'add_slot_form',
           window_config: {title: 'Add slot', width: 500},
           after: function () {

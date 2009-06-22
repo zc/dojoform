@@ -12,7 +12,7 @@
 #
 ##############################################################################
 
-name = 'zc.extjs'
+name = 'zc.dojoform'
 version = '0.7dev'
 
 import os, re
@@ -27,22 +27,6 @@ def read(rname):
 
 here = os.getcwd()
 os.chdir(os.path.join(os.path.dirname(__file__), 'src', *name.split('.')))
-long_description = re.sub(
-    r'..\s*include::\s*(\S+)\s*\n\s+:literal:',
-    (lambda m: '::\n\n  %s\n' % '  '.join(open(m.group(1)).readlines())),
-    (read('README.txt')
-     + '\n'
-     'Detailed Documentation\n'
-     '**********************\n'
-     '\n'
-     + read('application.txt')
-     + '\n' 
-     + read('form.txt')
-     + '\n' 
-     'Download\n'
-     '********\n'
-     )
-    )
 
 os.chdir(here)
 
@@ -52,7 +36,6 @@ setup(
     author = 'Jim Fulton',
     author_email = 'jim@zope.com',
     description = '',
-    long_description=long_description,
     license = 'ZPL 2.1',
     
     packages = find_packages('src'),
@@ -62,8 +45,8 @@ setup(
     install_requires = [
         'setuptools',
         'simplejson',
-        'zc.extjsresource',
         'zc.form',
+        'zc.extjsresource',
         'zope.deferredimport',
         ],
     extras_require = dict(

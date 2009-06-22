@@ -1,0 +1,8 @@
+<configure xmlns="http://namespaces.zope.org/zope" package="zc.dojoform">
+
+  <include package="zope.app.zcmlfiles" file="meta.zcml" /> <!-- Gaaaah -->
+  <include package="zc.dojoform" />
+  <include package="zc.ajaxform" file="tests.zcml"/>
+  <include package="zope.app.zcmlfiles" /> <!-- Gaaaah -->
+
+</configure>

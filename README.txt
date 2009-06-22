@@ -1,1 +1,1 @@
-See src/zc/extjs/README.txt.
+See src/zc.dojoform/README.txt.
