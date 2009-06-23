@@ -154,15 +154,12 @@ zc.dojo.build_form = function (config, pnode, orientation, listed, record)
     var node = new dijit.layout.BorderContainer({design:"sidebar", gutters:"false",
         style: node_style}, pnode);
     var style = 'float:left;';
+    var left_pane = false;
     if (!orientation){
         style = '';
-        var left_pane = new dijit.layout.ContentPane({
+        var right_pane = new dijit.layout.ContentPane({
             region: 'center'
         }, dojo.create('div'));
-        var right_pane = new dijit.layout.ContentPane({
-            region: 'right'
-        }, dojo.create('div'));
-        node.addChild(left_pane);
         node.addChild(right_pane);
     }
     for (var i in config.definition.widgets)
@@ -173,7 +170,13 @@ zc.dojo.build_form = function (config, pnode, orientation, listed, record)
         if (!(left_pane) && (!right_pane)){
             node.addChild(cp);
         }
-        else if (widget.left){
+        else if (config.definition.left_fields[widget.name]){
+            if (!left_pane){
+                var left_pane = new dijit.layout.ContentPane({
+                    region: 'left'
+                }, dojo.create('div'));
+                node.addChild(left_pane);
+            }
             left_pane.domNode.appendChild(cp.domNode);
         }
         else {
@@ -192,16 +195,15 @@ zc.dojo.build_form = function (config, pnode, orientation, listed, record)
             var values = dojo.fromJson(widget.value);
             var conf = {definition: widget.record_schema};
             for (record_index in values) {
-                var wid = dojo.create('span');
+                var wid = dojo.create('span', {style: 'float:left;'});
                 var record_v = values[record_index];
                 zc.dojo.build_form(conf, wid, true, listed_v, record_v);
                 cp.domNode.appendChild(wid);
                 dojo.create('br', null, cp.domNode);
                 listed_v++;
             }
-            var wid = dojo.create('span');
+            var wid = dojo.create('span', {style: 'float:left;'});
             zc.dojo.build_form(conf, wid, true, '_new', 0);
-            console.log('yay');
             cp.domNode.appendChild(wid);
             dojo.create('br', null, cp.domNode);
         }
