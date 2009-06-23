@@ -200,7 +200,7 @@ zc.dojo.build_form = function (config, pnode, orientation, listed, record)
                 listed_v++;
             }
             var wid = dojo.create('span');
-            zc.dojo.build_form(conf, wid, true, '_new', null);
+            zc.dojo.build_form(conf, wid, true, '_new', 0);
             console.log('yay');
             cp.domNode.appendChild(wid);
             dojo.create('br', null, cp.domNode);
@@ -212,7 +212,7 @@ zc.dojo.build_form = function (config, pnode, orientation, listed, record)
             if (record) {
                 widget['value'] = record[widget.fieldLabel];
             }
-            else if (record == null){
+            else if (record == 0){
                 delete widget['value'];
             }
             var wid = zc.dojo.widgets[widget.widget_constructor](
