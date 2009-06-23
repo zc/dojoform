@@ -1,8 +1,11 @@
 dojo.provide('zc.dojo');
 
 dojo.require('dijit.form.ValidationTextBox');
+dojo.require('dijit.form.TextBox');
+dojo.require('dijit.form.NumberSpinner');
 dojo.require('dijit.form.FilteringSelect');
 dojo.require('dijit.form.CheckBox');
+dojo.require('dijit.form.SimpleTextarea');
 dojo.require('dijit.layout.BorderContainer');
 dojo.require('dijit.form.NumberTextBox');
 dojo.require('dijit.Dialog');
@@ -62,22 +65,50 @@ zc.dojo.widgets['zope.schema.TextLine'] = function (config, node, order)
     return new dijit.form.ValidationTextBox(wconfig, node);
 };
 
+zc.dojo.widgets['zope.schema.Text'] = function (config, node, order) {
+
+    wconfig = parse_config(config, order);
+    return new dijit.form.SimpleTextarea(wconfig, node);
+}
+
+zc.dojo.widgets['zc.ajaxform.widgets.Hidden'] = function (config, node, order) {
+    
+    wconfig = parse_config(config, order);
+    wconfig.type = 'hidden';
+    return new dijit.form.TextBox(wconfig, node);
+}
+
 zc.dojo.widgets['zope.schema.Int'] = function (config, node, order) {
 
     wconfig = parse_config(config, order);    
-    if (config.field_min || config.field_max) {
-        constraints = {};
-        if (config.field_min != undefined) {
-            constraints['min'] = config.field_min;
-        }
-        if (config.field_max != undefined) {
-            constraints['max'] = config.field_max;
-        }
-        wconfig.constraints = constraints;
+    constraints = {};
+    if (config.field_min != undefined) {
+        constraints['min'] = config.field_min;
+    }
+    if (config.field_max != undefined) {
+        constraints['max'] = config.field_max;
+    }
+    constraints['places'] = 0;
+    wconfig.constraints = constraints;
+    if (config.custom_type == 'zc.ajaxform.NumberSpinner') {
+        return new dijit.form.NumberSpinner(wconfig, node);
     }
     return new dijit.form.NumberTextBox(wconfig, node);
 };
 
+zc.dojo.widgets['zope.schema.Decimal'] = function (config, node, order) {
+
+    wconfig = parse_config(config, order);
+    constraints = {};
+    if (config.field_min != undefined) {
+        constraints['min'] = config.field_min;
+    }
+    if (config.field_max != undefined) {
+        constraints['max'] = config.field_max;
+    }
+    wconfig.constraints = constraints;
+    return new dijit.form.NumberTextBox(wconfig, node);
+};
 
 zc.dojo.widgets['zope.schema.Bool'] = function (config, node, order) {
 
@@ -118,16 +149,21 @@ zc.dojo.build_form = function (config, pnode)
     for (var i in config.definition.widgets)
     {
         var widget = config.definition.widgets[i];
-        console.log(widget);
-        var label = dojo.create('label', {
-            innerHTML: widget.fieldLabel +'<br>'
-        }, node.domNode);
+        var brk = false;
+        if (!(widget.widget_constructor == 'zc.ajaxform.widgets.Hidden')){
+            brk = true;
+            var label = dojo.create('label', {
+                innerHTML: widget.fieldLabel +'<br>'
+            }, node.domNode);
+        }
         var wid = zc.dojo.widgets[widget.widget_constructor](
-            widget, 
+            widget,
             dojo.create('div', {}, 
                 dojo.create('div')));
         node.addChild(wid);
-        dojo.create('br', null, node.domNode);
+        if (brk){
+            dojo.create('br', null, node.domNode);
+        }
     }
 }
 
@@ -147,11 +183,12 @@ function system_error(task) {
 function parse_config(config, order) {
     readonly = config.readonly;
     if (!readonly){ readonly = false; }
+    console.log(config);
     var wconfig = {
         required: config.required,
         id: config.name,
         name: config.name,
-        alt: config.alt,
+        promptMessage: config.fieldHint,
         tabIndex: order,
         readOnly: readonly
     };
