@@ -203,7 +203,7 @@ zc.dojo.build_form = function (config, pnode, orientation, listed, record)
     for (var i in config.definition.widgets)
     {
         var cp = new dijit.layout.ContentPane({
-        }, dojo.create('div',{style: style}));
+        }, dojo.create('p',{style: style}));
         var widget = config.definition.widgets[i];
         if (!(left_pane) && (!right_pane)){
             node.addChild(cp);
@@ -235,17 +235,35 @@ zc.dojo.build_form = function (config, pnode, orientation, listed, record)
                 definition: widget.record_schema
             };
             for (record_index in values) {
-                var wid = dojo.create('span', {style: 'float:left;'});
+                var wid = dojo.create('p', {style: 'float:left;'});
                 var record_v = values[record_index];
                 zc.dojo.build_form(conf, wid, true, listed_v, record_v);
                 cp.domNode.appendChild(wid);
-                dojo.create('br', null, cp.domNode);
+                var check_label = dojo.create('label', {
+                    innerHTML: 'Add/Delete'
+                });
+                wid.appendChild(check_label);
+                var check =  new dijit.form.CheckBox({
+                    id: widget.name + '.'+String(listed_v),
+                    name: widget.name + '.'+String(listed_v),
+                    checked: false
+                },dojo.create('div'));
+                wid.appendChild(check.domNode);
                 listed_v++;
             }
-            var wid = dojo.create('span', {style: 'float:left;'});
+            var wid = dojo.create('p', {style: 'float:left;'});
             zc.dojo.build_form(conf, wid, true, 'new', 0);
+            var check_label = dojo.create('label', {
+                innerHTML: 'Add/Delete'
+            });
+            wid.appendChild(check_label);
+            var check =  new dijit.form.CheckBox({
+                id: widget.name + '.new',
+                name: widget.name + '.new',
+                checked: false
+            },dojo.create('div'));
+            wid.appendChild(check.domNode);
             cp.domNode.appendChild(wid);
-            dojo.create('br', null, cp.domNode);
         }
         else {
             var widget_conf = dojo.clone(widget);
