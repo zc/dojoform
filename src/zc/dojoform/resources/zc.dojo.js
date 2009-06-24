@@ -240,7 +240,7 @@ zc.dojo.build_form = function (config, pnode, orientation, listed, record)
                 zc.dojo.build_form(conf, wid, true, listed_v, record_v);
                 cp.domNode.appendChild(wid);
                 var check_label = dojo.create('label', {
-                    innerHTML: 'Add/Delete'
+                    innerHTML: 'Delete'
                 });
                 wid.appendChild(check_label);
                 var check =  new dijit.form.CheckBox({
@@ -254,7 +254,7 @@ zc.dojo.build_form = function (config, pnode, orientation, listed, record)
             var wid = dojo.create('p', {style: 'float:left;'});
             zc.dojo.build_form(conf, wid, true, 'new', 0);
             var check_label = dojo.create('label', {
-                innerHTML: 'Add/Delete'
+                innerHTML: 'Add'
             });
             wid.appendChild(check_label);
             var check =  new dijit.form.CheckBox({
@@ -276,7 +276,6 @@ zc.dojo.build_form = function (config, pnode, orientation, listed, record)
             else if (record == 0){
                 delete widget_conf['value'];
             }
-            console.log(widget_conf);
             var wid = zc.dojo.widgets[widget.widget_constructor](
                 widget_conf,
                 dojo.create('div', {}, 
