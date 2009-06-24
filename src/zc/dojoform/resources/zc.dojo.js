@@ -1,10 +1,10 @@
 dojo.provide('zc.dojo');
-
 dojo.require('dijit.form.ValidationTextBox');
 dojo.require('dijit.form.TextBox');
 dojo.require('dijit.form.NumberSpinner');
 dojo.require('dijit.form.FilteringSelect');
 dojo.require('dijit.form.CheckBox');
+dojo.require('dijit.form.Button');
 dojo.require('dijit.form.SimpleTextarea');
 dojo.require('dijit.layout.BorderContainer');
 dojo.require('dijit.layout.ContentPane');
@@ -12,7 +12,7 @@ dojo.require('dijit.form.NumberTextBox');
 dojo.require('dijit.Dialog');
 dojo.require('dojo.data.ItemFileReadStore');
 
-zc.dojo.widgets = {}
+zc.dojo.widgets = {};
 
 zc.dojo.call_server = function (args) {
 
@@ -36,19 +36,46 @@ zc.dojo.call_server = function (args) {
     };
 
     var callback_success = function (data) {
-        if (args.success) {
-            args.success(data)
+        if (dojo.isString(data)) {
+            data = dojo.fromJson(data);
+        }
+        if (data.errors) {
+            result = '';
+            errors = data.errors;
+            for (error in errors) {
+                result += errors[error];
+            }
+            var this_dialog = new dijit.Dialog({
+                title: args.task+' failed',
+                content: result });
+            this_dialog.show();
+        }
+        else if (args.success) {
+            args.success(data);
         }
     };
 
-    dojo.xhrPost({
-        url: args.url,
-        handleAs: "json",
-        content: args.content,
-        load: callback_success,
-        error: callback_error
-    });
+    if (args.form_id == undefined) {
+        dojo.xhrPost({
+            url: args.url,
+            handleAs: "json",
+            content: args.content,
+            load: callback_success,
+            error: callback_error
+        });
+    }
+    else {
+        dojo.xhrPost({
+            url: args.url,
+            form: args.form_id,
+            load: callback_success,
+            error: callback_error
+        });
+    }
 }
+
+zc.dojo.submit_form = zc.dojo.call_server;
+
 
 zc.dojo.widgets['zope.schema.TextLine'] = function (config, node, order)
 {
@@ -139,7 +166,6 @@ zc.dojo.widgets['zope.schema.Choice'] = function (config, node, order) {
         data: store_data
     })
     wconfig['store'] = select_store;
-    wconfig['name'] = "label";
     wconfig['searchAttr'] = "label";
     return new dijit.form.FilteringSelect(wconfig, node);
 
@@ -147,12 +173,20 @@ zc.dojo.widgets['zope.schema.Choice'] = function (config, node, order) {
 
 zc.dojo.build_form = function (config, pnode, orientation, listed, record)
 {
-    var node_style = "height: 100%;";
     if (orientation){
-        node_style = '';
+        var node = new dijit.layout.BorderContainer({
+            design:"headline",
+            gutters:"false",
+        }, pnode);
     }
-    var node = new dijit.layout.BorderContainer({design:"sidebar", gutters:"false",
-        style: node_style}, pnode);
+    else {
+        var form = dojo.create('form', {id: config.definition.prefix}, pnode);
+        var node = new dijit.layout.BorderContainer({
+            design:"headline",
+            gutters:"false",
+            style:"height:100%;"
+        }, form);
+    }
     var style = 'float:left;';
     var left_pane = false;
     if (!orientation){
@@ -161,6 +195,10 @@ zc.dojo.build_form = function (config, pnode, orientation, listed, record)
             region: 'center'
         }, dojo.create('div'));
         node.addChild(right_pane);
+        var bottom_pane = new dijit.layout.ContentPane({
+            region: 'bottom'
+        }, dojo.create('div'));
+        node.addChild(bottom_pane);
     }
     for (var i in config.definition.widgets)
     {
@@ -193,7 +231,9 @@ zc.dojo.build_form = function (config, pnode, orientation, listed, record)
         if (widget.widget_constructor == 'zope.schema.List') {
             var listed_v = 0;
             var values = dojo.fromJson(widget.value);
-            var conf = {definition: widget.record_schema};
+            var conf = {
+                definition: widget.record_schema
+            };
             for (record_index in values) {
                 var wid = dojo.create('span', {style: 'float:left;'});
                 var record_v = values[record_index];
@@ -203,28 +243,48 @@ zc.dojo.build_form = function (config, pnode, orientation, listed, record)
                 listed_v++;
             }
             var wid = dojo.create('span', {style: 'float:left;'});
-            zc.dojo.build_form(conf, wid, true, '_new', 0);
+            zc.dojo.build_form(conf, wid, true, 'new', 0);
             cp.domNode.appendChild(wid);
             dojo.create('br', null, cp.domNode);
         }
         else {
-            if (listed) {
-                widget['name'] += String(listed); 
+            var widget_conf = dojo.clone(widget);
+            if (listed != undefined) {
+                widget_conf['name'] += '.'+String(listed); 
             }
             if (record) {
-                widget['value'] = record[widget.fieldLabel];
+                widget_conf['value'] = record[widget.fieldLabel];
             }
             else if (record == 0){
-                delete widget['value'];
+                delete widget_conf['value'];
             }
+            console.log(widget_conf);
             var wid = zc.dojo.widgets[widget.widget_constructor](
-                widget,
+                widget_conf,
                 dojo.create('div', {}, 
                     dojo.create('div'))).domNode;
             cp.domNode.appendChild(wid);
             if (brk){
                 dojo.create('br', null, cp.domNode);
             }
+        }
+    }
+    if (config.definition.actions != undefined){
+        actions = config.definition.actions;
+        for (action_index in actions) {
+            action = actions[action_index];
+            var button = new dijit.form.Button({
+                label: action.label,
+                id: action.name
+            }, dojo.create('div', {style: "float:left;"}));
+            dojo.connect(button, 'onClick', function () {
+               zc.dojo.submit_form({
+                   url: action.url,
+                   form_id: config.definition.prefix,
+                   task: 'Submitting Form'
+               });
+            });
+            bottom_pane.domNode.appendChild(button.domNode);
         }
     }
     node.startup();
