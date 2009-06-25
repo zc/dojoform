@@ -46,6 +46,7 @@ setup(
         'setuptools',
         'simplejson',
         'zc.form',
+        'zc.configuration',
         'zc.extjsresource',
         'zope.deferredimport',
         ],
