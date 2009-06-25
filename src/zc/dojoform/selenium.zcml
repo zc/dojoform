@@ -1,0 +1,14 @@
+<configure xmlns="http://namespaces.zope.org/zope" package="zc.dojoform">
+
+  <include file="tests.zcml" />
+
+  <include package="zope.app.server" />
+  <include package="zc.selenium" />
+
+  <adapter 
+     factory="zc.dojoform.selenium.SeleniumTests" 
+     name="zc.dojoform.tests.SeleniumTests.html"
+     permission="zope.Public"
+     />
+
+</configure>

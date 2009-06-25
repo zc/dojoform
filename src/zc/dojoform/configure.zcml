@@ -1,0 +1,30 @@
+<configure 
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:browser="http://namespaces.zope.org/browser"
+   >
+
+  <include package="zc.extjsresource" /><!-- Find out why zcml is depdning on this! -->
+
+  <resourceLibrary name="zc.dojoform">
+    <directory
+       source="resources"
+       include="zc.dojo.js calculator_example.js 
+                container_example.js form_example.js"
+       />
+  </resourceLibrary>
+
+  <adapter name="calculator.html"
+           factory=".examples.Calculator"
+           permission="zope.View"
+           />
+  <adapter name="container.html"
+           factory=".examples.Container"
+           permission="zope.View"
+           />
+  <adapter name="form.html"
+           factory=".examples.Form"
+           permission="zope.View"
+           />
+
+</configure>
+
