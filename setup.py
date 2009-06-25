@@ -45,6 +45,7 @@ setup(
     install_requires = [
         'setuptools',
         'simplejson',
+        'zc.ajaxform',
         'zc.form',
         'zc.configuration',
         'zc.extjsresource',
