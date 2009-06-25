@@ -43,11 +43,12 @@ zc.dojo.call_server = function (args) {
             result = '';
             errors = data.errors;
             for (error in errors) {
-                result += errors[error];
+                result += errors[error]+'<br>';
             }
             var this_dialog = new dijit.Dialog({
                 title: args.task+' failed',
-                content: result });
+                content: dojo.create('div',{id: 'error_message', innerHTML: result})
+            });
             this_dialog.show();
         }
         else if (args.success) {
