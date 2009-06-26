@@ -147,6 +147,14 @@ zc.dojo.widgets['zope.schema.Bool'] = function (config, node, order) {
 
 }
 
+zc.dojo.widgets['zc.ajaxform.widgets.BasicDisplay'] = function (config, node, order) {
+
+    wconfig = parse_config(config, order);
+    wconfig['disabled'] = true;
+    return new dijit.form.TextBox(wconfig, node);
+
+}
+
 zc.dojo.widgets['zope.schema.Choice'] = function (config, node, order) {
 
     wconfig = parse_config(config, order);    
@@ -181,11 +189,14 @@ zc.dojo.build_form = function (config, pnode, orientation, listed, record)
         }, pnode);
     }
     else {
-        var form = dojo.create('form', {id: config.definition.prefix}, pnode);
+        var form = dojo.create('form', {
+            id: config.definition.prefix,
+            style:'position:absolute;'
+        }, pnode);
         var node = new dijit.layout.BorderContainer({
             design:"headline",
             gutters:"false",
-            style:"height:100%;"
+            style:"height:100%; width:100%;"
         }, form);
     }
     var style = 'float:left;';
@@ -223,7 +234,7 @@ zc.dojo.build_form = function (config, pnode, orientation, listed, record)
         }
         var brk = false;
         if (!(widget.widget_constructor == 'zc.ajaxform.widgets.Hidden') &&
-            !listed){
+            ((listed == 'new') || (listed == undefined))){
             brk = true;
             var label = dojo.create('label', {
                 innerHTML: widget.fieldLabel +'<br>'
@@ -235,6 +246,19 @@ zc.dojo.build_form = function (config, pnode, orientation, listed, record)
             var conf = {
                 definition: widget.record_schema
             };
+            var wid = dojo.create('p', {style: 'float:left;'});
+            zc.dojo.build_form(conf, wid, true, 'new', 0);
+            var check_label = dojo.create('label', {
+                innerHTML: 'Add'
+            });
+            wid.appendChild(check_label);
+            var check =  new dijit.form.CheckBox({
+                id: widget.name + '.new',
+                name: widget.name + '.new',
+                checked: false
+            },dojo.create('div'));
+            wid.appendChild(check.domNode);
+            cp.domNode.appendChild(wid);
             for (record_index in values) {
                 var wid = dojo.create('p', {style: 'float:left;'});
                 var record_v = values[record_index];
@@ -252,19 +276,6 @@ zc.dojo.build_form = function (config, pnode, orientation, listed, record)
                 wid.appendChild(check.domNode);
                 listed_v++;
             }
-            var wid = dojo.create('p', {style: 'float:left;'});
-            zc.dojo.build_form(conf, wid, true, 'new', 0);
-            var check_label = dojo.create('label', {
-                innerHTML: 'Add'
-            });
-            wid.appendChild(check_label);
-            var check =  new dijit.form.CheckBox({
-                id: widget.name + '.new',
-                name: widget.name + '.new',
-                checked: false
-            },dojo.create('div'));
-            wid.appendChild(check.domNode);
-            cp.domNode.appendChild(wid);
         }
         else {
             var widget_conf = dojo.clone(widget);
@@ -287,25 +298,12 @@ zc.dojo.build_form = function (config, pnode, orientation, listed, record)
             }
         }
     }
-    if (config.definition.actions != undefined){
-        actions = config.definition.actions;
-        for (action_index in actions) {
-            action = actions[action_index];
-            var button = new dijit.form.Button({
-                label: action.label,
-                id: action.name
-            }, dojo.create('div', {style: "float:left;"}));
-            dojo.connect(button, 'onClick', function () {
-               zc.dojo.submit_form({
-                   url: action.url,
-                   form_id: config.definition.prefix,
-                   task: 'Submitting Form'
-               });
-            });
-            bottom_pane.domNode.appendChild(button.domNode);
-        }
+    if (bottom_pane) {
+        return {'button_locale':bottom_pane.domNode, 'form_node':node};
     }
-    node.startup();
+    else {
+        node.startup();
+    }
 };
 
 function session_expired() {
