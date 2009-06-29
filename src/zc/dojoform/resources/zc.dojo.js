@@ -242,38 +242,43 @@ zc.dojo.build_form = function (config, pnode, orientation, listed, record)
         }
         if (widget.widget_constructor == 'zope.schema.List') {
             var listed_v = 0;
-            var values = dojo.fromJson(widget.value);
+            var values = widget.value;
+            values = dojo.fromJson(values);
             var conf = {
                 definition: widget.record_schema
             };
-            var wid = dojo.create('p', {style: 'float:left;'});
+            var wid = dojo.create('p', {});
             zc.dojo.build_form(conf, wid, true, 'new', 0);
-            var check_label = dojo.create('label', {
-                innerHTML: 'Add'
-            });
-            wid.appendChild(check_label);
-            var check =  new dijit.form.CheckBox({
-                id: widget.name + '.new',
-                name: widget.name + '.new',
-                checked: false
-            },dojo.create('div'));
-            wid.appendChild(check.domNode);
-            cp.domNode.appendChild(wid);
-            for (record_index in values) {
-                var wid = dojo.create('p', {style: 'float:left;'});
-                var record_v = values[record_index];
-                zc.dojo.build_form(conf, wid, true, listed_v, record_v);
-                cp.domNode.appendChild(wid);
+            if (!widget.record_schema.readonly) {
                 var check_label = dojo.create('label', {
-                    innerHTML: 'Delete'
+                    innerHTML: 'Add'
                 });
                 wid.appendChild(check_label);
                 var check =  new dijit.form.CheckBox({
-                    id: widget.name + '.'+String(listed_v),
-                    name: widget.name + '.'+String(listed_v),
+                    id: widget.name + '.new',
+                    name: widget.name + '.new',
                     checked: false
                 },dojo.create('div'));
                 wid.appendChild(check.domNode);
+            }
+            cp.domNode.appendChild(wid);
+            for (record_index in values) {
+                var wid = dojo.create('p', {});
+                var record_v = values[record_index];
+                zc.dojo.build_form(conf, wid, true, listed_v, record_v);
+                cp.domNode.appendChild(wid);
+                if (!widget.record_schema.readonly) {
+                    var check_label = dojo.create('label', {
+                        innerHTML: 'Delete'
+                    });
+                    wid.appendChild(check_label);
+                    var check =  new dijit.form.CheckBox({
+                        id: widget.name + '.'+String(listed_v),
+                        name: widget.name + '.'+String(listed_v),
+                        checked: false
+                    },dojo.create('div'));
+                    wid.appendChild(check.domNode);
+                }
                 listed_v++;
             }
         }
@@ -329,7 +334,7 @@ function parse_config(config, order) {
         promptMessage: config.fieldHint,
         tabIndex: order,
         value: config.value,
-        readOnly: readonly,
+        readonly: readonly,
         left: config.left
     };
     return wconfig;
