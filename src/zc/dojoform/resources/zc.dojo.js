@@ -120,7 +120,7 @@ zc.dojo.widgets['zope.schema.Int'] = function (config, node, order) {
     constraints['places'] = 0;
     wconfig.constraints = constraints;
     if (config.custom_type == 'zc.ajaxform.NumberSpinner') {
-        return new dijit.form.NumberSpinner(wconfig, node);
+        return new dijit.form.NumberSpinner(wconfig, node).domNode;
     }
     return new dijit.form.NumberTextBox(wconfig, node).domNode;
 };
