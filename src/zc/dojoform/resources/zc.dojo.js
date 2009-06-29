@@ -91,20 +91,20 @@ zc.dojo.widgets['zope.schema.TextLine'] = function (config, node, order)
     }
     else if (config.min_size)
         wconfig.regExp = ".{"+config.mmin_size+",}";
-    return new dijit.form.ValidationTextBox(wconfig, node);
+    return new dijit.form.ValidationTextBox(wconfig, node).domNode;
 };
 
 zc.dojo.widgets['zope.schema.Text'] = function (config, node, order) {
 
     wconfig = parse_config(config, order);
-    return new dijit.form.SimpleTextarea(wconfig, node);
+    return new dijit.form.SimpleTextarea(wconfig, node).domNode;
 }
 
 zc.dojo.widgets['zc.ajaxform.widgets.Hidden'] = function (config, node, order) {
     
     wconfig = parse_config(config, order);
     wconfig.type = 'hidden';
-    return new dijit.form.TextBox(wconfig, node);
+    return new dijit.form.TextBox(wconfig, node).domNode;
 }
 
 zc.dojo.widgets['zope.schema.Int'] = function (config, node, order) {
@@ -122,7 +122,7 @@ zc.dojo.widgets['zope.schema.Int'] = function (config, node, order) {
     if (config.custom_type == 'zc.ajaxform.NumberSpinner') {
         return new dijit.form.NumberSpinner(wconfig, node);
     }
-    return new dijit.form.NumberTextBox(wconfig, node);
+    return new dijit.form.NumberTextBox(wconfig, node).domNode;
 };
 
 zc.dojo.widgets['zope.schema.Decimal'] = function (config, node, order) {
@@ -136,14 +136,14 @@ zc.dojo.widgets['zope.schema.Decimal'] = function (config, node, order) {
         constraints['max'] = config.field_max;
     }
     wconfig.constraints = constraints;
-    return new dijit.form.NumberTextBox(wconfig, node);
+    return new dijit.form.NumberTextBox(wconfig, node).domNode;
 };
 
 zc.dojo.widgets['zope.schema.Bool'] = function (config, node, order) {
 
     wconfig = parse_config(config, order);    
     wconfig['checked'] = config.value;
-    return new dijit.form.CheckBox(wconfig, node);
+    return new dijit.form.CheckBox(wconfig, node).domNode;
 
 }
 
@@ -151,7 +151,7 @@ zc.dojo.widgets['zc.ajaxform.widgets.BasicDisplay'] = function (config, node, or
 
     wconfig = parse_config(config, order);
     wconfig['disabled'] = true;
-    return new dijit.form.TextBox(wconfig, node);
+    return new dijit.form.TextBox(wconfig, node).domNode;
 
 }
 
@@ -176,46 +176,96 @@ zc.dojo.widgets['zope.schema.Choice'] = function (config, node, order) {
     })
     wconfig['store'] = select_store;
     wconfig['searchAttr'] = "label";
-    return new dijit.form.FilteringSelect(wconfig, node);
+    return new dijit.form.FilteringSelect(wconfig, node).domNode
+};
 
-}
+var build_record = function (record, pnode, suffix, record_value){
 
-zc.dojo.build_form = function (config, pnode, orientation, listed, record)
+    var cp = new dijit.layout.ContentPane({
+    }, dojo.create('p',{}));
+    pnode.addChild(cp);
+
+    var c_label = 'Delete';
+    if (suffix == '.new') {
+        c_label = 'Add';
+    }
+
+    for (rc_wid in record.widgets) {
+        rc_wid = dojo.clone(rc.widgets[rc_wid]);
+        indexed_name = rc_wid.name+suffix;
+        rc_wid.name = indexed_name;
+        rc_wid.id = indexed_name;
+        var inner = dojo.create('div', {style:'float:left;'}, cp.domNode);
+        var label = dojo.create('label', {
+             innerHTML: rc_wid.fieldLabel +'<br>'
+        }, inner);
+        if (record_value){
+            rc_wid.value = record_value[rc_wid.fieldLabel];
+        }
+        var wid = zc.dojo.widgets[rc_wid.widget_constructor](
+            rc_wid,
+            dojo.create('div', {},
+                dojo.create('div', {})));
+        inner.appendChild(wid);
+    }
+    if (!record.readonly) {
+        var check_label = dojo.create('label', {
+            innerHTML: c_label
+        });
+        cp.domNode.appendChild(check_label);
+        var check =  new dijit.form.CheckBox({
+            id: record.name + suffix,
+            name: record.name + suffix,
+            checked: false
+        });
+        cp.domNode.appendChild(check.domNode);
+    }
+};
+
+zc.dojo.widgets['zope.schema.List'] = function (config, pnode) {
+
+    var node = new dijit.layout.BorderContainer({
+            design:"headline",
+            gutters:"false",
+        }, pnode);
+    rc = config.record_schema;
+    rc.name = config.name;
+    build_record(rc, node, '.new');
+    records = dojo.fromJson(config.value);
+    var num = 0;
+    for (record in records) {
+        record = records[record];
+        build_record(rc, node, '.'+String(num), record);
+        num++;
+    }
+    node.startup();
+    return pnode;
+};
+
+zc.dojo.build_form = function (config, pnode)
 {
-    if (orientation){
-        var node = new dijit.layout.BorderContainer({
-            design:"headline",
-            gutters:"false",
-        }, pnode);
-    }
-    else {
-        var form = dojo.create('form', {
-            id: config.definition.prefix,
-            style:'position:absolute;'
-        }, pnode);
-        var node = new dijit.layout.BorderContainer({
-            design:"headline",
-            gutters:"false",
-            style:"height:100%; width:100%;"
-        }, form);
-    }
-    var style = 'float:left;';
+    var form = dojo.create('form', {
+        id: config.definition.prefix,
+        style:'position:absolute;'
+    }, pnode);
+    var node = new dijit.layout.BorderContainer({
+        design:"headline",
+        gutters:"false",
+        style:"height:100%; width:100%;"
+    }, form);
     var left_pane = false;
-    if (!orientation){
-        style = '';
-        var right_pane = new dijit.layout.ContentPane({
-            region: 'center'
-        }, dojo.create('div'));
-        node.addChild(right_pane);
-        var bottom_pane = new dijit.layout.ContentPane({
-            region: 'bottom'
-        }, dojo.create('div'));
-        node.addChild(bottom_pane);
-    }
+    var right_pane = new dijit.layout.ContentPane({
+        region: 'center'
+    }, dojo.create('div'));
+    node.addChild(right_pane);
+    var bottom_pane = new dijit.layout.ContentPane({
+        region: 'bottom'
+    }, dojo.create('div'));
+    node.addChild(bottom_pane);
     for (var i in config.definition.widgets)
     {
         var cp = new dijit.layout.ContentPane({
-        }, dojo.create('p',{style: style}));
+        }, dojo.create('p',{}));
         var widget = config.definition.widgets[i];
         if (!(left_pane) && (!right_pane)){
             node.addChild(cp);
@@ -232,75 +282,21 @@ zc.dojo.build_form = function (config, pnode, orientation, listed, record)
         else {
             right_pane.domNode.appendChild(cp.domNode);
         }
+
         var brk = false;
-        if (!(widget.widget_constructor == 'zc.ajaxform.widgets.Hidden') &&
-            ((listed == 'new') || (listed == undefined))){
+        if (!(widget.widget_constructor == 'zc.ajaxform.widgets.Hidden')){
             brk = true;
             var label = dojo.create('label', {
                 innerHTML: widget.fieldLabel +'<br>'
             }, cp.domNode);
         }
-        if (widget.widget_constructor == 'zope.schema.List') {
-            var listed_v = 0;
-            var values = widget.value;
-            values = dojo.fromJson(values);
-            var conf = {
-                definition: widget.record_schema
-            };
-            var wid = dojo.create('p', {});
-            zc.dojo.build_form(conf, wid, true, 'new', 0);
-            if (!widget.record_schema.readonly) {
-                var check_label = dojo.create('label', {
-                    innerHTML: 'Add'
-                });
-                wid.appendChild(check_label);
-                var check =  new dijit.form.CheckBox({
-                    id: widget.name + '.new',
-                    name: widget.name + '.new',
-                    checked: false
-                },dojo.create('div'));
-                wid.appendChild(check.domNode);
-            }
-            cp.domNode.appendChild(wid);
-            for (record_index in values) {
-                var wid = dojo.create('p', {});
-                var record_v = values[record_index];
-                zc.dojo.build_form(conf, wid, true, listed_v, record_v);
-                cp.domNode.appendChild(wid);
-                if (!widget.record_schema.readonly) {
-                    var check_label = dojo.create('label', {
-                        innerHTML: 'Delete'
-                    });
-                    wid.appendChild(check_label);
-                    var check =  new dijit.form.CheckBox({
-                        id: widget.name + '.'+String(listed_v),
-                        name: widget.name + '.'+String(listed_v),
-                        checked: false
-                    },dojo.create('div'));
-                    wid.appendChild(check.domNode);
-                }
-                listed_v++;
-            }
-        }
-        else {
-            var widget_conf = dojo.clone(widget);
-            if (listed != undefined) {
-                widget_conf['name'] += '.'+String(listed); 
-            }
-            if (record) {
-                widget_conf['value'] = record[widget.fieldLabel];
-            }
-            else if (record == 0){
-                delete widget_conf['value'];
-            }
-            var wid = zc.dojo.widgets[widget.widget_constructor](
-                widget_conf,
-                dojo.create('div', {}, 
-                    dojo.create('div'))).domNode;
-            cp.domNode.appendChild(wid);
-            if (brk){
-                dojo.create('br', null, cp.domNode);
-            }
+        var wid = zc.dojo.widgets[widget.widget_constructor](
+            widget,
+            dojo.create('div', {}, 
+                dojo.create('div')));
+        cp.domNode.appendChild(wid);
+        if (brk){
+            dojo.create('br', null, cp.domNode);
         }
     }
     if (bottom_pane) {
