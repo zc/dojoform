@@ -8,23 +8,9 @@
   <resourceLibrary name="zc.dojoform">
     <directory
        source="resources"
-       include="zc.dojo.js calculator_example.js 
-                container_example.js form_example.js"
+       include="zc.dojo.js" 
        />
   </resourceLibrary>
-
-  <adapter name="calculator.html"
-           factory=".examples.Calculator"
-           permission="zope.View"
-           />
-  <adapter name="container.html"
-           factory=".examples.Container"
-           permission="zope.View"
-           />
-  <adapter name="form.html"
-           factory=".examples.Form"
-           permission="zope.View"
-           />
 
 </configure>
 
