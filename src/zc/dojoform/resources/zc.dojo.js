@@ -6,6 +6,7 @@ dojo.require('dijit.form.FilteringSelect');
 dojo.require('dijit.form.CheckBox');
 dojo.require('dijit.form.Button');
 dojo.require('dijit.form.SimpleTextarea');
+dojo.require('dijit.Editor');
 dojo.require('dijit.layout.BorderContainer');
 dojo.require('dijit.layout.ContentPane');
 dojo.require('dijit.form.NumberTextBox');
@@ -97,7 +98,25 @@ zc.dojo.widgets['zope.schema.TextLine'] = function (config, node, order)
 zc.dojo.widgets['zope.schema.Text'] = function (config, node, order) {
 
     wconfig = parse_config(config, order);
-    return new dijit.form.SimpleTextarea(wconfig, node).domNode;
+    var total_editor = dojo.create('div', {}, node);
+    console.log(wconfig.value);
+    var editor_for_form = new dijit.form.TextBox({
+        type: 'hidden',
+        name: wconfig.name,
+        value: wconfig.value
+    });
+    // iframes = :[
+    wconfig['style'] = 'width:400px; height:200px;';
+    wconfig['height'] = '100%';
+    var editor = new dijit.Editor(wconfig);
+    total_editor.appendChild(editor_for_form.domNode);
+    total_editor.appendChild(editor.domNode);
+    editor.value = editor_for_form.getValue();
+    dojo.connect(editor, 'onBlur', function() {
+            editor_for_form.setValue(editor.getValue());
+            console.log(editor_for_form.value);
+    });
+    return total_editor;
 }
 
 zc.dojo.widgets['zc.ajaxform.widgets.Hidden'] = function (config, node, order) {
@@ -145,7 +164,7 @@ zc.dojo.widgets['zope.schema.Bool'] = function (config, node, order) {
     wconfig['checked'] = config.value;
     return new dijit.form.CheckBox(wconfig, node).domNode;
 
-}
+};
 
 zc.dojo.widgets['zc.ajaxform.widgets.BasicDisplay'] = function (config, node, order) {
 
@@ -153,7 +172,15 @@ zc.dojo.widgets['zc.ajaxform.widgets.BasicDisplay'] = function (config, node, or
     wconfig['disabled'] = true;
     return new dijit.form.TextBox(wconfig, node).domNode;
 
-}
+};
+
+zc.dojo.widgets['zc.ajaxform.widgets.RichTextDisplay'] = function (config, node, order) {
+
+    wconfig = parse_config(config, order);
+    wconfig['disabled'] = true;
+    return new dijit.form.SimpleTextarea(wconfig, node).domNode;
+
+};
 
 zc.dojo.widgets['zope.schema.Choice'] = function (config, node, order) {
 
