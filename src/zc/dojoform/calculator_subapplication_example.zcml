@@ -1,0 +1,11 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:browser="http://namespaces.zope.org/browser"
+   >
+
+  <adapter name="container.html"
+           factory=".examples.Container"
+           permission="zope.View"
+           />
+
+</configure>
