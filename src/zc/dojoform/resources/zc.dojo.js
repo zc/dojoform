@@ -251,11 +251,13 @@ zc.dojo.build_form = function (config, pnode)
     var node = new dijit.layout.BorderContainer({
         design:"headline",
         gutters:"false",
+        liveSplitters: true,
         style:"height:100%; width:100%;"
     }, form);
     var left_pane = false;
     var right_pane = new dijit.layout.ContentPane({
-        region: 'center'
+        region: 'center',
+        splitter: true
     }, dojo.create('div'));
     node.addChild(right_pane);
     var bottom_pane = new dijit.layout.ContentPane({
@@ -273,7 +275,8 @@ zc.dojo.build_form = function (config, pnode)
         else if (config.definition.left_fields[widget.name]){
             if (!left_pane){
                 var left_pane = new dijit.layout.ContentPane({
-                    region: 'left'
+                    region: 'left',
+                    splitter: true
                 }, dojo.create('div'));
                 node.addChild(left_pane);
             }
