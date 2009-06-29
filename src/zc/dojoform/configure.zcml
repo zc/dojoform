@@ -3,7 +3,8 @@
    xmlns:browser="http://namespaces.zope.org/browser"
    >
 
-  <include package="zc.extjsresource" /><!-- Find out why zcml is depdning on this! -->
+  <include package="zc.resourcelibrary" file="meta.zcml"/>
+  <include package="zc.resourcelibrary" />
 
   <resourceLibrary name="zc.dojoform">
     <directory
