@@ -35,7 +35,11 @@ class SeleniumTests(zc.selenium.pytest.Test):
         s.waitForValue('ExampleForm.first_name', "Happy") 
         s.verifyValue('ExampleForm.last_name', 'Camper') 
         s.verifyValue('ExampleForm.age', '23') 
-        s.verifyValue('ExampleForm.other', "I've got a magic toenail")
+        # XXX Iframe selection not implemented yet apparently
+        #s.selectFrame('ExampleForm.other_iframe')
+        #s.verifyTextPresent("I've got a magic toenail")
+        #s.selectFrame('ExampleForm.description_iframe')
+        #s.verifyTextPresent("10ft tall Razor sharp scales.")
         s.verifyValue('ExampleForm.favorite_color', "Blue")
         s.assertChecked('ExampleForm.happy')
         s.verifyValue('ExampleForm.temperment', 'Right Neighborly')
