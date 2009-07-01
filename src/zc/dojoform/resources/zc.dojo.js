@@ -227,7 +227,9 @@ var build_record = function (record, pnode, suffix, record_value){
              innerHTML: rc_wid.fieldLabel +'<br>'
         }, inner);
         if (record_value){
-            rc_wid.value = record_value[rc_wid.fieldLabel];
+            var id_list = rc_wid.id.split('.');
+            var id = id_list[id_list.length-2];
+            rc_wid.value = record_value[id];
         }
         var wid = zc.dojo.widgets[rc_wid.widget_constructor](
             rc_wid,
