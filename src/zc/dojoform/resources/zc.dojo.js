@@ -129,26 +129,7 @@ zc.dojo.widgets['zc.ajaxform.widgets.Hidden'] = function (config, node, order) {
     return new dijit.form.TextBox(wconfig, node).domNode;
 }
 
-zc.dojo.widgets['zope.schema.Int'] = function (config, node, order) {
-
-    wconfig = parse_config(config, order);    
-    constraints = {};
-    if (config.field_min != undefined) {
-        constraints['min'] = config.field_min;
-    }
-    if (config.field_max != undefined) {
-        constraints['max'] = config.field_max;
-    }
-    constraints['places'] = 0;
-    wconfig.constraints = constraints;
-    if (config.custom_type == 'zc.ajaxform.NumberSpinner') {
-        return new dijit.form.NumberSpinner(wconfig, node).domNode;
-    }
-    return new dijit.form.NumberTextBox(wconfig, node).domNode;
-};
-
-zc.dojo.widgets['zope.schema.Decimal'] = function (config, node, order) {
-
+zc.dojo.parse_number_config = function(config, order) {
     wconfig = parse_config(config, order);
     constraints = {};
     if (config.field_min != undefined) {
@@ -158,6 +139,25 @@ zc.dojo.widgets['zope.schema.Decimal'] = function (config, node, order) {
         constraints['max'] = config.field_max;
     }
     wconfig.constraints = constraints;
+    return wconfig;
+};
+
+zc.dojo.widgets['zope.schema.Int'] = function (config, node, order) {
+
+    wconfig = zc.dojo.parse_number_config(config, order);
+    wconfig.constraints['places'] = 0;
+    return new dijit.form.NumberTextBox(wconfig, node).domNode;
+};
+
+zc.dojo.widgets['zc.ajaxform.widgets.NumberSpinner'] = function (config, node, order) {
+
+    wconfig = zc.dojo.parse_number_config(config, order);
+    return new dijit.form.NumberSpinner(wconfig, node).domNode;
+};
+
+zc.dojo.widgets['zope.schema.Decimal'] = function (config, node, order) {
+
+    wconfig = zc.dojo.parse_number_config(config, order);
     return new dijit.form.NumberTextBox(wconfig, node).domNode;
 };
 
