@@ -20,10 +20,10 @@ zc.dojo.call_server = function (args) {
     var callback_error = function (error) {
         result = dojo.fromJson(error.responseText);
         if (!('error' in result) && !('session_expired' in result)){
-            system_error(args.task);
+            zc.dojo.system_error(args.task);
         }
         else if (result.session_expired) {
-            return session_expired(error);
+            return zc.dojo.session_expired(error);
         }
         else if (result.error) {
             var this_dialog = new dijit.Dialog({
@@ -78,10 +78,9 @@ zc.dojo.call_server = function (args) {
 
 zc.dojo.submit_form = zc.dojo.call_server;
 
-
 zc.dojo.widgets['zope.schema.TextLine'] = function (config, node, order)
 {
-    wconfig = parse_config(config, order);    
+    wconfig = zc.dojo.parse_config(config, order);    
     if (config.max_size != undefined)
     {
         wconfig.maxLength = config.max_size;
@@ -97,7 +96,7 @@ zc.dojo.widgets['zope.schema.TextLine'] = function (config, node, order)
 
 zc.dojo.widgets['zope.schema.Text'] = function (config, node, order, disabled) {
 
-    wconfig = parse_config(config, order);
+    wconfig = zc.dojo.parse_config(config, order);
     var total_editor = dojo.create('div', {}, node);
     console.log(wconfig.value);
     var editor_for_form = new dijit.form.TextBox({
@@ -124,13 +123,13 @@ zc.dojo.widgets['zope.schema.Text'] = function (config, node, order, disabled) {
 
 zc.dojo.widgets['zc.ajaxform.widgets.Hidden'] = function (config, node, order) {
     
-    wconfig = parse_config(config, order);
+    wconfig = zc.dojo.parse_config(config, order);
     wconfig.type = 'hidden';
     return new dijit.form.TextBox(wconfig, node).domNode;
 }
 
 zc.dojo.parse_number_config = function(config, order) {
-    wconfig = parse_config(config, order);
+    wconfig = zc.dojo.parse_config(config, order);
     constraints = {};
     if (config.field_min != undefined) {
         constraints['min'] = config.field_min;
@@ -138,7 +137,7 @@ zc.dojo.parse_number_config = function(config, order) {
     if (config.field_max != undefined) {
         constraints['max'] = config.field_max;
     }
-    wconfig.constraints = constraints;
+    wconfig['constraints'] = constraints;
     return wconfig;
 };
 
@@ -163,7 +162,7 @@ zc.dojo.widgets['zope.schema.Decimal'] = function (config, node, order) {
 
 zc.dojo.widgets['zope.schema.Bool'] = function (config, node, order) {
 
-    wconfig = parse_config(config, order);    
+    wconfig = zc.dojo.parse_config(config, order);    
     wconfig['checked'] = config.value;
     return new dijit.form.CheckBox(wconfig, node).domNode;
 
@@ -171,7 +170,7 @@ zc.dojo.widgets['zope.schema.Bool'] = function (config, node, order) {
 
 zc.dojo.widgets['zc.ajaxform.widgets.BasicDisplay'] = function (config, node, order) {
 
-    wconfig = parse_config(config, order);
+    wconfig = zc.dojo.parse_config(config, order);
     wconfig['disabled'] = true;
     return new dijit.form.TextBox(wconfig, node).domNode;
 
@@ -185,7 +184,7 @@ zc.dojo.widgets['zc.ajaxform.widgets.RichTextDisplay'] = function (config, node,
 
 zc.dojo.widgets['zope.schema.Choice'] = function (config, node, order) {
 
-    wconfig = parse_config(config, order);    
+    wconfig = zc.dojo.parse_config(config, order);    
     var store_data = {
         identifier: 'value',
         label: 'label'
@@ -340,20 +339,20 @@ zc.dojo.build_form = function (config, pnode)
     }
 };
 
-function session_expired() {
+zc.dojo.session_expired = function () {
    dijit.Dialog({
        title: "Session Expired",
        content: "You will need to log-in again." }).show();
 }
 
-function system_error(task) {
+zc.dojo.system_error = function (task) {
     var this_dialog = new dijit.Dialog({
     title: "Failed",
     content: task+" failed for an unknown reason" })
     this_dialog.show();
 }
 
-function parse_config(config, order) {
+zc.dojo.parse_config = function (config, order) {
     readonly = config.readonly;
     if (!readonly){ readonly = false; }
     var wconfig = {
