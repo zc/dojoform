@@ -332,11 +332,19 @@ zc.dojo.build_form = function (config, pnode)
         }
     }
     if (bottom_pane) {
-        return {'button_locale':bottom_pane.domNode, 'form_node':node};
+        if (config.definition.actions != undefined){
+            actions = config.definition.actions;
+            for (action_index in actions) {
+                action = actions[action_index];
+                var button = new dijit.form.Button({
+                    label: action.label,
+                    id: action.name,
+                }, dojo.create('div', {style: "float:left;"}));
+                bottom_pane.domNode.appendChild(button.domNode);
+             }
+        }
     }
-    else {
-        node.startup();
-    }
+    node.startup();
 };
 
 zc.dojo.session_expired = function () {
