@@ -257,7 +257,7 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode) {
         }, pnode);
     rc = config.record_schema;
     rc.name = config.name;
-    if (!config.readonly) {
+    if (!config.record_schema.readonly) {
         build_record(rc, node, '.new');
     }
     records = dojo.fromJson(config.value);
