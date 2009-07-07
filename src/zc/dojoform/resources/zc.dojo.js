@@ -98,7 +98,6 @@ zc.dojo.widgets['zope.schema.Text'] = function (config, node, order, disabled) {
 
     wconfig = zc.dojo.parse_config(config, order);
     var total_editor = dojo.create('div', {}, node);
-    console.log(wconfig.value);
     var editor_for_form = new dijit.form.TextBox({
         type: 'hidden',
         name: wconfig.name,
@@ -116,7 +115,6 @@ zc.dojo.widgets['zope.schema.Text'] = function (config, node, order, disabled) {
     editor.value = editor_for_form.getValue();
     dojo.connect(editor, 'onBlur', function() {
             editor_for_form.setValue(editor.getValue());
-            console.log(editor_for_form.value);
     });
     return total_editor;
 }
@@ -259,7 +257,9 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode) {
         }, pnode);
     rc = config.record_schema;
     rc.name = config.name;
-    build_record(rc, node, '.new');
+    if (!config.readonly) {
+        build_record(rc, node, '.new');
+    }
     records = dojo.fromJson(config.value);
     var num = 0;
     for (record in records) {
