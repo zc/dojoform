@@ -191,8 +191,8 @@ zc.dojo.widgets['zope.schema.Choice'] = function (config, node, order) {
     values = config.values;
     for (index in values){
         items.push({
-            label: values[index][0],
-            value: values[index][1]
+            label: values[index][1],
+            value: values[index][0]
         });
     }
     store_data['items'] = items; 
@@ -345,6 +345,7 @@ zc.dojo.build_form = function (config, pnode)
         }
     }
     node.startup();
+    return node;
 };
 
 zc.dojo.session_expired = function () {
