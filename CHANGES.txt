@@ -1,0 +1,8 @@
+=======
+Changes
+=======
+
+unreleased
+==========
+
+- Removed dependency on ``zc.extjsresource``.
