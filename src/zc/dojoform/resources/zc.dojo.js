@@ -293,6 +293,7 @@ zc.dojo.build_form = function (config, pnode)
         region: 'bottom'
     }, dojo.create('div'));
     node.addChild(bottom_pane);
+    var widgets = [];
     for (var i in config.definition.widgets)
     {
         var cp = new dijit.layout.ContentPane({
@@ -324,12 +325,13 @@ zc.dojo.build_form = function (config, pnode)
         }
         var wid = zc.dojo.widgets[widget.widget_constructor](
             widget,
-            dojo.create('div', {}, 
+            dojo.create('div', {},
                 dojo.create('div')));
         cp.domNode.appendChild(wid);
         if (brk){
             dojo.create('br', null, cp.domNode);
         }
+        widgets.push(wid);
     }
     if (bottom_pane) {
         if (config.definition.actions != undefined){
@@ -345,6 +347,11 @@ zc.dojo.build_form = function (config, pnode)
         }
     }
     node.startup();
+    dojo.forEach(widgets, function (widget) {
+        if (widget.postStartup != null) {
+            widget.postStartup();
+        }
+    });
     return node;
 };
 
