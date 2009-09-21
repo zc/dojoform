@@ -48,7 +48,6 @@ setup(
         'zc.ajaxform',
         'zc.form',
         'zc.configuration',
-        'zope.deferredimport',
         'zope.html >=2.0',
         ],
     extras_require = dict(
