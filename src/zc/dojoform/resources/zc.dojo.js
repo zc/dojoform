@@ -325,14 +325,20 @@ zc.dojo.build_form = function (config, pnode)
         }
         var wid = zc.dojo.widgets[widget.widget_constructor](
             widget,
-            dojo.create('div', {},
-                dojo.create('div')));
+            dojo.create('div'));
         cp.domNode.appendChild(wid);
         if (brk){
             dojo.create('br', null, cp.domNode);
         }
         widgets.push(wid);
     }
+
+    var fireSubmitEvent = function () {
+        var event = document.createEvent('Event');
+        event.initEvent('beforeSubmit', true, true);
+        document.dispatchEvent(event);
+    };
+
     if (bottom_pane) {
         if (config.definition.actions != undefined){
             actions = config.definition.actions;
@@ -342,6 +348,7 @@ zc.dojo.build_form = function (config, pnode)
                     label: action.label,
                     id: action.name,
                 }, dojo.create('div', {style: "float:left;"}));
+                button.onClick = fireSubmitEvent;
                 bottom_pane.domNode.appendChild(button.domNode);
              }
         }
