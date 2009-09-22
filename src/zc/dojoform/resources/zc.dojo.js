@@ -281,17 +281,18 @@ zc.dojo.build_form = function (config, pnode)
         design:"headline",
         gutters:"false",
         liveSplitters: true,
+        persist: true,
         style:"height:100%; width:100%;"
     }, form);
     var left_pane = false;
     var right_pane = new dijit.layout.ContentPane({
         region: 'center',
         splitter: true
-    }, dojo.create('div'));
+    });
     node.addChild(right_pane);
     var bottom_pane = new dijit.layout.ContentPane({
         region: 'bottom'
-    }, dojo.create('div'));
+    });
     node.addChild(bottom_pane);
     var widgets = [];
     for (var i in config.definition.widgets)
@@ -307,7 +308,7 @@ zc.dojo.build_form = function (config, pnode)
                 var left_pane = new dijit.layout.ContentPane({
                     region: 'left',
                     splitter: true
-                }, dojo.create('div'));
+                });
                 node.addChild(left_pane);
             }
             left_pane.domNode.appendChild(cp.domNode);
