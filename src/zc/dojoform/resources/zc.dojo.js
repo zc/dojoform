@@ -281,6 +281,7 @@ zc.dojo.build_form = function (config, pnode)
         design:"headline",
         gutters:"false",
         liveSplitters: true,
+        persist: true,
         style:"height:100%; width:100%;"
     }, form);
     var left_pane = false;
