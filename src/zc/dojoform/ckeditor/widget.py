@@ -16,7 +16,7 @@ import zc.ajaxform.widgets
 import zope.schema.interfaces
 
 
-class CKEditorWidget(zc.ajaxform.widgets.Base):
+class CKEditorWidget(zc.ajaxform.widgets.InputText):
     """A CKEditor widget.
     """
     zope.component.adapts(
