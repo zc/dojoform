@@ -336,6 +336,33 @@ zc.dojo.build_form = function (config, pnode)
         widgets.push(wid);
     }
 
+    if (left_pane) {
+        var max = function (a, b) {
+            if (a > b) {
+                return a;
+            } else {
+                return b;
+            }
+        };
+        var margin = 30;
+        node.fit = function () {
+            var h = max(
+                right_pane.domNode.offsetHeight,
+                left_pane.domNode.offsetHeight
+            );
+            node.domNode.style.height =
+                (h + bottom_pane.domNode.offsetHeight + margin) + 'px';
+        };
+    } else {
+        node.fit = function () {
+            var h =
+                right_pane.domNode.offsetHeight
+                + bottom_pane.domNode.offsetHeight
+                + margin;
+            node.domNode.style.height = h + 'px';
+        };
+    }
+
     var fireSubmitEvent = function () {
         var event = document.createEvent('Event');
         event.initEvent('beforeSubmit', true, true);
