@@ -1,5 +1,10 @@
 /* Dojo form widget for resource reference list */
 
+
+// URL of a CKEeditor config file to use.
+var customConfig = '';
+
+
 var CKEditor = function (config, parent, order) {
     var textarea = dojo.create(
         'textarea',
@@ -8,7 +13,13 @@ var CKEditor = function (config, parent, order) {
     );
     textarea.value = config.value;
     parent.postStartup = function () {
-        var editor = CKEDITOR.replace(textarea);
+        var editor;
+        if (customConfig == '') {
+            editor = CKEDITOR.replace(textarea);
+        } else {
+            editor = CKEDITOR.replace(
+                textarea, {'customConfig': customConfig});
+        }
         var handler = function () {
             textarea.value = editor.getData();
         };
