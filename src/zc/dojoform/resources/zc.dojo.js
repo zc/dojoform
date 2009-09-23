@@ -281,7 +281,6 @@ zc.dojo.build_form = function (config, pnode)
         design:"headline",
         gutters:"false",
         liveSplitters: true,
-        persist: true,
         style:"height:100%; width:100%;"
     }, form);
     var left_pane = false;
@@ -308,10 +307,10 @@ zc.dojo.build_form = function (config, pnode)
             if (!left_pane){
                 var left_pane = new dijit.layout.ContentPane({
                     region: 'left',
-                    style: 'width:50%',
+                    style: 'width:60%',
                     splitter: true
                 });
-                right_pane.style.width = '50%';
+                right_pane.style.width = '40%';
                 node.addChild(left_pane);
             }
             left_pane.domNode.appendChild(cp.domNode);
