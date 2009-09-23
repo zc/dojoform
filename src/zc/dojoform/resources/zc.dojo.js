@@ -275,7 +275,7 @@ zc.dojo.build_form = function (config, pnode)
 {
     var form = dojo.create('form', {
         id: config.definition.prefix,
-        style:'position:absolute;'
+        style: 'position:absolute;'
     }, pnode);
     var node = new dijit.layout.BorderContainer({
         design:"headline",
@@ -298,8 +298,8 @@ zc.dojo.build_form = function (config, pnode)
     var widgets = [];
     for (var i in config.definition.widgets)
     {
-        var cp = new dijit.layout.ContentPane({
-        }, dojo.create('p',{}));
+        var cp = new dijit.layout.ContentPane({}, dojo.create('div'));
+        dojo.addClass(cp.domNode, 'widget');
         var widget = config.definition.widgets[i];
         if (!(left_pane) && (!right_pane)){
             node.addChild(cp);
