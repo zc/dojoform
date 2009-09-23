@@ -7,6 +7,6 @@ unreleased
 
 - Removed dependency on ``zc.extjsresource``.
 - Removed dependency on ``zope.deferredimport``.
-- Added a `postStartup` hook for widgets that is called after form startup.
+- Added a `postStartup` hook for widgets, called after form startup.
 - Added a CKEditor widget as an optional replacement for the Dojo WYSIWYG
   editor widget.
