@@ -336,32 +336,29 @@ zc.dojo.build_form = function (config, pnode)
         widgets.push(wid);
     }
 
-    if (left_pane) {
-        var max = function (a, b) {
-            if (a > b) {
-                return a;
-            } else {
-                return b;
-            }
+    node.fit = function () {
+        var margin = 20;
+        var getHeight = function (node) {
+            return node.scrollHeight;
         };
-        var margin = 30;
-        node.fit = function () {
-            var h = max(
-                right_pane.domNode.offsetHeight,
-                left_pane.domNode.offsetHeight
-            );
-            node.domNode.style.height =
-                (h + bottom_pane.domNode.offsetHeight + margin) + 'px';
+        var heights = dojo.map(
+            node.getChildren(),
+            function (child) { return getHeight(child.domNode); }
+        );
+        var max = function (xs) {
+            var m = null;
+            var x;
+            for (var i in xs) {
+                x = xs[i];
+                if (x > m) {
+                    m = x;
+                }
+            };
+            return m;
         };
-    } else {
-        node.fit = function () {
-            var h =
-                right_pane.domNode.offsetHeight
-                + bottom_pane.domNode.offsetHeight
-                + margin;
-            node.domNode.style.height = h + 'px';
-        };
-    }
+        var h = max(heights) + getHeight(bottom_pane.domNode) + margin;
+        node.domNode.style.height = h + 'px';
+    };
 
     var fireSubmitEvent = function () {
         var event = document.createEvent('Event');

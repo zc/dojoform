@@ -5,7 +5,7 @@
 var customConfig = '';
 
 
-var CKEditor = function (config, parent, order) {
+var CKEditorWidget = function (config, parent, order) {
     var textarea = dojo.create(
         'textarea',
         {'name': config.name},
@@ -28,4 +28,4 @@ var CKEditor = function (config, parent, order) {
     return parent;
 };
 
-zc.dojo.widgets['zc.dojoform.ckeditor.CKEditor'] = CKEditor;
+zc.dojo.widgets['zc.dojoform.ckeditor.CKEditor'] = CKEditorWidget;
