@@ -383,7 +383,7 @@ zc.dojo.build_form = function (config, pnode)
     node.startup();
     dojo.forEach(widgets, function (widget) {
         if (widget.postStartup != null) {
-            widget.postStartup();
+            widget.postStartup(node);
         }
     });
     return node;

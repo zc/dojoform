@@ -12,7 +12,7 @@ var CKEditorWidget = function (config, parent, order) {
         parent
     );
     textarea.value = config.value;
-    parent.postStartup = function () {
+    parent.postStartup = function (formNode) {
         var editor;
         if (customConfig == '') {
             editor = CKEDITOR.replace(textarea);
@@ -24,6 +24,9 @@ var CKEditorWidget = function (config, parent, order) {
             textarea.value = editor.getData();
         };
         window.addEventListener('beforeSubmit', handler, true);
+        CKEDITOR.on('instanceReady', function (event) {
+            formNode.fit()
+        });
     };
     return parent;
 };
