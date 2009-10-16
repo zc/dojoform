@@ -319,20 +319,20 @@ zc.dojo.build_form = function (config, pnode)
             right_pane.domNode.appendChild(cp.domNode);
         }
 
-        var brk = false;
-        if (!(widget.widget_constructor == 'zc.ajaxform.widgets.Hidden')){
-            brk = true;
-            var label = dojo.create('label', {
-                innerHTML: widget.fieldLabel +'<br>'
-            }, cp.domNode);
+        if (widget.widget_constructor != 'zc.ajaxform.widgets.Hidden'){
+            var label = dojo.create(
+                'label', {innerHTML: widget.fieldLabel}, cp.domNode);
+            if (widget.required == true) {
+                var span = dojo.create(
+                    'span', {innerHTML: ' (required)'}, label);
+                dojo.addClass(span, 'status-marker');
+            }
+            dojo.create('br', null, cp.domNode);
         }
         var wid = zc.dojo.widgets[widget.widget_constructor](
             widget,
             dojo.create('div'));
         cp.domNode.appendChild(wid);
-        if (brk){
-            dojo.create('br', null, cp.domNode);
-        }
         widgets.push(wid);
     }
 
