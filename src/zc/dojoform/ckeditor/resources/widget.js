@@ -2,7 +2,7 @@
 
 
 // URL of a CKEeditor config file to use.
-var customConfig = '';
+var ckeditorCustomConfig = '';
 
 
 var CKEditorWidget = function (config, parent, order) {
@@ -13,13 +13,16 @@ var CKEditorWidget = function (config, parent, order) {
     );
     textarea.value = config.value;
     parent.postStartup = function (formNode) {
-        var editor;
-        if (customConfig == '') {
-            editor = CKEDITOR.replace(textarea);
+        var editor, ckeditorConfig;
+        if (config.display_options != null) {
+            ckeditorConfig = config.display_options;
         } else {
-            editor = CKEDITOR.replace(
-                textarea, {'customConfig': customConfig});
+            ckeditorConfig = {};
         }
+        if (ckeditorCustomConfig != '') {
+            ckeditorConfig['customConfig'] = ckeditorCustomConfig;
+        }
+        editor = CKEDITOR.replace(textarea, ckeditorConfig);
         var handler = function () {
             textarea.value = editor.getData();
         };
