@@ -338,7 +338,7 @@ zc.dojo.build_form = function (config, pnode)
     }
 
     node.fit = function () {
-        var margin = 20;
+        var margin = 8;
         var getHeight = function (node) {
             return node.scrollHeight;
         };
