@@ -277,6 +277,7 @@ zc.dojo.build_form = function (config, pnode)
         id: config.definition.prefix,
         style: 'position:absolute;'
     }, pnode);
+    dojo.addClass(form, 'zcForm');
     var node = new dijit.layout.BorderContainer({
         design:"headline",
         gutters:"false",
