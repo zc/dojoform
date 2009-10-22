@@ -8,4 +8,9 @@
            permission="zope.View"
            />
 
+  <adapter
+      factory="zc.ajaxform.form_example.PetWidget"
+      provides="zc.ajaxform.interfaces.IInputWidget"
+      />
+
 </configure>
