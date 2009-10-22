@@ -4,6 +4,7 @@ dojo.require('dijit.form.TextBox');
 dojo.require('dijit.form.NumberSpinner');
 dojo.require('dijit.form.FilteringSelect');
 dojo.require('dijit.form.CheckBox');
+dojo.require('dijit.form.ComboBox');
 dojo.require('dijit.form.Button');
 dojo.require('dijit.form.SimpleTextarea');
 dojo.require('dijit.Editor');
@@ -180,9 +181,9 @@ zc.dojo.widgets['zc.ajaxform.widgets.RichTextDisplay'] = function (config, node,
 
 };
 
-zc.dojo.widgets['zope.schema.Choice'] = function (config, node, order) {
 
-    wconfig = zc.dojo.parse_config(config, order);    
+var _choiceConfig = function (config, node, order) {
+    wconfig = zc.dojo.parse_config(config, order);
     var store_data = {
         identifier: 'value',
         label: 'label'
@@ -201,8 +202,25 @@ zc.dojo.widgets['zope.schema.Choice'] = function (config, node, order) {
     })
     wconfig['store'] = select_store;
     wconfig['searchAttr'] = "label";
-    return new dijit.form.FilteringSelect(wconfig, node).domNode
+    return wconfig;
 };
+
+
+var makeChoice = function (config, node, order) {
+    var wconfig = _choiceConfig(config, node, order);
+    return new dijit.form.FilteringSelect(wconfig, node).domNode;
+};
+
+zc.dojo.widgets['zope.schema.Choice'] = makeChoice;
+
+
+var makeComboBox = function (config, node, order) {
+    var wconfig = _choiceConfig(config, node, order);
+    return new dijit.form.ComboBox(wconfig, node).domNode;
+};
+
+zc.dojo.widgets['zc.ajaxform.widgets.ComboBox'] = makeComboBox;
+
 
 var build_record = function (record, pnode, suffix, record_value){
 
