@@ -10,7 +10,8 @@ unreleased
 - Added a `postStartup` hook for widgets, called after form startup.
 - Added a CKEditor widget as an optional replacement for the Dojo WYSIWYG
   editor widget.
-- Add `fit()` method to generated form.  This resizes the height of the form
-  to that of its largest region.
+- Added `fit()` method to generated form.  This resizes the height of the
+  form to that of its largest region.
+- Added `ComboBox` widget.
 
 XXX missing previous release history
