@@ -19,6 +19,9 @@ var CKEditorWidget = function (config, parent, order) {
         } else {
             ckeditorConfig = {};
         }
+        if (order != null) {
+            ckeditorConfig.tabIndex = order;
+        }
         if (ckeditorCustomConfig != '') {
             ckeditorConfig['customConfig'] = ckeditorCustomConfig;
         }
