@@ -95,7 +95,7 @@ zc.dojo.widgets['zope.schema.TextLine'] = function (config, node, order)
     return new dijit.form.ValidationTextBox(wconfig, node).domNode;
 };
 
-zc.dojo.widgets['zope.schema.Text'] = function (config, node, order, disabled) {
+zc.dojo.widgets['zope.schema.Text'] = function (config, node, order, readOnly) {
 
     wconfig = zc.dojo.parse_config(config, order);
     var total_editor = dojo.create('div', {}, node);
@@ -107,8 +107,8 @@ zc.dojo.widgets['zope.schema.Text'] = function (config, node, order, disabled) {
     // iframes = :[
     wconfig['style'] = 'width:400px; height:200px;';
     wconfig['height'] = '100%';
-    if (disabled) {
-        wconfig['disabled'] = true;
+    if (readOnly) {
+        wconfig['readOnly'] = true;
     }
     var editor = new dijit.Editor(wconfig);
     total_editor.appendChild(editor_for_form.domNode);
@@ -170,7 +170,7 @@ zc.dojo.widgets['zope.schema.Bool'] = function (config, node, order) {
 zc.dojo.widgets['zc.ajaxform.widgets.BasicDisplay'] = function (config, node, order) {
 
     wconfig = zc.dojo.parse_config(config, order);
-    wconfig['disabled'] = true;
+    wconfig['readOnly'] = true;
     return new dijit.form.TextBox(wconfig, node).domNode;
 
 };
