@@ -14,5 +14,7 @@ unreleased
   form to that of its largest region.
 - Added `ComboBox` widget.
 - Fixed text selection on display widgets.
+- Changed the rich-text display widget to be an `iframe` instead of a full
+  Dojo rich-text editor.
 
 XXX missing previous release history

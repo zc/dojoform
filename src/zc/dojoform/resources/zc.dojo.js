@@ -176,9 +176,14 @@ zc.dojo.widgets['zc.ajaxform.widgets.BasicDisplay'] = function (config, node, or
 };
 
 zc.dojo.widgets['zc.ajaxform.widgets.RichTextDisplay'] = function (config, node, order) {
-
-    return zc.dojo.widgets['zope.schema.Text'](config, node, null, true);
-
+    var iframe = dojo.create('iframe', {'frameborder': 1}, node);
+    iframe.postStartup = function (node) {
+        var doc = this.contentDocument;
+        doc.open()
+        doc.write(config['value']);
+        doc.close();
+    };
+    return iframe;
 };
 
 
