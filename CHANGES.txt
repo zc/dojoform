@@ -13,5 +13,6 @@ unreleased
 - Added `fit()` method to generated form.  This resizes the height of the
   form to that of its largest region.
 - Added `ComboBox` widget.
+- Fixed text selection on display widgets.
 
 XXX missing previous release history
