@@ -16,5 +16,6 @@ unreleased
 - Fixed text selection on display widgets.
 - Changed the rich-text display widget to be an `iframe` instead of a full
   Dojo rich-text editor.
+- ``zc.dojo.build_form`` now sets the tab-index for all widgets in the form.
 
 XXX missing previous release history

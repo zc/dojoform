@@ -294,8 +294,11 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode) {
     return pnode;
 };
 
-zc.dojo.build_form = function (config, pnode)
+zc.dojo.build_form = function (config, pnode, tabIndexOffset)
 {
+    if (!tabIndexOffset) {
+        tabIndexOffset = 0;
+    }
     var form = dojo.create('form', {
         id: config.definition.prefix,
         style: 'position:absolute;'
@@ -319,6 +322,7 @@ zc.dojo.build_form = function (config, pnode)
     });
     node.addChild(bottom_pane);
     var widgets = [];
+    var index_map = zc.dojo.tab_index_map(config.definition);
     for (var i in config.definition.widgets)
     {
         var cp = new dijit.layout.ContentPane({}, dojo.create('div'));
@@ -355,7 +359,9 @@ zc.dojo.build_form = function (config, pnode)
         }
         var wid = zc.dojo.widgets[widget.widget_constructor](
             widget,
-            dojo.create('div'));
+            dojo.create('div'),
+            index_map[widget.name] + tabIndexOffset
+        );
         cp.domNode.appendChild(wid);
         widgets.push(wid);
     }
@@ -398,6 +404,7 @@ zc.dojo.build_form = function (config, pnode)
                 var button = new dijit.form.Button({
                     label: action.label,
                     id: action.name,
+                    tabIndex: index_map[action.name] + tabIndexOffset
                 }, dojo.create('div', {style: "float:left;"}));
                 button.onClick = fireSubmitEvent;
                 bottom_pane.domNode.appendChild(button.domNode);
@@ -411,6 +418,35 @@ zc.dojo.build_form = function (config, pnode)
         }
     });
     return node;
+};
+
+/* Return a mapping from name to tab-index for all widgets in the form. */
+zc.dojo.tab_index_map = function (definition) {
+    var indices = {};
+    var left = definition.left_fields;
+    var right = [];
+    var index = 0;
+    var widget;
+    for (var k in definition.widgets) {
+        widget = definition.widgets[k];
+        if (left[widget.name]) {
+            indices[widget.name] = index;
+            index += 1;
+        } else {
+            right.push(widget);
+        }
+    };
+    for (var i in right) {
+        widget = right[i];
+        indices[widget.name] = index;
+        index += 1;
+    };
+    for (var k in definition.actions) {
+        widget = definition.actions[k];
+        indices[widget.name] = index;
+        index += 1;
+    }
+    return indices;
 };
 
 zc.dojo.session_expired = function () {
