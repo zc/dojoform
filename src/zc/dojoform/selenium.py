@@ -34,12 +34,23 @@ class SeleniumTests(zc.selenium.pytest.Test):
         s.open('/form.html?login')
         s.waitForValue('first_name', "Happy") 
         s.verifyValue('last_name', 'Camper') 
-        s.verifyValue('age', '23') 
+        s.verifyValue('age', '23')
         # XXX Iframe selection not implemented yet apparently
         #s.selectFrame('other_iframe')
         #s.verifyTextPresent("I've got a magic toenail")
         #s.selectFrame('description_iframe')
         #s.verifyTextPresent("10ft tall Razor sharp scales.")
+
+        # test the pet combobox:
+        s.verifyValue('pet', '')
+        # 1) the combobox has a pulldown menu
+        s.click(
+            '//div[@id=\'widget_pet\']/div'
+            '/div[contains(@class, \'dijitDownArrowButton\')][1]')
+        # 2) the combobox has text input
+        s.type('pet', 'Cockatiel')
+        s.verifyValue('pet', 'Cockatiel')
+
         s.verifyValue('favorite_color', "Blue")
         s.assertChecked('happy')
         s.verifyValue('temperment', 'Right Neighborly')

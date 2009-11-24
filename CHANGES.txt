@@ -6,4 +6,16 @@ unreleased
 ==========
 
 - Removed dependency on ``zc.extjsresource``.
-- Added a `postStartup` hook for widgets that is called after form startup.
+- Removed dependency on ``zope.deferredimport``.
+- Added a `postStartup` hook for widgets, called after form startup.
+- Added a CKEditor widget as an optional replacement for the Dojo WYSIWYG
+  editor widget.
+- Added `fit()` method to generated form.  This resizes the height of the
+  form to that of its largest region.
+- Added `ComboBox` widget.
+- Fixed text selection on display widgets.
+- Changed the rich-text display widget to be an `iframe` instead of a full
+  Dojo rich-text editor.
+- ``zc.dojo.build_form`` now sets the tab-index for all widgets in the form.
+
+XXX missing previous release history
