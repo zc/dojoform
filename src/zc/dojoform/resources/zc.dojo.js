@@ -81,7 +81,7 @@ zc.dojo.submit_form = zc.dojo.call_server;
 
 zc.dojo.widgets['zope.schema.TextLine'] = function (config, node, order)
 {
-    wconfig = zc.dojo.parse_config(config, order);    
+    wconfig = zc.dojo.parse_config(config, order);
     if (config.max_size != undefined)
     {
         wconfig.maxLength = config.max_size;
@@ -121,7 +121,7 @@ zc.dojo.widgets['zope.schema.Text'] = function (config, node, order, readOnly) {
 }
 
 zc.dojo.widgets['zc.ajaxform.widgets.Hidden'] = function (config, node, order) {
-    
+
     wconfig = zc.dojo.parse_config(config, order);
     wconfig.type = 'hidden';
     return new dijit.form.TextBox(wconfig, node).domNode;
@@ -161,7 +161,7 @@ zc.dojo.widgets['zope.schema.Decimal'] = function (config, node, order) {
 
 zc.dojo.widgets['zope.schema.Bool'] = function (config, node, order) {
 
-    wconfig = zc.dojo.parse_config(config, order);    
+    wconfig = zc.dojo.parse_config(config, order);
     wconfig['checked'] = config.value;
     return new dijit.form.CheckBox(wconfig, node).domNode;
 
@@ -201,7 +201,7 @@ var _choiceConfig = function (config, node, order) {
             value: values[index][0]
         });
     }
-    store_data['items'] = items; 
+    store_data['items'] = items;
     var select_store = new dojo.data.ItemFileReadStore({
         data: store_data
     })
