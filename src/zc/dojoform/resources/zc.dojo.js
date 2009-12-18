@@ -238,6 +238,7 @@ var build_record = function (record, pnode, suffix, record_value){
         c_label = 'Add';
     }
 
+    var widgets = [];
     for (rc_wid in record.widgets) {
         rc_wid = dojo.clone(rc.widgets[rc_wid]);
         indexed_name = rc_wid.name+suffix;
@@ -257,6 +258,7 @@ var build_record = function (record, pnode, suffix, record_value){
             dojo.create('div', {},
                 dojo.create('div', {})));
         inner.appendChild(wid);
+        widgets.push(wid);
     }
     if (!record.readonly) {
         var check_label = dojo.create('label', {
@@ -270,9 +272,10 @@ var build_record = function (record, pnode, suffix, record_value){
         });
         cp.domNode.appendChild(check.domNode);
     }
+    return widgets;
 };
 
-zc.dojo.widgets['zope.schema.List'] = function (config, pnode) {
+zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
 
     var node = new dijit.layout.BorderContainer({
             design:"headline",
@@ -281,13 +284,19 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode) {
     rc = config.record_schema;
     rc.name = config.name;
     if (!config.record_schema.readonly) {
-        build_record(rc, node, '.new');
+        var record_widgets = build_record(rc, node, '.new');
+        dojo.forEach(record_widgets, function (widget) {
+            widgets.push(widget);
+        });
     }
     records = dojo.fromJson(config.value);
     var num = 0;
     for (record in records) {
         record = records[record];
-        build_record(rc, node, '.'+String(num), record);
+        var record_widgets = build_record(rc, node, '.'+String(num), record);
+        dojo.forEach(record_widgets, function (widget) {
+            widgets.push(widget);
+        });
         num++;
     }
     node.startup();
@@ -360,7 +369,8 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
         var wid = zc.dojo.widgets[widget.widget_constructor](
             widget,
             dojo.create('div'),
-            index_map[widget.name] + tabIndexOffset
+            index_map[widget.name] + tabIndexOffset,
+            widgets
         );
         cp.domNode.appendChild(wid);
         widgets.push(wid);
