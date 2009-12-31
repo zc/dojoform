@@ -426,10 +426,9 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
             if (grid.edit_dlg == null) {
                 grid.edit_dlg = build_record_form(grid);
             }
-            var row_values = {record_id: '', highlight_text:'', body: ''};
             dojo.forEach(grid.edit_dlg.formNode.elements, function (ele) {
-                if (row_values[ele.name] != null) {
-                    ele.value = row_values[ele.name];
+                if (ele.name == 'record_id' || ele.name in (grid.structure)) {
+                    ele.value = '';
                 }
             });
             grid.edit_dlg.beforeShow();
@@ -442,15 +441,25 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
             if (grid.edit_dlg == null) {
                 grid.edit_dlg = build_record_form(grid, true);
             }
-            var row_values = grid.selection.getSelected()[0];
-            row_values['record_id'] = row_values.name[0];
-            dojo.forEach(grid.edit_dlg.formNode.elements, function (ele) {
-                if (row_values[ele.name] != null) {
-                    ele.value = row_values[ele.name];
-                }
-            });
-            grid.edit_dlg.beforeShow();
-            grid.edit_dlg.show();
+            var row_values = grid.selection.getSelected();
+            if (row_values.length != 1) {
+                var error_dialog = new dijit.Dialog({
+                    title: 'Error!',
+                    content: 'Please select a single row to Edit.'
+                });
+                error_dialog.show();
+            }
+            else {
+                row_values = row_values[0];
+                row_values['record_id'] = row_values.name[0];
+                dojo.forEach(grid.edit_dlg.formNode.elements, function (ele) {
+                    if (row_values[ele.name] != null) {
+                        ele.value = row_values[ele.name];
+                    }
+                });
+                grid.edit_dlg.beforeShow();
+                grid.edit_dlg.show();
+            }
         }
     }, dojo.create('div', null, node.domNode));
     var delete_btn = new dijit.form.Button({
