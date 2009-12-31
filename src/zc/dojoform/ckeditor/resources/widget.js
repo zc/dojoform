@@ -30,10 +30,17 @@ var CKEditorWidget = function (config, parent, order) {
             textarea.value = editor.getData();
         };
         window.addEventListener('beforeSubmit', handler, true);
+        dojo.subscribe(zc.dojo.recordFormSubmittedTopic, handler);
         CKEDITOR.on('instanceReady', function (event) {
-            formNode.fit()
+            if (formNode.fit != null) {
+                formNode.fit()
+            }
         });
     };
+    parent.updateValues = function () {
+        var editor = CKEDITOR.instances[textarea.name];
+        editor.setData(textarea.value);
+    }
     return parent;
 };
 
