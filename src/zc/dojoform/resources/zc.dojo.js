@@ -25,7 +25,8 @@ dojo.require("dojox.grid.enhanced.plugins.IndirectSelection");
 
 zc.dojo.widgets = {};
 
-zc.dojo.recordFormSubmittedTopic = "ZC_DOJO_RECORD_FORM_SUBMITTED";
+zc.dojo.beforeContentFormSubmittedTopic = "ZC_DOJO_BEFORE_CONTENT_FORM_SUBMITTED";
+zc.dojo.beforeRecordFormSubmittedTopic = "ZC_DOJO_BEFORE_RECORD_FORM_SUBMITTED";
 
 zc.dojo.get_recordlist_data = function (args) {
     if (args.form_id) {
@@ -86,6 +87,8 @@ zc.dojo.call_server = function (args) {
         }
     };
 
+    /* Subscribers might be listening to this event. Do not remove. */
+    dojo.publish(zc.dojo.beforeContentFormSubmittedTopic, [args.form_id]);
     content = zc.dojo.get_recordlist_data(args);
     if (args.content == null) {
         args.content = {};
@@ -341,7 +344,7 @@ var build_record_form = function (grid) {
     var save_btn = new dijit.form.Button({
         label: 'Save',
         onClick: function (e) {
-            dojo.publish(zc.dojo.recordFormSubmittedTopic);
+            dojo.publish(zc.dojo.beforeRecordFormSubmittedTopic, [rec_form.id]);
             var record_data = dojo.formToObject(rec_form.domNode);
             if (! record_data.record_id) {
                 var row = {name: '.' + grid.rowCount};
