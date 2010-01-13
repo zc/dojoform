@@ -288,48 +288,56 @@ var build_layout = function (record){
     var record_layout = [];
     for (rc_wid in record.widgets) {
         rc_wid = dojo.clone(record.widgets[rc_wid]);
-        record_layout.push({
+        var column = {
             name: rc_wid.fieldLabel,
             field: rc_wid.name,
             width: 'auto',
             widget_constructor: rc_wid.widget_constructor,
             rc_wid: rc_wid
-        });
+        };
+        if (rc_wid.widget_constructor == "zc.z4m.schemacontent.Photo") {
+            column.formatter = function (v) {
+                var data = dojo.fromJson(v);
+                if (data.thumbnail_tag != null) {
+                    return data.thumbnail_tag;
+                }
+                else {
+                    return '<img src="' + data.thumbnail_url + '" />';
+                }
+            }
+        }
+        record_layout.push(column);
     }
     return record_layout;
 };
 
 var build_record_form = function (grid) {
     var layout = grid.structure;
-    var edit_dlg = new dijit.Dialog({title: 'Add/Modify Record'});
-    var rec_form = new dijit.form.Form({});
-    var form_table = dojo.create('table', {
-        width: '100%',
-        cellspacing: '5px',
-    }, rec_form.domNode);
+    var edit_dlg = new dijit.Dialog({
+        title: 'Add/Modify Record'
+    });
+    var rec_form = new dijit.form.Form({
+        method: 'POST',
+        encType: 'multipart/form-data'
+    });
+    var cp = new dijit.layout.ContentPane(
+        {style: 'height: auto;'}, dojo.create('div', null, rec_form.domNode));
     edit_dlg.form_widgets = [];
     for (fld in layout) {
         var rc_wid = dojo.clone(layout[fld].rc_wid);
-        var tr = dojo.create('tr', null, form_table);
-        var label_td = dojo.create('td', {
+        var widget_div = dojo.create('div', {style: 'margin: 5px;'}, cp.domNode);
+        var label_div = dojo.create('div', {
             innerHTML: rc_wid.fieldLabel + ': ',
-            valign: 'top',
-            align: 'right',
-        }, tr);
-        var field_td = dojo.create('td', {
-            valign: 'top',
-        }, tr);
+        }, widget_div);
         var wid = zc.dojo.widgets[rc_wid.widget_constructor](
-            rc_wid, dojo.create('div', null, field_td));
+            rc_wid, dojo.create('div', {style: 'height: auto;'}, widget_div));
         edit_dlg.form_widgets.push(wid);
     }
-    var buttons_td = dojo.create(
-        'td', {colspan: '2', align: 'center'},
-        dojo.create('tr', null, form_table));
+    var buttons_div = dojo.create('div', null, cp.domNode);
     var record_input = new dijit.form.TextBox({
         name: 'record_id',
         type: 'hidden'
-    }, dojo.create('div', null, buttons_td));
+    }, dojo.create('div', null, cp.domNode));
     var save_btn = new dijit.form.Button({
         label: 'Save',
         onClick: function (e) {
@@ -354,13 +362,13 @@ var build_record_form = function (grid) {
             }
             edit_dlg.hide();
         }
-    }, dojo.create('div', null, buttons_td));
+    }, dojo.create('div', null, buttons_div));
     var cancel_btn = new dijit.form.Button({
         label: 'Cancel',
         onClick: function (evt) {
             edit_dlg.hide();
         }
-    }, dojo.create('div', null, buttons_td));
+    }, dojo.create('div', null, buttons_div));
 
     edit_dlg.attr('content', rec_form);
     edit_dlg.startup()
@@ -390,7 +398,7 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
     rc.name = config.name;
     var num = 0;
     var item_list = [];
-    records = dojo.fromJson(config.value);
+    records = config.value;
     for (record in records) {
         record = records[record];
         item_list.push(build_record(rc, node, '.'+String(num), record));
@@ -427,7 +435,11 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
                 grid.edit_dlg = build_record_form(grid);
             }
             dojo.forEach(grid.edit_dlg.formNode.elements, function (ele) {
-                if (ele.name == 'record_id' || ele.name in (grid.structure)) {
+                var record_fields = {};
+                dojo.forEach(grid.structure, function (item) {
+                    record_fields[item.field] = "";
+                });
+                if (ele.name == 'record_id' || ele.name in record_fields) {
                     ele.value = '';
                 }
             });
