@@ -37,10 +37,32 @@ var CKEditorWidget = function (config, parent, order) {
             }
         });
     };
-    parent.updateValues = function () {
-        var editor = CKEDITOR.instances[textarea.name];
-        editor.setData(textarea.value);
+
+    /* subscribers to reset/set/save photo widget data.
+    */
+    if (!zc.dojo.widgets['zc.dojoform.ckeditor.CKEditor'].subscribers) { 
+        dojo.subscribe(zc.dojo.beforeRecordFormSubmittedTopic, function(frm_id) {
+            dojo.forEach(dojo.query('textarea', frm_id), function (textarea) {
+                var editor = CKEDITOR.instances[textarea.name];
+                textarea.value = editor.getData();
+            })
+        })
+        dojo.subscribe(zc.dojo.dialogFormResetTopic, function(frm_id) {
+            dojo.forEach(dojo.query('textarea', frm_id), function (textarea) {
+                var editor = CKEDITOR.instances[textarea.name];
+                editor.setData('');
+            });
+        })
+        dojo.subscribe(zc.dojo.dialogFormUpdateTopic, function(frm_id, row) {
+            dojo.forEach(dojo.query('textarea', frm_id), function (textarea) {
+                textarea.value = row[textarea.name];
+                var editor = CKEDITOR.instances[textarea.name];
+                editor.setData(row[textarea.name]);
+            });
+        })
+        zc.dojo.widgets['zc.dojoform.ckeditor.CKEditor'].subscribers = true;
     }
+
     return parent;
 };
 

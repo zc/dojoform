@@ -27,6 +27,8 @@ zc.dojo.widgets = {};
 
 zc.dojo.beforeContentFormSubmittedTopic = "ZC_DOJO_BEFORE_CONTENT_FORM_SUBMITTED";
 zc.dojo.beforeRecordFormSubmittedTopic = "ZC_DOJO_BEFORE_RECORD_FORM_SUBMITTED";
+zc.dojo.dialogFormResetTopic = "ZC_DOJO_DIALOG_FORM_RESET";
+zc.dojo.dialogFormUpdateTopic = "ZC_DOJO_DIALOG_FORM_UPDATE";
 
 zc.dojo.get_recordlist_data = function (args) {
     if (args.form_id) {
@@ -375,19 +377,12 @@ var build_record_form = function (grid) {
 
     edit_dlg.attr('content', rec_form);
     edit_dlg.startup()
-    edit_dlg.formNode = rec_form.domNode;
+    edit_dlg.editForm = rec_form;
     dojo.forEach(edit_dlg.form_widgets, function (w) {
         if (w.postStartup != null) {
             w.postStartup(edit_dlg);
         }
     });
-    edit_dlg.beforeShow = function() {
-        dojo.forEach(edit_dlg.form_widgets, function (w) {
-            if (w.updateValues != null) {
-                w.updateValues();
-            }
-        });
-    };
     return edit_dlg;
 };
 
@@ -437,16 +432,8 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
             if (grid.edit_dlg == null) {
                 grid.edit_dlg = build_record_form(grid);
             }
-            dojo.forEach(grid.edit_dlg.formNode.elements, function (ele) {
-                var record_fields = {};
-                dojo.forEach(grid.structure, function (item) {
-                    record_fields[item.field] = "";
-                });
-                if (ele.name == 'record_id' || ele.name in record_fields) {
-                    ele.value = '';
-                }
-            });
-            grid.edit_dlg.beforeShow();
+            grid.edit_dlg.reset();
+            dojo.publish(zc.dojo.dialogFormResetTopic, [grid.edit_dlg.editForm.id])
             grid.edit_dlg.show();
         }
     }, dojo.create('div', null, node.domNode));
@@ -465,14 +452,12 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
                 error_dialog.show();
             }
             else {
-                row_values = row_values[0];
-                row_values['record_id'] = row_values.name[0];
-                dojo.forEach(grid.edit_dlg.formNode.elements, function (ele) {
-                    if (row_values[ele.name] != null) {
-                        ele.value = row_values[ele.name];
-                    }
-                });
-                grid.edit_dlg.beforeShow();
+                var row_value = row_values[0];
+                row_value['record_id'] = row_value.name[0];
+                /* order of next two lines is important */
+                grid.edit_dlg.setValues(row_value);
+                dojo.publish(
+                    zc.dojo.dialogFormUpdateTopic, [grid.edit_dlg.editForm.id, row_value]);
                 grid.edit_dlg.show();
             }
         }
