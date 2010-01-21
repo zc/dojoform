@@ -329,14 +329,21 @@ var build_layout = function (record){
 var build_record_form = function (grid) {
     var layout = grid.structure[0].cells;
     var edit_dlg = new dijit.Dialog({
-        title: 'Add/Modify Record'
+        title: 'Add/Modify Record',
+        style: 'width: auto;',
     });
     var rec_form = new dijit.form.Form({
         method: 'POST',
         encType: 'multipart/form-data'
     });
     var cp = new dijit.layout.ContentPane(
-        {style: 'height: auto;'}, dojo.create('div', null, rec_form.domNode));
+        {style: 'height: 300px; width: 100%; y-overflow: auto;'},
+        dojo.create('div', null, rec_form.domNode)
+    );
+    var record_input = new dijit.form.TextBox({
+        name: 'record_id',
+        type: 'hidden'
+    }, dojo.create('div', null, cp.domNode));
     edit_dlg.form_widgets = [];
     dojo.forEach(layout, function (fld) {
         if (fld.rc_wid) {
@@ -350,11 +357,9 @@ var build_record_form = function (grid) {
             edit_dlg.form_widgets.push(wid);
         }
     })
-    var buttons_div = dojo.create('div', null, cp.domNode);
-    var record_input = new dijit.form.TextBox({
-        name: 'record_id',
-        type: 'hidden'
-    }, dojo.create('div', null, cp.domNode));
+    var buttons_cp = new dijit.layout.ContentPane(
+        {}, dojo.create('div', null, rec_form.domNode));
+    var buttons_div = dojo.create('div', null, buttons_cp.domNode);
     var save_btn = new dijit.form.Button({
         label: 'Save',
         onClick: function (e) {
