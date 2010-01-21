@@ -268,7 +268,7 @@ var makeComboBox = function (config, node, order) {
 zc.dojo.widgets['zc.ajaxform.widgets.ComboBox'] = makeComboBox;
 
 
-var build_record = function (record, pnode, suffix, record_value){
+function build_record(record, pnode, suffix, record_value){
 
     var record_json = '"name": "' + suffix + '", ';
     for (rc_wid in record.widgets) {
@@ -288,7 +288,7 @@ var build_record = function (record, pnode, suffix, record_value){
     return rec;
 };
 
-var build_layout = function (record){
+function build_layout(record){
 
     var record_layout = [];
     var colwidth = 750/record.widgets.length;
@@ -326,7 +326,7 @@ var build_layout = function (record){
     return record_layout;
 };
 
-var build_record_form = function (grid) {
+function build_record_form(grid) {
     var layout = grid.structure[0].cells;
     var edit_dlg = new dijit.Dialog({
         title: 'Add/Modify Record',
@@ -405,6 +405,19 @@ var build_record_form = function (grid) {
     return edit_dlg;
 };
 
+function edit_record(grid, row_value) {
+    grid.select.clearDrugDivs();
+    if (grid.edit_dlg == null) {
+        grid.edit_dlg = build_record_form(grid, true);
+    }
+    row_value['record_id'] = row_value.name[0];
+    /* order of next two lines is important */
+    grid.edit_dlg.setValues(row_value);
+    dojo.publish(
+        zc.dojo.dialogFormUpdateTopic, [grid.edit_dlg.editForm.id, row_value]);
+    grid.edit_dlg.show();
+}
+
 zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
 
     var node = new dijit.layout.BorderContainer({
@@ -427,8 +440,9 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
         "label": "name"
     };
     var records_jsonStore = new dojo.data.ItemFileWriteStore({data: records_data});
+    var record_fields = build_layout(rc)
     var layout = [{
-        cells: build_layout(rc)
+        cells: record_fields
     }];
 
     var grid = new dojox.grid.EnhancedGrid({
@@ -445,13 +459,11 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
             dnd: true,
         }
     }, dojo.create('div', null, node.domNode));
-    grid.select.exceptColumnsTo = 1;
+    // To limit DnD activity to the DnD Handle.
+    grid.select.exceptColumnsTo = record_fields.length - 2;
     grid.select.getExceptionalColOffsetWidth = dojo.hitch(grid.select, function () {
-	//summary:
-	//		get the width of all un-movable columns
-	//return: Integer
-	//		the width of all un-movable columns
-	// if(!this.grid.indirectSelection || !this.grid.rowSelectCell){ return 0; }
+        // We override the method in dojox.grid.enhanced.dnd._DndMovingManager
+        // because we don't use the IndirectSelection plugin, but still want DnD.
 	var offsetWidth = (normalizedOffsetWidth = 0);
 	dojo.forEach(this.getHeaderNodes(), function(node, index){
 	    if(index <= this.exceptColumnsTo){
@@ -477,6 +489,10 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
     dojo.connect(grid, 'onCellClick', function (e) {
 	grid.selection.select(e.rowIndex);
     });
+    dojo.connect(grid, 'onCellDblClick', function (e) {
+	grid.selection.select(e.rowIndex);
+        edit_record(grid, grid.selection.getSelected()[0]);
+    });
 
     var new_btn = new dijit.form.Button({
         label: 'New',
@@ -493,9 +509,6 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
     var edit_btn = new dijit.form.Button({
         label: 'Edit',
         onClick: function (evt) {
-            if (grid.edit_dlg == null) {
-                grid.edit_dlg = build_record_form(grid, true);
-            }
             var row_values = grid.selection.getSelected();
             if (row_values.length != 1) {
                 var error_dialog = new dijit.Dialog({
@@ -504,16 +517,7 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
                 });
                 error_dialog.show();
             }
-            else {
-                var row_value = row_values[0];
-                row_value['record_id'] = row_value.name[0];
-                /* order of next two lines is important */
-                grid.edit_dlg.setValues(row_value);
-                dojo.publish(
-                    zc.dojo.dialogFormUpdateTopic, [grid.edit_dlg.editForm.id, row_value]);
-                grid.select.cancelDND();
-                grid.edit_dlg.show();
-            }
+            edit_record(grid, row_values[0]);
         }
     }, dojo.create('div', null, node.domNode));
     var delete_btn = new dijit.form.Button({
