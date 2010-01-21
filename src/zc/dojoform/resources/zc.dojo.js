@@ -291,33 +291,43 @@ var build_record = function (record, pnode, suffix, record_value){
 var build_layout = function (record){
 
     var record_layout = [];
+    var colwidth = 750/record.widgets.length;
     for (rc_wid in record.widgets) {
         rc_wid = dojo.clone(record.widgets[rc_wid]);
         var column = {
             name: rc_wid.fieldLabel,
             field: rc_wid.name,
-            width: 'auto',
+            width: colwidth + 'px',
             widget_constructor: rc_wid.widget_constructor,
-            rc_wid: rc_wid
+            rc_wid: rc_wid,
+            draggable: false
         };
         if (rc_wid.widget_constructor == "zc.z4m.schemacontent.Photo") {
             column.formatter = function (v) {
                 var data = dojo.fromJson(v);
                 if (data.thumbnail_tag != null) {
-                    return data.thumbnail_tag;
+                    return unescape(data.thumbnail_tag);
                 }
                 else {
-                    return '<img src="' + data.thumbnail_url + '" />';
+                    return '<img src="' + unescape(data.thumbnail_url) + '" />';
                 }
             }
         }
         record_layout.push(column);
     }
+    record_layout.push({
+        name: '',
+        field: '',
+        width: '20px',
+        noresize: true,
+        cellStyles: 'text-align: right;',
+        value: '<div>||</div>',
+    });
     return record_layout;
 };
 
 var build_record_form = function (grid) {
-    var layout = grid.structure;
+    var layout = grid.structure[0].cells;
     var edit_dlg = new dijit.Dialog({
         title: 'Add/Modify Record'
     });
@@ -328,16 +338,18 @@ var build_record_form = function (grid) {
     var cp = new dijit.layout.ContentPane(
         {style: 'height: auto;'}, dojo.create('div', null, rec_form.domNode));
     edit_dlg.form_widgets = [];
-    for (fld in layout) {
-        var rc_wid = dojo.clone(layout[fld].rc_wid);
-        var widget_div = dojo.create('div', {style: 'margin: 5px;'}, cp.domNode);
-        var label_div = dojo.create('div', {
-            innerHTML: rc_wid.fieldLabel + ': ',
-        }, widget_div);
-        var wid = zc.dojo.widgets[rc_wid.widget_constructor](
-            rc_wid, dojo.create('div', {style: 'height: auto;'}, widget_div));
-        edit_dlg.form_widgets.push(wid);
-    }
+    dojo.forEach(layout, function (fld) {
+        if (fld.rc_wid) {
+            var rc_wid = dojo.clone(fld.rc_wid);
+            var widget_div = dojo.create('div', {style: 'margin: 5px;'}, cp.domNode);
+            var label_div = dojo.create('div', {
+                innerHTML: rc_wid.fieldLabel + ': ',
+            }, widget_div);
+            var wid = zc.dojo.widgets[rc_wid.widget_constructor](
+                rc_wid, dojo.create('div', {style: 'height: auto;'}, widget_div));
+            edit_dlg.form_widgets.push(wid);
+        }
+    })
     var buttons_div = dojo.create('div', null, cp.domNode);
     var record_input = new dijit.form.TextBox({
         name: 'record_id',
@@ -350,7 +362,7 @@ var build_record_form = function (grid) {
             var record_data = dojo.formToObject(rec_form.domNode);
             if (! record_data.record_id) {
                 var row = {name: '.' + grid.rowCount};
-                dojo.forEach(grid.structure, function (fld) {
+                dojo.forEach(grid.structure[0].cells, function (fld) {
                     row[fld.field] = record_data[fld.field];
                 });
                 grid.store.newItem(row);
@@ -359,8 +371,10 @@ var build_record_form = function (grid) {
                 grid.store.fetchItemByIdentity({
                     identity: record_data.record_id,
                     onItem: function (item) {
-                        dojo.forEach(grid.structure, function (fld) {
-                            grid.store.setValue(item, fld.field, record_data[fld.field]);
+                        dojo.forEach(grid.structure[0].cells, function (fld) {
+                            if (fld.rc_wid) {
+                                grid.store.setValue(item, fld.field, record_data[fld.field]);
+                            }
                         });
                     }
                 })
@@ -408,23 +422,56 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
         "label": "name"
     };
     var records_jsonStore = new dojo.data.ItemFileWriteStore({data: records_data});
-    var layout = build_layout(rc);
+    var layout = [{
+        cells: build_layout(rc)
+    }];
+
     var grid = new dojox.grid.EnhancedGrid({
         query: { name: '*' },
         store: records_jsonStore,
-        rowSelector: '20px',
         structure: layout,
         escapeHTMLInData: false,
+        rowSelector: '20px',
+        autoWidth: true,
+        elastic: true,
+        autoHeight: true,
         plugins: {
             nestedSorting: true,
             dnd: true,
-            indirectSelection: {
-                name: "Selection",
-                width: '70px',
-                styles: "text-align: center;"
-            }
         }
-    }, dojo.create('div', {style: 'height: 300px;'}, node.domNode));
+    }, dojo.create('div', null, node.domNode));
+    grid.select.exceptColumnsTo = 1;
+    grid.select.getExceptionalColOffsetWidth = dojo.hitch(grid.select, function () {
+	//summary:
+	//		get the width of all un-movable columns
+	//return: Integer
+	//		the width of all un-movable columns
+	// if(!this.grid.indirectSelection || !this.grid.rowSelectCell){ return 0; }
+	var offsetWidth = (normalizedOffsetWidth = 0);
+	dojo.forEach(this.getHeaderNodes(), function(node, index){
+	    if(index <= this.exceptColumnsTo){
+		var coord = dojo.coords(node);
+		offsetWidth += coord.w;
+	    }
+	}, this);
+	normalizedOffsetWidth = offsetWidth;
+	return normalizedOffsetWidth > 0 ? normalizedOffsetWidth : 0;
+
+    });
+    dojo.connect(grid, 'onCellMouseOver', function (e) {
+        if (e.cell.draggable) {
+            grid.select.cleanAll();
+	    grid.selection.select(e.rowIndex);
+            grid.select.clearDrugDivs();
+            grid.select.addRowMover(e.rowIndex, e.rowIndex);
+        }
+        else {
+            grid.select.clearDrugDivs();
+        }
+    });
+    dojo.connect(grid, 'onCellClick', function (e) {
+	grid.selection.select(e.rowIndex);
+    });
 
     var new_btn = new dijit.form.Button({
         label: 'New',
@@ -434,6 +481,7 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
             }
             grid.edit_dlg.reset();
             dojo.publish(zc.dojo.dialogFormResetTopic, [grid.edit_dlg.editForm.id])
+            grid.select.cancelDND();
             grid.edit_dlg.show();
         }
     }, dojo.create('div', null, node.domNode));
@@ -458,6 +506,7 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
                 grid.edit_dlg.setValues(row_value);
                 dojo.publish(
                     zc.dojo.dialogFormUpdateTopic, [grid.edit_dlg.editForm.id, row_value]);
+                grid.select.cancelDND();
                 grid.edit_dlg.show();
             }
         }
@@ -465,8 +514,12 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
     var delete_btn = new dijit.form.Button({
         label: 'Delete',
         onClick: function (evt) {
-            grid.removeSelectedRows();
-        }
+            grid.edit.apply();
+            var selected = grid.selection.getSelected()
+            dojo.forEach(selected, grid.store.deleteItem, grid.store);
+	    grid.selection.clear();
+            grid.select.cancelDND();
+	}
     }, dojo.create('div', null, node.domNode));
 
     pnode.postStartup = function (node) {
