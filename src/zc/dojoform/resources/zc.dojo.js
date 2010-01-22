@@ -39,7 +39,7 @@ zc.dojo.get_recordlist_data = function (args) {
             while (idx < form_grid.rowCount) {
                 rec = form_grid.getItem(idx);
                 for (k in rec) {
-                    content[k + '.' + idx] = rec[k];
+                    content[k + '.' + idx] = form_grid.store.getValue(rec, k);
                 }
                 idx++;
             }
@@ -267,33 +267,13 @@ var makeComboBox = function (config, node, order) {
 
 zc.dojo.widgets['zc.ajaxform.widgets.ComboBox'] = makeComboBox;
 
-
-function build_record(record, pnode, suffix, record_value){
-
-    var record_json = '"name": "' + suffix + '", ';
-    for (rc_wid in record.widgets) {
-        rc_wid = dojo.clone(record.widgets[rc_wid]);
-        indexed_name = rc_wid.name;
-        rc_wid.name = indexed_name;
-        rc_wid.id = indexed_name;
-        if (record_value){
-            rc_wid.value = escape(record_value[rc_wid.id]);
-        }
-        record_json += '"' + rc_wid.name + '": "' + rc_wid.value + '",';
-    }
-    var rec = dojo.fromJson('{' + record_json + '}');
-    for (k in rec) {
-        rec[k] = unescape(rec[k]);
-    }
-    return rec;
-};
-
 function build_layout(record){
 
     var record_layout = [];
     var colwidth = 750/record.widgets.length;
     for (rc_wid in record.widgets) {
         rc_wid = dojo.clone(record.widgets[rc_wid]);
+        rc_wid.name = record.name + '.' + rc_wid.name
         var column = {
             name: rc_wid.fieldLabel,
             field: rc_wid.name,
@@ -324,6 +304,26 @@ function build_layout(record){
         value: '<div>||</div>',
     });
     return record_layout;
+};
+
+function build_record(record, pnode, suffix, record_value){
+
+    var record_json = '"name": "' + suffix + '", ';
+    for (rc_wid in record.widgets) {
+        rc_wid = dojo.clone(record.widgets[rc_wid]);
+        indexed_name = rc_wid.name;
+        rc_wid.name = record.name + '.' + indexed_name;
+        rc_wid.id = record.name + '.' + indexed_name;
+        if (record_value){
+            rc_wid.value = escape(record_value[indexed_name]);
+        }
+        record_json += '"' + rc_wid.name + '": "' + rc_wid.value + '",';
+    }
+    var rec = dojo.fromJson('{' + record_json + '}');
+    for (k in rec) {
+        rec[k] = unescape(rec[k]);
+    }
+    return rec;
 };
 
 function build_record_form(grid) {
