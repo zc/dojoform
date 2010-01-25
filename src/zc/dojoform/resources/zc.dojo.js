@@ -286,12 +286,17 @@ function build_layout(record){
         };
         if (rc_wid.widget_constructor == "zc.z4m.schemacontent.Photo") {
             column.formatter = function (v) {
-                var data = dojo.fromJson(v);
-                if (data.thumbnail_tag != null) {
-                    return unescape(data.thumbnail_tag);
+                if (v) {
+                    var data = dojo.fromJson(v);
+                    if (data.thumbnail_tag != null) {
+                        return unescape(data.thumbnail_tag);
+                    }
+                    else {
+                        return '<img src="' + unescape(data.thumbnail_url) + '" />';
+                    }
                 }
                 else {
-                    return '<img src="' + unescape(data.thumbnail_url) + '" />';
+                    return '';
                 }
             }
         }
@@ -370,7 +375,9 @@ function build_record_form(grid) {
             if (! record_data.record_id) {
                 var row = {name: '.' + grid.rowCount};
                 dojo.forEach(grid.structure[0].cells, function (fld) {
-                    row[fld.field] = record_data[fld.field];
+                    if (fld.rc_wid) {
+                        row[fld.field] = record_data[fld.field];
+                    }
                 });
                 grid.store.newItem(row);
             }
