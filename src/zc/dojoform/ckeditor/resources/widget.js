@@ -44,20 +44,26 @@ var CKEditorWidget = function (config, parent, order) {
         dojo.subscribe(zc.dojo.beforeRecordFormSubmittedTopic, function(frm_id) {
             dojo.forEach(dojo.query('textarea', frm_id), function (textarea) {
                 var editor = CKEDITOR.instances[textarea.name];
-                textarea.value = editor.getData();
+                if (editor) {
+                    textarea.value = editor.getData();
+                }
             })
         })
         dojo.subscribe(zc.dojo.dialogFormResetTopic, function(frm_id) {
             dojo.forEach(dojo.query('textarea', frm_id), function (textarea) {
                 var editor = CKEDITOR.instances[textarea.name];
-                editor.setData('');
+                if (editor) {
+                    editor.setData('');
+                }
             });
         })
         dojo.subscribe(zc.dojo.dialogFormUpdateTopic, function(frm_id, row) {
             dojo.forEach(dojo.query('textarea', frm_id), function (textarea) {
                 textarea.value = row[textarea.name];
                 var editor = CKEDITOR.instances[textarea.name];
-                editor.setData(row[textarea.name]);
+                if (editor) {
+                    editor.setData(row[textarea.name]);
+                }
             });
         })
         zc.dojo.widgets['zc.dojoform.ckeditor.CKEditor'].subscribers = true;

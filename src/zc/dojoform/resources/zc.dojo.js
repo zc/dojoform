@@ -273,7 +273,9 @@ function build_layout(record){
     var colwidth = 750/record.widgets.length;
     for (rc_wid in record.widgets) {
         rc_wid = dojo.clone(record.widgets[rc_wid]);
-        rc_wid.name = record.name + '.' + rc_wid.name
+        new_name = record.name + '.' + rc_wid.name;
+        rc_wid.name = new_name;
+        rc_wid.id = new_name;
         var column = {
             name: rc_wid.fieldLabel,
             field: rc_wid.name,
@@ -410,11 +412,23 @@ function edit_record(grid, row_value) {
     if (grid.edit_dlg == null) {
         grid.edit_dlg = build_record_form(grid, true);
     }
-    row_value['record_id'] = row_value.name[0];
+    var form_values = {record_id: grid.store.getValue(row_value, 'name')};
+    dojo.forEach(grid.structure[0].cells, function (fld) {
+        if (fld.rc_wid) {
+            form_values[fld.field] = grid.store.getValue(row_value, fld.field);
+        }
+    });
     /* order of next two lines is important */
-    grid.edit_dlg.setValues(row_value);
+    dojo.forEach(grid.edit_dlg.editForm.domNode.elements, function (ele) {
+ 	if (ele.name == 'record_id' || ele.name in form_values) {
+            var wid = dijit.byId(ele.id);
+            if (wid) {
+ 	        wid.attr('value', form_values[ele.name]);
+            }
+ 	}
+    });
     dojo.publish(
-        zc.dojo.dialogFormUpdateTopic, [grid.edit_dlg.editForm.id, row_value]);
+        zc.dojo.dialogFormUpdateTopic, [grid.edit_dlg.editForm.id, form_values]);
     grid.edit_dlg.show();
 }
 
