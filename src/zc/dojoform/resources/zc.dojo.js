@@ -325,6 +325,9 @@ function build_record(record, pnode, suffix, record_value){
         if (record_value){
             rc_wid.value = escape(record_value[indexed_name]);
         }
+        if (rc_wid.value == 'null') {
+            rc_wid.value = '';
+        }
         record_json += '"' + rc_wid.name + '": "' + rc_wid.value + '",';
     }
     var rec = dojo.fromJson('{' + record_json + '}');
