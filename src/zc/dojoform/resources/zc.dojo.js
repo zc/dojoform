@@ -276,8 +276,9 @@ function build_layout(record){
         new_name = record.name + '.' + rc_wid.name;
         rc_wid.name = new_name;
         rc_wid.id = new_name;
+        var column_label = rc_wid.fieldLabel;
         var column = {
-            name: rc_wid.fieldLabel,
+            name: column_label,
             field: rc_wid.name,
             width: colwidth + 'px',
             widget_constructor: rc_wid.widget_constructor,
@@ -355,10 +356,16 @@ function build_record_form(grid) {
     dojo.forEach(layout, function (fld) {
         if (fld.rc_wid) {
             var rc_wid = dojo.clone(fld.rc_wid);
-            var widget_div = dojo.create('div', {style: 'margin: 5px;'}, cp.domNode);
-            var label_div = dojo.create('div', {
-                innerHTML: rc_wid.fieldLabel + ': ',
+            var widget_div = dojo.create('div', {class: 'widget', style: 'margin: 5px;'}, cp.domNode);
+            var label = dojo.create('label', {
+                innerHTML:  rc_wid.fieldLabel + ': ',
             }, widget_div);
+            if (rc_wid.required == true) {
+                var span = dojo.create(
+                    'span', {innerHTML: ' (required)'}, label);
+                dojo.addClass(span, 'status-marker');
+            }
+            dojo.create('br', null, widget_div);
             var wid = zc.dojo.widgets[rc_wid.widget_constructor](
                 rc_wid, dojo.create('div', {style: 'height: auto;'}, widget_div));
             edit_dlg.form_widgets.push(wid);
@@ -496,61 +503,65 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
 	return normalizedOffsetWidth > 0 ? normalizedOffsetWidth : 0;
 
     });
-    dojo.connect(grid, 'onCellMouseOver', function (e) {
-        if (e.cell.draggable) {
-            grid.select.cleanAll();
+    if (!rc.readonly) {
+        dojo.connect(grid, 'onCellMouseOver', function (e) {
+            if (e.cell.draggable) {
+                grid.select.cleanAll();
+	        grid.selection.select(e.rowIndex);
+                grid.select.clearDrugDivs();
+                grid.select.addRowMover(e.rowIndex, e.rowIndex);
+            }
+            else {
+                grid.select.clearDrugDivs();
+            }
+        });
+        dojo.connect(grid, 'onCellClick', function (e) {
 	    grid.selection.select(e.rowIndex);
-            grid.select.clearDrugDivs();
-            grid.select.addRowMover(e.rowIndex, e.rowIndex);
-        }
-        else {
-            grid.select.clearDrugDivs();
-        }
-    });
-    dojo.connect(grid, 'onCellClick', function (e) {
-	grid.selection.select(e.rowIndex);
-    });
-    dojo.connect(grid, 'onCellDblClick', function (e) {
-	grid.selection.select(e.rowIndex);
-        edit_record(grid, grid.selection.getSelected()[0]);
-    });
+        });
+        dojo.connect(grid, 'onCellDblClick', function (e) {
+	    grid.selection.select(e.rowIndex);
+            edit_record(grid, grid.selection.getSelected()[0]);
+        });
+    }
 
-    var new_btn = new dijit.form.Button({
-        label: 'New',
-        onClick: function (evt) {
-            if (grid.edit_dlg == null) {
-                grid.edit_dlg = build_record_form(grid);
+    if (!rc.readonly) {
+        var new_btn = new dijit.form.Button({
+            label: 'New',
+            onClick: function (evt) {
+                if (grid.edit_dlg == null) {
+                    grid.edit_dlg = build_record_form(grid);
+                }
+                grid.edit_dlg.reset();
+                dojo.publish(zc.dojo.dialogFormResetTopic, [grid.edit_dlg.editForm.id])
+                grid.select.cancelDND();
+                grid.edit_dlg.show();
             }
-            grid.edit_dlg.reset();
-            dojo.publish(zc.dojo.dialogFormResetTopic, [grid.edit_dlg.editForm.id])
-            grid.select.cancelDND();
-            grid.edit_dlg.show();
-        }
-    }, dojo.create('div', null, node.domNode));
-    var edit_btn = new dijit.form.Button({
-        label: 'Edit',
-        onClick: function (evt) {
-            var row_values = grid.selection.getSelected();
-            if (row_values.length != 1) {
-                var error_dialog = new dijit.Dialog({
-                    title: 'Error!',
-                    content: 'Please select a single row to Edit.'
-                });
-                error_dialog.show();
+        }, dojo.create('div', null, node.domNode));
+        var edit_btn = new dijit.form.Button({
+            label: 'Edit',
+            onClick: function (evt) {
+                var row_values = grid.selection.getSelected();
+                if (row_values.length != 1) {
+                    var error_dialog = new dijit.Dialog({
+                        title: 'Error!',
+                        content: 'Please select a single row to Edit.'
+                    });
+                    error_dialog.show();
+                }
+                edit_record(grid, row_values[0]);
             }
-            edit_record(grid, row_values[0]);
-        }
-    }, dojo.create('div', null, node.domNode));
-    var delete_btn = new dijit.form.Button({
-        label: 'Delete',
-        onClick: function (evt) {
-            grid.edit.apply();
-            var selected = grid.selection.getSelected()
-            dojo.forEach(selected, grid.store.deleteItem, grid.store);
-	    grid.selection.clear();
-            grid.select.cancelDND();
-	}
-    }, dojo.create('div', null, node.domNode));
+        }, dojo.create('div', null, node.domNode));
+        var delete_btn = new dijit.form.Button({
+            label: 'Delete',
+            onClick: function (evt) {
+                grid.edit.apply();
+                var selected = grid.selection.getSelected()
+                dojo.forEach(selected, grid.store.deleteItem, grid.store);
+	        grid.selection.clear();
+                grid.select.cancelDND();
+	    }
+        }, dojo.create('div', null, node.domNode));
+    }
 
     pnode.postStartup = function (node) {
         grid.startup();
@@ -677,7 +688,7 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
         }
     }
     node.startup();
-    dojo.forEach(widgets, function (widget) {
+    dojo.forEach(widgets, function (widget, idx) {
         if (widget.postStartup != null) {
             widget.postStartup(node);
         }
