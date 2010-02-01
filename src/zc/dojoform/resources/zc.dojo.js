@@ -323,10 +323,7 @@ function build_record(record, pnode, suffix, record_value){
         rc_wid.name = record.name + '.' + indexed_name;
         rc_wid.id = record.name + '.' + indexed_name;
         if (record_value){
-            rc_wid.value = escape(record_value[indexed_name]);
-        }
-        if (rc_wid.value == 'null') {
-            rc_wid.value = '';
+            rc_wid.value = escape(record_value[indexed_name] || '');
         }
         record_json += '"' + rc_wid.name + '": "' + rc_wid.value + '",';
     }
