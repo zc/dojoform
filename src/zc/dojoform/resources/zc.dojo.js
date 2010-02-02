@@ -95,6 +95,23 @@ zc.dojo.widgets['zope.schema.TextLine'] = function (config, node, order)
     return new dijit.form.ValidationTextBox(wconfig, node).domNode;
 };
 
+zc.dojo.widgets['zope.schema.Password'] = function (config, node, order)
+{
+    wconfig = zc.dojo.parse_config(config, order);
+    wconfig.type = "password";
+    if (config.max_size != undefined)
+    {
+        wconfig.maxLength = config.max_size;
+        if (config.min_size)
+            wconfig.regExp = ".{"+config.min_size+","+config.max_size+"}";
+        else
+            wconfig.regExp = ".{0,"+config.max_size+"}";
+    }
+    else if (config.min_size)
+        wconfig.regExp = ".{"+config.mmin_size+",}";
+    return new dijit.form.ValidationTextBox(wconfig, node).domNode;
+};
+
 zc.dojo.widgets['zope.schema.Text'] = function (config, node, order, readOnly) {
 
     wconfig = zc.dojo.parse_config(config, order);
