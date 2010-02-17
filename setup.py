@@ -13,7 +13,7 @@
 ##############################################################################
 
 name = 'zc.dojoform'
-version = '0'
+version = '0.8.0'
 
 import os, re
 from setuptools import setup, find_packages
