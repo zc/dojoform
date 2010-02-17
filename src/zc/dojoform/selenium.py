@@ -28,12 +28,12 @@ class SeleniumTests(zc.selenium.pytest.Test):
         s.type('input', '3')
         s.click('dijit_form_Button_1')
         s.waitForText('value', '1')
-      
+
     def testForm(self):
         s = self.selenium
         s.open('/form.html?login')
-        s.waitForValue('first_name', "Happy") 
-        s.verifyValue('last_name', 'Camper') 
+        s.waitForValue('first_name', "Happy")
+        s.verifyValue('last_name', 'Camper')
         s.verifyValue('age', '23')
         # XXX Iframe selection not implemented yet apparently
         #s.selectFrame('other_iframe')
@@ -55,21 +55,63 @@ class SeleniumTests(zc.selenium.pytest.Test):
         s.assertChecked('happy')
         s.verifyValue('temperment', 'Right Neighborly')
         s.verifyValue('siblings', '1')
-        s.assertNotChecked('addresses.0')
-        s.assertNotChecked('addresses.1')
-        s.assertNotChecked('addresses.new')
-        s.verifyValue('street.0', "123 fake street")
-        s.verifyValue('city.0', "fakeville")
-        s.verifyValue('awesomeness.0', "9")
-        s.verifyValue('street.1', "345 false street")
-        s.verifyValue('city.1', "falsetown")
-        s.verifyValue('awesomeness.1', "9001")
+
+
+        #check grid
+        s.verifyText(
+            '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[1]/table/tbody/tr/td[1]/div',
+            '123 fake street')
+        s.verifyText(
+            '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[1]/table/tbody/tr/td[2]/div',
+            'fakeville')
+        s.verifyText(
+            '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[1]/table/tbody/tr/td[3]/div',
+            '9')
+
+        s.verifyText(
+            '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[2]/table/tbody/tr/td[1]/div',
+            '345 false street')
+        s.verifyText(
+            '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[2]/table/tbody/tr/td[2]/div',
+            'falsetown')
+        s.verifyText(
+            '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[2]/table/tbody/tr/td[3]/div',
+            '9001')
         s.click('ExampleForm.actions.register')
         s.verifyTextPresent('Submitting Form failed')
         s.verifyTextPresent('Value is too big')
         s.verifyTextPresent('Weight: Missing Input')
         s.click("//div[@id='dijit_Dialog_0']/div[1]/span[2]")
         s.type('weight', '23.5')
-        s.type('awesomeness.1', '2')
+
+        s.click('//div[@id=\'dojox_grid__View_1\']/div/div/div/div[2]/table/tbody/tr/td[1]/div')
+        s.click('dijit_form_Button_14')
+        s.type('addresses.awesomeness', '2')
+        s.click('dijit_form_Button_29')
+
+        # add a new record
+        s.click('dijit_form_Button_13')
+        s.type('addresses.street', 'The thirteenth Floor')
+        s.type('addresses.city', 'Somewhere')
+        s.type('addresses.awesomeness', '1')
+        s.click('dijit_form_Button_29')
+
         s.click('ExampleForm.actions.register')
-        
+
+        s.verifyText(
+            '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[3]/table/tbody/tr/td[1]/div',
+            'The thirteenth Floor')
+        s.verifyText(
+            '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[3]/table/tbody/tr/td[2]/div',
+            'Somewhere')
+        s.verifyText(
+            '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[3]/table/tbody/tr/td[3]/div',
+            '1')
+
+        # check delete
+        s.click(
+            '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[2]/table/tbody/tr/td[1]/div')
+        s.click('dijit_form_Button_15')
+        s.click('ExampleForm.actions.register')
+        s.verifyTextNotPresent('345 false street')
+        s.verifyTextNotPresent('falsetown')

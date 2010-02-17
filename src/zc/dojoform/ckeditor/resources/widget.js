@@ -30,10 +30,45 @@ var CKEditorWidget = function (config, parent, order) {
             textarea.value = editor.getData();
         };
         window.addEventListener('beforeSubmit', handler, true);
+        dojo.subscribe(zc.dojo.recordFormSubmittedTopic, handler);
         CKEDITOR.on('instanceReady', function (event) {
-            formNode.fit()
+            if (formNode.fit != null) {
+                formNode.fit()
+            }
         });
     };
+
+    /* subscribers to reset/set/save photo widget data.
+    */
+    if (!zc.dojo.widgets['zc.dojoform.ckeditor.CKEditor'].subscribers) { 
+        dojo.subscribe(zc.dojo.beforeRecordFormSubmittedTopic, function(frm_id) {
+            dojo.forEach(dojo.query('textarea', frm_id), function (textarea) {
+                var editor = CKEDITOR.instances[textarea.name];
+                if (editor) {
+                    textarea.value = editor.getData();
+                }
+            })
+        })
+        dojo.subscribe(zc.dojo.dialogFormResetTopic, function(frm_id) {
+            dojo.forEach(dojo.query('textarea', frm_id), function (textarea) {
+                var editor = CKEDITOR.instances[textarea.name];
+                if (editor) {
+                    editor.setData('');
+                }
+            });
+        })
+        dojo.subscribe(zc.dojo.dialogFormUpdateTopic, function(frm_id, row) {
+            dojo.forEach(dojo.query('textarea', frm_id), function (textarea) {
+                textarea.value = row[textarea.name];
+                var editor = CKEDITOR.instances[textarea.name];
+                if (editor) {
+                    editor.setData(row[textarea.name]);
+                }
+            });
+        })
+        zc.dojo.widgets['zc.dojoform.ckeditor.CKEditor'].subscribers = true;
+    }
+
     return parent;
 };
 
