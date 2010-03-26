@@ -747,7 +747,7 @@ zc.dojo.tab_index_map = function (definition) {
         widget = right[i];
         indices[widget.name] = index;
         index += 1;
-    };
+    }
     for (k in definition.actions) {
         widget = definition.actions[k];
         indices[widget.name] = index;
