@@ -43,7 +43,7 @@ zc.dojo.get_recordlist_data = function (args) {
                 for (k in rec) {
                     content[k + '.' + idx] = form_grid.store.getValue(rec, k);
                 }
-                idx++;
+                idx += 1;
             }
         });
         return content;
@@ -63,8 +63,9 @@ zc.dojo.call_server = function (args) {
         }
         else if (result.error) {
             var this_dialog = new dijit.Dialog({
-                title: args.task+' failed',
-                content: result.error });
+                title: args.task + ' failed',
+                content: result.error
+            });
             this_dialog.show();
         }
         if (args.failure) {
@@ -81,11 +82,11 @@ zc.dojo.call_server = function (args) {
             result = '';
             errors = data.errors;
             for (error in errors) {
-                result += errors[error]+'<br>';
+                result += errors[error] + '<br>';
             }
             var this_dialog = new dijit.Dialog({
-                title: args.task+' failed',
-                content: dojo.create('div',{id: 'error_message', innerHTML: result})
+                title: args.task + ' failed',
+                content: dojo.create('div', {id: 'error_message', innerHTML: result})
             });
             this_dialog.show();
         }
@@ -132,12 +133,12 @@ zc.dojo.widgets['zope.schema.TextLine'] = function (config, node, order) {
     {
         wconfig.maxLength = config.max_size;
         if (config.min_size) {
-            wconfig.regExp = ".{"+config.min_size+","+config.max_size+"}";
+            wconfig.regExp = ".{" + config.min_size + "," + config.max_size + "}";
         } else {
-            wconfig.regExp = ".{0,"+config.max_size+"}";
+            wconfig.regExp = ".{0," + config.max_size + "}";
         }
     } else if (config.min_size) {
-        wconfig.regExp = ".{"+config.mmin_size+",}";
+        wconfig.regExp = ".{" + config.mmin_size + ",}";
     }
     return new dijit.form.ValidationTextBox(wconfig, node).domNode;
 };
@@ -150,12 +151,12 @@ zc.dojo.widgets['zope.schema.Password'] = function (config, node, order) {
     {
         wconfig.maxLength = config.max_size;
         if (config.min_size) {
-            wconfig.regExp = ".{"+config.min_size+","+config.max_size+"}";
+            wconfig.regExp = ".{" + config.min_size + "," + config.max_size + "}";
         } else {
-            wconfig.regExp = ".{0,"+config.max_size+"}";
+            wconfig.regExp = ".{0," + config.max_size + "}";
         }
     } else if (config.min_size) {
-        wconfig.regExp = ".{"+config.mmin_size+",}";
+        wconfig.regExp = ".{" + config.mmin_size + ",}";
     }
     return new dijit.form.ValidationTextBox(wconfig, node).domNode;
 };
@@ -170,17 +171,17 @@ zc.dojo.widgets['zope.schema.Text'] = function (config, node, order, readOnly) {
         value: wconfig.value
     });
     // iframes = :[
-    wconfig['style'] = 'width:400px; height:200px;';
-    wconfig['height'] = '100%';
+    wconfig.style = 'width:400px; height:200px;';
+    wconfig.height = '100%';
     if (readOnly) {
-        wconfig['readOnly'] = true;
+        wconfig.readOnly = true;
     }
     var editor = new dijit.Editor(wconfig);
     total_editor.appendChild(editor_for_form.domNode);
     total_editor.appendChild(editor.domNode);
     editor.value = editor_for_form.getValue();
-    dojo.connect(editor, 'onBlur', function() {
-            editor_for_form.setValue(editor.getValue());
+    dojo.connect(editor, 'onBlur', function () {
+        editor_for_form.setValue(editor.getValue());
     });
     return total_editor;
 };
@@ -192,24 +193,24 @@ zc.dojo.widgets['zc.ajaxform.widgets.Hidden'] = function (config, node, order) {
     return new dijit.form.TextBox(wconfig, node).domNode;
 };
 
-zc.dojo.parse_number_config = function(config, order) {
+zc.dojo.parse_number_config = function (config, order) {
     var wconfig, constraints;
     wconfig = zc.dojo.parse_config(config, order);
     constraints = {};
     if (config.field_min != undefined) {
-        constraints['min'] = config.field_min;
+        constraints.min = config.field_min;
     }
     if (config.field_max != undefined) {
-        constraints['max'] = config.field_max;
+        constraints.max = config.field_max;
     }
-    wconfig['constraints'] = constraints;
+    wconfig.constraints = constraints;
     return wconfig;
 };
 
 zc.dojo.widgets['zope.schema.Int'] = function (config, node, order) {
     var wconfig;
     wconfig = zc.dojo.parse_number_config(config, order);
-    wconfig.constraints['places'] = 0;
+    wconfig.constraints.places = 0;
     return new dijit.form.NumberTextBox(wconfig, node).domNode;
 };
 
@@ -228,7 +229,7 @@ zc.dojo.widgets['zope.schema.Decimal'] = function (config, node, order) {
 zc.dojo.widgets['zope.schema.Bool'] = function (config, node, order) {
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
-    wconfig['checked'] = config.value;
+    wconfig.checked = config.value;
     return new dijit.form.CheckBox(wconfig, node).domNode;
 
 };
@@ -236,7 +237,7 @@ zc.dojo.widgets['zope.schema.Bool'] = function (config, node, order) {
 zc.dojo.widgets['zc.ajaxform.widgets.BasicDisplay'] = function (config, node, order) {
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
-    wconfig['readOnly'] = true;
+    wconfig.readOnly = true;
     return new dijit.form.TextBox(wconfig, node).domNode;
 
 };
@@ -246,7 +247,7 @@ zc.dojo.widgets['zc.ajaxform.widgets.RichTextDisplay'] = function (config, node,
     iframe.postStartup = function (node) {
         var doc = this.contentDocument;
         doc.open();
-        doc.write(config['value']);
+        doc.write(config.value);
         doc.close();
     };
     return iframe;
@@ -262,18 +263,18 @@ var _choiceConfig = function (config, node, order) {
     };
     var items = [];
     values = config.values;
-    for (index in values){
+    for (index in values) {
         items.push({
             label: values[index][1],
             value: values[index][0]
         });
     }
-    store_data['items'] = items;
+    store_data.items = items;
     var select_store = new dojo.data.ItemFileReadStore({
         data: store_data
     });
-    wconfig['store'] = select_store;
-    wconfig['searchAttr'] = "label";
+    wconfig.store = select_store;
+    wconfig.searchAttr = "label";
     return wconfig;
 };
 
@@ -293,10 +294,10 @@ var makeComboBox = function (config, node, order) {
 
 zc.dojo.widgets['zc.ajaxform.widgets.ComboBox'] = makeComboBox;
 
-function build_layout(record){
+function build_layout(record) {
     var rc_wid, new_name;
     var record_layout = [];
-    var colwidth = 750/record.widgets.length;
+    var colwidth = 750 / record.widgets.length;
     for (rc_wid in record.widgets) {
         rc_wid = dojo.clone(record.widgets[rc_wid]);
         new_name = record.name + '.' + rc_wid.name;
@@ -340,7 +341,7 @@ function build_layout(record){
     return record_layout;
 }
 
-function build_record(record, pnode, suffix, record_value){
+function build_record(record, pnode, suffix, record_value) {
     var rc_wid, indexed_name, k;
     var record_json = '"name": "' + suffix + '", ';
     for (rc_wid in record.widgets) {
@@ -348,7 +349,7 @@ function build_record(record, pnode, suffix, record_value){
         indexed_name = rc_wid.name;
         rc_wid.name = record.name + '.' + indexed_name;
         rc_wid.id = record.name + '.' + indexed_name;
-        if (record_value){
+        if (record_value) {
             rc_wid.value = escape(record_value[indexed_name] || '');
         }
         record_json += '"' + rc_wid.name + '": "' + rc_wid.value + '",';
@@ -476,8 +477,8 @@ function edit_record(grid, row_value) {
 zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
     var record, records;
     var node = new dijit.layout.BorderContainer({
-            design:"headline",
-            gutters:"false"
+            design: "headline",
+            gutters: "false"
         }, pnode);
     var rc = config.record_schema;
     rc.name = config.name;
@@ -486,8 +487,8 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
     records = config.value;
     for (record in records) {
         record = records[record];
-        item_list.push(build_record(rc, node, '.'+String(num), record));
-        num++;
+        item_list.push(build_record(rc, node, '.' + String(num), record));
+        num += 1;
     }
     var records_data = {
         "items": item_list,
@@ -520,8 +521,8 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
         // We override the method in dojox.grid.enhanced.dnd._DndMovingManager
         // because we don't use the IndirectSelection plugin, but still want DnD.
 	var offsetWidth = (normalizedOffsetWidth = 0);
-	dojo.forEach(this.getHeaderNodes(), function(node, index){
-	    if(index <= this.exceptColumnsTo){
+	dojo.forEach(this.getHeaderNodes(), function (node, index) {
+	    if (index <= this.exceptColumnsTo) {
 		var coord = dojo.coords(node);
 		offsetWidth += coord.w;
 	    }
@@ -608,10 +609,10 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
     }, pnode);
     dojo.addClass(form, 'zcForm');
     var node = new dijit.layout.BorderContainer({
-        design:"headline",
-        gutters:"false",
+        design: "headline",
+        gutters: "false",
         liveSplitters: true,
-        style:"height:100%; width:100%;"
+        style: "height:100%; width:100%;"
     }, form);
     var left_pane = false;
     var right_pane = new dijit.layout.ContentPane({
@@ -631,11 +632,11 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
         var cp = new dijit.layout.ContentPane({}, dojo.create('div'));
         dojo.addClass(cp.domNode, 'widget');
         var widget = config.definition.widgets[i];
-        if (!(left_pane) && (!right_pane)){
+        if (!(left_pane) && (!right_pane)) {
             node.addChild(cp);
         }
-        else if (config.definition.left_fields[widget.name]){
-            if (!left_pane){
+        else if (config.definition.left_fields[widget.name]) {
+            if (!left_pane) {
                 left_pane = new dijit.layout.ContentPane({
                     region: 'left',
                     style: 'width:60%',
@@ -650,7 +651,7 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
             right_pane.domNode.appendChild(cp.domNode);
         }
 
-        if (widget.widget_constructor != 'zc.ajaxform.widgets.Hidden'){
+        if (widget.widget_constructor !== 'zc.ajaxform.widgets.Hidden') {
             var label = dojo.create(
                 'label', {innerHTML: widget.fieldLabel}, cp.domNode);
             if (widget.required == true) {
@@ -701,7 +702,7 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
     };
 
     if (bottom_pane) {
-        if (config.definition.actions != undefined){
+        if (config.definition.actions != undefined) {
             actions = config.definition.actions;
             for (action_index in actions) {
                 action = actions[action_index];
@@ -761,15 +762,16 @@ zc.dojo.session_expired = function () {
 
 zc.dojo.system_error = function (task) {
     var this_dialog = new dijit.Dialog({
-    title: "Failed",
-    content: task+" failed for an unknown reason" })
+        title: "Failed",
+        content: task + " failed for an unknown reason"
+    });
     this_dialog.show();
 };
 
 zc.dojo.parse_config = function (config, order) {
     var readonly;
     readonly = config.readonly;
-    if (!readonly){ readonly = false; }
+    if (!readonly) { readonly = false; }
     var wconfig = {
         required: config.required,
         id: config.name,
