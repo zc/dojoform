@@ -372,21 +372,17 @@ function build_record_form(grid) {
     var rec_form = new dijit.form.Form({
         method: 'POST',
         encType: 'multipart/form-data'
-    });
-    var cp = new dijit.layout.ContentPane(
-        {style: 'height: 450px; width: 650px; y-overflow: auto;'},
-        dojo.create('div', null, rec_form.domNode)
-    );
+    }, dojo.create('div', null, edit_dlg.domNode));
     var record_input = new dijit.form.TextBox({
         name: 'record_id',
         type: 'hidden'
-    }, dojo.create('div', null, cp.domNode));
+    }, dojo.create('div', null, rec_form.domNode));
     edit_dlg.form_widgets = [];
     dojo.forEach(layout, function (fld) {
         if (fld.rc_wid) {
             var rc_wid = dojo.clone(fld.rc_wid);
             var widget_div = dojo.create(
-                'div', {'class': 'widget', style: 'margin: 5px;'}, cp.domNode);
+                'div', {'class': 'widget', style: 'margin: 5px;'}, rec_form.domNode);
             var label = dojo.create('label', {
                 innerHTML:  rc_wid.fieldLabel + ': '
             }, widget_div);
