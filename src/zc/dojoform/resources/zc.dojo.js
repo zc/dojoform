@@ -307,10 +307,11 @@ function build_layout(record) {
         var column = {
             name: column_label,
             field: rc_wid.name,
-            width: colwidth + 'px',
+            width: 'auto',
             widget_constructor: rc_wid.widget_constructor,
             rc_wid: rc_wid,
-            draggable: false
+            draggable: false,
+            cellStyles: 'vertical-align: top;'
         };
         if (rc_wid.widget_constructor == "zc.z4m.schemacontent.Photo") {
             column.formatter = function (v) {
@@ -503,20 +504,26 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
         cells: record_fields
     }];
 
+    var grid_container = new dijit.layout.ContentPane({
+        autoWidth: true,
+        autoHeight: true,
+        doLayout: true
+    }, dojo.create('div', null, node.domNode));
+
     var grid = new dojox.grid.EnhancedGrid({
         query: { name: '*' },
         store: records_jsonStore,
         structure: layout,
         escapeHTMLInData: false,
-        rowSelector: '20px',
-        autoWidth: true,
         elastic: true,
+        rowSelector: '20px',
         autoHeight: true,
         plugins: {
             nestedSorting: true,
             dnd: true
         }
-    }, dojo.create('div', null, node.domNode));
+    });
+    grid_container.attr('content', grid);
     // To limit DnD activity to the DnD Handle.
     grid.select.exceptColumnsTo = record_fields.length - 2;
     grid.select.getExceptionalColOffsetWidth = dojo.hitch(grid.select, function () {
@@ -641,7 +648,7 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
             if (!left_pane) {
                 left_pane = new dijit.layout.ContentPane({
                     region: 'left',
-                    style: 'width:60%',
+                    style: 'width: 60%',
                     splitter: true
                 });
                 right_pane.style.width = '40%';
