@@ -367,8 +367,7 @@ function build_record_form(grid) {
     var edit_dlg = new dijit.Dialog({
         title: 'Add/Modify Record',
         style: 'width: auto;',
-        width: '650px',
-        height: '450px'
+        doLayout: true
     });
     var rec_form = new dijit.form.Form({
         method: 'POST',
