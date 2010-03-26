@@ -366,13 +366,15 @@ function build_record_form(grid) {
     var edit_dlg = new dijit.Dialog({
         title: 'Add/Modify Record',
         style: 'width: auto;'
+        width: '650px',
+        height: '450px'
     });
     var rec_form = new dijit.form.Form({
         method: 'POST',
         encType: 'multipart/form-data'
     });
     var cp = new dijit.layout.ContentPane(
-        {style: 'height: 300px; width: 100%; y-overflow: auto;'},
+        {style: 'height: 450px; width: 650px; y-overflow: auto;'},
         dojo.create('div', null, rec_form.domNode)
     );
     var record_input = new dijit.form.TextBox({
