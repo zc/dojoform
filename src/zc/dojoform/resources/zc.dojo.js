@@ -406,13 +406,14 @@ function build_record_form(grid) {
             dojo.publish(zc.dojo.beforeRecordFormSubmittedTopic, [rec_form.id]);
             var record_data = dojo.formToObject(rec_form.domNode);
             if (! record_data.record_id) {
-                var row = {name: '.' + grid.rowCount};
+                var row = {name: '.' + grid.rowCount + 1};
                 dojo.forEach(grid.structure[0].cells, function (fld) {
                     if (fld.rc_wid) {
                         row[fld.field] = record_data[fld.field];
                     }
                 });
                 grid.store.newItem(row);
+                grid.store.save();
             }
             else {
                 grid.store.fetchItemByIdentity({
@@ -421,6 +422,7 @@ function build_record_form(grid) {
                         dojo.forEach(grid.structure[0].cells, function (fld) {
                             if (fld.rc_wid) {
                                 grid.store.setValue(item, fld.field, record_data[fld.field]);
+                                grid.store.save();
                             }
                         });
                     }
@@ -586,11 +588,9 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
         var delete_btn = new dijit.form.Button({
             label: 'Delete',
             onClick: function (evt) {
-                grid.edit.apply();
                 var selected = grid.selection.getSelected();
                 dojo.forEach(selected, grid.store.deleteItem, grid.store);
-	        grid.selection.clear();
-                grid.select.cancelDND();
+                grid.store.save();
 	    }
         }, dojo.create('div', null, node.domNode));
     }
