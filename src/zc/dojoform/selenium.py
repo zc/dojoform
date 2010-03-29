@@ -89,6 +89,11 @@ class SeleniumTests(zc.selenium.pytest.Test):
         s.type('addresses.awesomeness', '2')
         s.click('dijit_form_Button_29')
 
+        # check delete & immediate add
+        s.click(
+            '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[2]/table/tbody/tr/td[1]/div')
+        s.click('dijit_form_Button_15')
+
         # add a new record
         s.click('dijit_form_Button_13')
         s.type('addresses.street', 'The thirteenth Floor')
@@ -99,19 +104,24 @@ class SeleniumTests(zc.selenium.pytest.Test):
         s.click('ExampleForm.actions.register')
 
         s.verifyText(
-            '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[3]/table/tbody/tr/td[1]/div',
+            '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[2]/table/tbody/tr/td[1]/div',
             'The thirteenth Floor')
         s.verifyText(
-            '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[3]/table/tbody/tr/td[2]/div',
+            '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[2]/table/tbody/tr/td[2]/div',
             'Somewhere')
         s.verifyText(
-            '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[3]/table/tbody/tr/td[3]/div',
+            '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[2]/table/tbody/tr/td[3]/div',
             '1')
 
-        # check delete
-        s.click(
-            '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[2]/table/tbody/tr/td[1]/div')
-        s.click('dijit_form_Button_15')
-        s.click('ExampleForm.actions.register')
+        # check the deleted item doesn't exist
         s.verifyTextNotPresent('345 false street')
         s.verifyTextNotPresent('falsetown')
+
+        # now try a delete & save
+        s.click(
+            '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[1]/table/tbody/tr/td[1]/div')
+        s.click('dijit_form_Button_15')
+        s.click('ExampleForm.actions.register')
+
+        s.verifyTextNotPresent('123 fake street')
+        s.verifyTextNotPresent('fakeville')
