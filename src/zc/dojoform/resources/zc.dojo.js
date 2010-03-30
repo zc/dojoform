@@ -362,7 +362,7 @@ function build_record(record, pnode, suffix, record_value) {
     return rec;
 }
 
-function build_record_form(grid) {
+function build_record_form(widget_name, grid, index_map) {
     var layout = grid.structure[0].cells;
     var edit_dlg = new dijit.Dialog({
         title: 'Add/Modify Record',
@@ -381,6 +381,8 @@ function build_record_form(grid) {
     dojo.forEach(layout, function (fld) {
         if (fld.rc_wid) {
             var rc_wid = dojo.clone(fld.rc_wid);
+            var order = index_map[rc_wid.name];
+            rc_wid.tabIndex = order;
             var widget_div = dojo.create(
                 'div', {'class': 'widget', style: 'margin: 5px;'}, rec_form.domNode);
             var label = dojo.create('label', {
@@ -393,7 +395,7 @@ function build_record_form(grid) {
             }
             dojo.create('br', null, widget_div);
             var wid = zc.dojo.widgets[rc_wid.widget_constructor](
-                rc_wid, dojo.create('div', {style: 'height: auto;'}, widget_div));
+                rc_wid, dojo.create('div', {style: 'height: auto;'}, widget_div), order);
             edit_dlg.form_widgets.push(wid);
         }
     });
@@ -402,6 +404,7 @@ function build_record_form(grid) {
     var buttons_div = dojo.create('div', null, buttons_cp.domNode);
     var save_btn = new dijit.form.Button({
         label: 'Save',
+        tabIndex: index_map[widget_name + '.dojo.save'],
         onClick: function (e) {
             dojo.publish(zc.dojo.beforeRecordFormSubmittedTopic, [rec_form.id]);
             var record_data = dojo.formToObject(rec_form.domNode);
@@ -433,6 +436,7 @@ function build_record_form(grid) {
     }, dojo.create('div', null, buttons_div));
     var cancel_btn = new dijit.form.Button({
         label: 'Cancel',
+        tabIndex: index_map[widget_name + '.dojo.cancel'],
         onClick: function (evt) {
             edit_dlg.hide();
         }
@@ -449,10 +453,10 @@ function build_record_form(grid) {
     return edit_dlg;
 }
 
-function edit_record(grid, row_value) {
+function edit_record(widget_name, grid, row_value, index_map) {
     grid.select.clearDrugDivs();
     if (grid.edit_dlg == null) {
-        grid.edit_dlg = build_record_form(grid, true);
+        grid.edit_dlg = build_record_form(widget_name, grid, index_map);
     }
     var form_values = {record_id: grid.store.getValue(row_value, 'name')};
     dojo.forEach(grid.structure[0].cells, function (fld) {
@@ -474,7 +478,7 @@ function edit_record(grid, row_value) {
     grid.edit_dlg.show();
 }
 
-zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
+zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, index_map) {
     var record, records;
     var node = new dijit.layout.BorderContainer({
             design: "headline",
@@ -554,16 +558,17 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
         });
         dojo.connect(grid, 'onCellDblClick', function (e) {
 	    grid.selection.select(e.rowIndex);
-            edit_record(grid, grid.selection.getSelected()[0]);
+            edit_record(config.name, grid, grid.selection.getSelected()[0], index_map);
         });
     }
 
     if (!rc.readonly) {
         var new_btn = new dijit.form.Button({
             label: 'New',
+            tabIndex: index_map[config.name + '.dojo.new'],
             onClick: function (evt) {
                 if (grid.edit_dlg == null) {
-                    grid.edit_dlg = build_record_form(grid);
+                    grid.edit_dlg = build_record_form(config.name, grid, index_map);
                 }
                 grid.edit_dlg.reset();
                 dojo.publish(zc.dojo.dialogFormResetTopic, [grid.edit_dlg.editForm.id]);
@@ -573,6 +578,7 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
         }, dojo.create('div', null, node.domNode));
         var edit_btn = new dijit.form.Button({
             label: 'Edit',
+            tabIndex: index_map[config.name + '.dojo.edit'],
             onClick: function (evt) {
                 var row_values = grid.selection.getSelected();
                 if (row_values.length != 1) {
@@ -582,11 +588,12 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets) {
                     });
                     error_dialog.show();
                 }
-                edit_record(grid, row_values[0]);
+                edit_record(config.name, grid, row_values[0], index_map);
             }
         }, dojo.create('div', null, node.domNode));
         var delete_btn = new dijit.form.Button({
             label: 'Delete',
+            tabIndex: index_map[config.name + '.dojo.delete'],
             onClick: function (evt) {
                 var selected = grid.selection.getSelected();
                 dojo.forEach(selected, grid.store.deleteItem, grid.store);
@@ -669,7 +676,8 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
             widget,
             dojo.create('div'),
             index_map[widget.name] + tabIndexOffset,
-            widgets
+            widgets,
+            index_map
         );
         cp.domNode.appendChild(wid);
         widgets.push(wid);
@@ -736,11 +744,28 @@ zc.dojo.tab_index_map = function (definition) {
     var right = [];
     var index = 0;
     var widget, k, i;
+    var list_widgets = [];
     for (k in definition.widgets) {
         widget = definition.widgets[k];
         if (left[widget.name]) {
             indices[widget.name] = index;
             index += 1;
+            if (widget.widget_constructor == 'zope.schema.List') {
+                /* for the New, Edit, and Delete buttons */
+                dojo.forEach(['new', 'edit', 'delete'], function (item) {
+                    indices[widget.name + '.dojo.' + item] = index;
+                    index += 1;
+                });
+                for (inner_k in widget.record_schema.widgets) {
+                    if (widget.record_schema.widgets.hasOwnProperty(inner_k)) {
+                        var list_widget = widget.record_schema.widgets[inner_k];
+                        list_widgets.push(widget.name + '.' + list_widget.name);
+                    }
+                }
+                dojo.forEach(['save', 'cancel'], function (item) {
+                    list_widgets.push(widget.name + '.dojo.' + item);
+                });
+            }
         } else {
             right.push(widget);
         }
@@ -755,6 +780,11 @@ zc.dojo.tab_index_map = function (definition) {
         indices[widget.name] = index;
         index += 1;
     }
+    /* Handle widgets for list type if any*/
+    dojo.forEach(list_widgets, function (item, idx, arr) {
+        indices[item] = index;
+        index += 1;
+    });
     return indices;
 };
 
