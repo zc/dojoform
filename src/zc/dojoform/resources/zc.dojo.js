@@ -377,6 +377,7 @@ function build_record_form(widget_name, grid, index_map) {
     });
     var rec_form = new dijit.form.Form({
         method: 'POST',
+        style: 'max-height: 400px; overflow: auto;',
         encType: 'multipart/form-data'
     }, dojo.create('div', null, edit_dlg.domNode));
     var record_input = new dijit.form.TextBox({
