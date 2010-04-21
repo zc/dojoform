@@ -313,7 +313,7 @@ function build_layout(record) {
             draggable: false,
             cellStyles: 'vertical-align: top;'
         };
-        if (rc_wid.widget_constructor == "zc.z4m.schemacontent.Photo") {
+        if (rc_wid.widget_constructor == "zc.z4m.quickcontent.Photo") {
             column.formatter = function (v) {
                 if (v) {
                     var data = dojo.fromJson(v);
