@@ -313,15 +313,21 @@ function build_layout(record) {
             draggable: false,
             cellStyles: 'vertical-align: top;'
         };
-        if (rc_wid.widget_constructor == "zc.z4m.quickcontent.Photo") {
+        if (rc_wid.type == "file") {
             column.formatter = function (v) {
                 if (v) {
                     var data = dojo.fromJson(v);
                     if (data.thumbnail_tag != null) {
                         return unescape(data.thumbnail_tag);
                     }
-                    else {
+                    else if (data.thumbnail_url != null){
                         return '<img src="' + unescape(data.thumbnail_url) + '" />';
+                    }
+                    else if (data.filename != null){
+                        return data.filename;
+                    }
+                    else {
+                        return '';
                     }
                 }
                 else {
