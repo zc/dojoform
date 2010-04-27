@@ -2,7 +2,7 @@
 Changes
 =======
 
-0.10.0 (2010-04-27)
+0.13.0 (2010-04-27)
 ===================
 
 - Removed call to .startup() on form; it is the client's job to start the form
@@ -14,6 +14,12 @@ Changes
   a plain text widget.
 - Bug fix (I think): removed some style ("width:100%") from the right
   ContentPane that caused the form to be too wide.
+
+
+0.10.0 through 0.12.0
+=====================
+
+Missing change log.
 
 
 0.9.0 (2010-03-29)
