@@ -2,6 +2,19 @@
 Changes
 =======
 
+0.10.0 (2010-04-27)
+===================
+
+- Removed call to .startup() on form; it is the client's job to start the form
+  after optionally adding additional widgets to it.
+- Added a rich text widget (zc.ajaxform.widgets.RichText).
+- Made the rich text widget's height and width configurable via display
+  options.
+- Bug fix: zope.schema.Text was errantly given a rich text widget.  It now uses
+  a plain text widget.
+- Bug fix (I think): removed some style ("width:100%") from the right
+  ContentPane that caused the form to be too wide.
+
 
 0.9.0 (2010-03-29)
 ==================

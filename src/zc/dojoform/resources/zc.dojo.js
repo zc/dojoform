@@ -143,6 +143,12 @@ zc.dojo.widgets['zope.schema.TextLine'] = function (config, node, order) {
     return new dijit.form.ValidationTextBox(wconfig, node).domNode;
 };
 
+function update(a, b) {
+    for (var k in b)
+        if (b.hasOwnProperty(k))
+            a[k] = b[k];
+}
+
 zc.dojo.widgets['zope.schema.Password'] = function (config, node, order) {
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
@@ -162,8 +168,18 @@ zc.dojo.widgets['zope.schema.Password'] = function (config, node, order) {
 };
 
 zc.dojo.widgets['zope.schema.Text'] = function (config, node, order, readOnly) {
-    var wconfig;
-    wconfig = zc.dojo.parse_config(config, order);
+    var wconfig = zc.dojo.parse_config(config, order);
+    wconfig.style = 'width:auto';
+    if (config.display_options != null) {
+        update(wconfig, config.display_options);
+    }
+    return new dijit.form.SimpleTextarea(wconfig, node).domNode;
+};
+
+zc.dojo.widgets['zc.ajaxform.widgets.RichText'] =
+        function (config, node, order, readOnly) {
+
+    var wconfig = zc.dojo.parse_config(config, order);
     var total_editor = dojo.create('div', {}, node);
     var editor_for_form = new dijit.form.TextBox({
         type: 'hidden',
@@ -171,8 +187,19 @@ zc.dojo.widgets['zope.schema.Text'] = function (config, node, order, readOnly) {
         value: wconfig.value
     });
     // iframes = :[
-    wconfig.style = 'width:400px; height:200px;';
+    if (wconfig.style == null)
+        wconfig.style = '';
+    if (wconfig.width == null)
+        wconfig.width = '400px';
+    if (wconfig.height == null)
+        wconfig.height = '200px';
+
+    if (config.display_options != null) {
+        update(wconfig, config.display_options);
+    }
+
     wconfig.height = '100%';
+
     if (readOnly) {
         wconfig.readOnly = true;
     }
@@ -635,7 +662,6 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
     var left_pane = false;
     var right_pane = new dijit.layout.ContentPane({
         region: 'center',
-        style: 'width:100%',
         splitter: true
     });
     node.addChild(right_pane);
@@ -728,14 +754,14 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
                 var button = new dijit.form.Button({
                     label: action.label,
                     id: action.name,
+                    onClick: fireSubmitEvent,
+                    type: 'button',
                     tabIndex: index_map[action.name] + tabIndexOffset
-                }, dojo.create('div', {style: "float:left;"}));
-                button.onClick = fireSubmitEvent;
+                });
                 bottom_pane.domNode.appendChild(button.domNode);
              }
         }
     }
-    node.startup();
     dojo.forEach(widgets, function (widget, idx) {
         if (widget.postStartup != null) {
             widget.postStartup(node);
