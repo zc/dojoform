@@ -41,6 +41,8 @@ setup(
     packages = find_packages('src'),
     namespace_packages = ['zc'],
     package_dir = {'': 'src'},
+    data_files=[
+        ('zc/dojoform/resources', ['src/zc/dojoform/resources/default.css'])],
     include_package_data = True,
     install_requires = [
         'setuptools',
