@@ -566,22 +566,22 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, i
     grid.select.getExceptionalColOffsetWidth = dojo.hitch(grid.select, function () {
         // We override the method in dojox.grid.enhanced.dnd._DndMovingManager
         // because we don't use the IndirectSelection plugin, but still want DnD.
-	var offsetWidth = (normalizedOffsetWidth = 0);
-	dojo.forEach(this.getHeaderNodes(), function (node, index) {
-	    if (index <= this.exceptColumnsTo) {
-		var coord = dojo.coords(node);
-		offsetWidth += coord.w;
-	    }
-	}, this);
-	normalizedOffsetWidth = offsetWidth;
-	return normalizedOffsetWidth > 0 ? normalizedOffsetWidth : 0;
+        var offsetWidth = (normalizedOffsetWidth = 0);
+        dojo.forEach(this.getHeaderNodes(), function (node, index) {
+            if (index <= this.exceptColumnsTo) {
+                var coord = dojo.coords(node);
+                offsetWidth += coord.w;
+            }
+        }, this);
+        normalizedOffsetWidth = offsetWidth;
+        return normalizedOffsetWidth > 0 ? normalizedOffsetWidth : 0;
 
     });
     if (!rc.readonly) {
         dojo.connect(grid, 'onCellMouseOver', function (e) {
             if (e.cell.draggable) {
                 grid.select.cleanAll();
-	        grid.selection.select(e.rowIndex);
+                grid.selection.select(e.rowIndex);
                 grid.select.clearDrugDivs();
                 grid.select.addRowMover(e.rowIndex, e.rowIndex);
             }
@@ -590,10 +590,10 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, i
             }
         });
         dojo.connect(grid, 'onCellClick', function (e) {
-	    grid.selection.select(e.rowIndex);
+            grid.selection.select(e.rowIndex);
         });
         dojo.connect(grid, 'onCellDblClick', function (e) {
-	    grid.selection.select(e.rowIndex);
+            grid.selection.select(e.rowIndex);
             edit_record(config.name, grid, grid.selection.getSelected()[0], index_map);
         });
     }
@@ -634,7 +634,7 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, i
                 var selected = grid.selection.getSelected();
                 dojo.forEach(selected, grid.store.deleteItem, grid.store);
                 grid.store.save();
-	    }
+            }
         }, dojo.create('div', null, node.domNode));
     }
 
