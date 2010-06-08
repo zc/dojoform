@@ -1,5 +1,6 @@
 /* Dojo form widget for resource reference list */
 
+zc.dojo.GLOBAL_HANDLERS = [];
 
 // URL of a CKEeditor config file to use.
 var ckeditorCustomConfig = '';
@@ -30,6 +31,7 @@ var CKEditorWidget = function (config, parent, order) {
             textarea.value = editor.getData();
         };
         window.addEventListener('beforeSubmit', handler, true);
+        zc.dojo.GLOBAL_HANDLERS.push(handler);
         dojo.subscribe(zc.dojo.recordFormSubmittedTopic, handler);
         CKEDITOR.on('instanceReady', function (event) {
             if (formNode.fit != null) {
