@@ -50,6 +50,54 @@ zc.dojo.get_recordlist_data = function (args) {
     }
 };
 
+zc.dojo.alert = function (args) {
+    var button, dialog, dtor, el, nodes;
+    dialog = new dijit.Dialog({'title': args.title || 'Alert'});
+    dtor = function () {
+        dialog.hide();
+        dialog.destroyRecursive();
+    };
+    dojo.connect(dialog, 'onCancel', dtor);
+    button = new dijit.form.Button({
+        label: 'OK',
+        onClick: dtor
+    });
+    el = dojo.create('div', {
+            style: 'text-align: left; width: 100%; margin-bottom: 15%;',
+            innerHTML: args.content
+        });
+    nodes = new dojo.NodeList(el);
+    el = dojo.create('div', {style: 'text-align: right; width: 100%;'});
+    el.appendChild(button.domNode);
+    nodes.push(el);
+    dialog.attr('content', nodes);
+    dialog.show();
+};
+
+zc.dojo.alert = function (args) {
+    var button, dialog, dtor, el, nodes;
+    dialog = new dijit.Dialog({'title': args.title || 'Alert'});
+    dtor = function () {
+        dialog.hide();
+        dialog.destroyRecursive();
+    };
+    dojo.connect(dialog, 'onCancel', dtor);
+    button = new dijit.form.Button({
+        label: 'OK',
+        onClick: dtor
+    });
+    el = dojo.create('div', {
+            style: 'text-align: left; width: 100%; margin-bottom: 15%;',
+            innerHTML: args.content
+        });
+    nodes = new dojo.NodeList(el);
+    el = dojo.create('div', {style: 'text-align: right; width: 100%;'});
+    el.appendChild(button.domNode);
+    nodes.push(el);
+    dialog.attr('content', nodes);
+    dialog.show();
+};
+
 zc.dojo.call_server = function (args) {
     var content, k;
     var callback_error = function (error) {
@@ -62,11 +110,10 @@ zc.dojo.call_server = function (args) {
             return zc.dojo.session_expired(error);
         }
         else if (result.error) {
-            var this_dialog = new dijit.Dialog({
+            zc.dojo.alert({
                 title: args.task + ' failed',
                 content: result.error
             });
-            this_dialog.show();
         }
         if (args.failure) {
             args.failure(error);
@@ -84,11 +131,9 @@ zc.dojo.call_server = function (args) {
             for (error in errors) {
                 result += errors[error] + '<br>';
             }
-            var this_dialog = new dijit.Dialog({
+            zc.dojo.alert({
                 title: args.task + ' failed',
-                content: dojo.create('div', {id: 'error_message', innerHTML: result})
-            });
-            this_dialog.show();
+                content: result});
         }
         else if (args.success) {
             args.success(data);
@@ -442,6 +487,9 @@ function build_record_form(widget_name, grid, index_map) {
         label: 'Save',
         tabIndex: index_map[widget_name + '.dojo.save'],
         onClick: function (e) {
+            if (!rec_form.validate()) {
+                return;
+            }
             dojo.publish(zc.dojo.beforeRecordFormSubmittedTopic, [rec_form.id]);
             var record_data = dojo.formToObject(rec_form.domNode);
             if (! record_data.record_id) {
@@ -603,11 +651,13 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, i
             label: 'New',
             tabIndex: index_map[config.name + '.dojo.new'],
             onClick: function (evt) {
-                if (grid.edit_dlg == null) {
-                    grid.edit_dlg = build_record_form(config.name, grid, index_map);
+                if (!grid.edit_dlg) {
+                    grid.edit_dlg = build_record_form(config.name, grid,
+                                                      index_map);
                 }
                 grid.edit_dlg.reset();
-                dojo.publish(zc.dojo.dialogFormResetTopic, [grid.edit_dlg.editForm.id]);
+                dojo.publish(zc.dojo.dialogFormResetTopic,
+                             [grid.edit_dlg.editForm.id]);
                 grid.select.cancelDND();
                 grid.edit_dlg.show();
             }
@@ -618,11 +668,10 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, i
             onClick: function (evt) {
                 var row_values = grid.selection.getSelected();
                 if (row_values.length != 1) {
-                    var error_dialog = new dijit.Dialog({
+                    zc.dojo.alert({
                         title: 'Error!',
                         content: 'Please select a single row to Edit.'
                     });
-                    error_dialog.show();
                 }
                 edit_record(config.name, grid, row_values[0], index_map);
             }
@@ -824,17 +873,16 @@ zc.dojo.tab_index_map = function (definition) {
 };
 
 zc.dojo.session_expired = function () {
-   dijit.Dialog({
+   zc.dojo.alert({
        title: "Session Expired",
-       content: "You will need to log-in again." }).show();
+       content: "You will need to log-in again." });
 };
 
 zc.dojo.system_error = function (task) {
-    var this_dialog = new dijit.Dialog({
+    zc.dojo.alert({
         title: "Failed",
         content: task + " failed for an unknown reason"
     });
-    this_dialog.show();
 };
 
 zc.dojo.parse_config = function (config, order) {
@@ -853,4 +901,3 @@ zc.dojo.parse_config = function (config, order) {
     };
     return wconfig;
 };
-
