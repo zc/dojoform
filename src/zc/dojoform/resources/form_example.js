@@ -7,6 +7,7 @@ dojo.addOnLoad( function () {
             dojo.create('div', {}, dojo.body())
         );
         actionify_buttons(form_data);
+        dijit.byId(form_data.definition.prefix).startup();
     };
 
     zc.dojo.call_server({
@@ -14,7 +15,7 @@ dojo.addOnLoad( function () {
         task: 'Loading Form',
         success: createForm
     });
- 
+
     console.log('form loaded');
 
     actionify_buttons = function (config) {
@@ -25,7 +26,7 @@ dojo.addOnLoad( function () {
                 zc.dojo.submit_form({
                     url: action.url,
                     form_id: config.definition.prefix,
-                    task: 'Submitting Form',
+                    task: 'Submitting Form'
                 });
             });
         }
