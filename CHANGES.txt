@@ -2,6 +2,35 @@
 Changes
 =======
 
+0.17.0 (????-??-??)
+===================
+
+- Add convenience function (zc.dojo.alert) for displaying alert messages.
+
+- Make zope.schema.List widget validate contents of the adding form.
+
+
+0.16.0 (2010-06-09)
+===================
+
+- Keep track of window event handlers in the ckeditor widget; handlers are
+  added to the zc.dojo.GLOBAL_HANDLERS list.
+
+- Revert change in 0.15.0.
+
+0.15.0 (2010-05-13)
+===================
+
+- Added data_files entry to setup.py for `default.css` file added in 0.14.0.
+
+0.14.0 (2010-05-13)
+===================
+
+- Added `default.css` to resources, a style sheet that can be used for nicer
+  presentation.
+
+- Whitespace/lint cleanup in `zc.dojo.js`.
+
 0.13.0 (2010-04-27)
 ===================
 
