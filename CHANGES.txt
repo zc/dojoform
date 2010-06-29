@@ -7,8 +7,14 @@ Changes
 
 - Add convenience function (zc.dojo.alert) for displaying alert messages.
 
+- Add convenience function (zc.dojo.confirm) for displaying confirmation
+  dialogs.
+
 - Make zope.schema.List widget validate contents of the adding form.
 
+- Fix broken selenium tests.
+
+- Fix issue with the RichText widget when no default value is provided.
 
 0.16.0 (2010-06-09)
 ===================

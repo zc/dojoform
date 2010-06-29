@@ -289,7 +289,7 @@ zc.dojo.widgets['zc.ajaxform.widgets.RichText'] =
     var editor_for_form = new dijit.form.TextBox({
         type: 'hidden',
         name: wconfig.name,
-        value: wconfig.value
+        value: wconfig.value || ''
     });
     // iframes = :[
     if (!wconfig.style) {
