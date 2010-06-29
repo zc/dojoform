@@ -51,7 +51,28 @@ zc.dojo.get_recordlist_data = function (args) {
 };
 
 zc.dojo.alert = function (args) {
+    // Parameters can be passed in an object or in the following order:
+    //
+    // title: String
+    //              The text for the title bar of the dialog.
+    // content: String
+    //              The text for the body of the dialog.
+
     var button, dialog, dtor, el, nodes;
+
+    var _args, params;
+
+    if (arguments.length > 1) {
+        _args = {};
+        params = ['title', 'content'];
+        for (i=0; i<arguments.length; i++) {
+            _args[params[i]] = arguments[i];
+        }
+        args = _args;
+    } else if (typeof args != "object") {
+        throw new Error("Invalid argument.");
+    }
+
     dialog = new dijit.Dialog({'title': args.title || 'Alert'});
     dtor = function () {
         dialog.hide();
@@ -73,6 +94,67 @@ zc.dojo.alert = function (args) {
     dialog.attr('content', nodes);
     dialog.show();
 };
+
+zc.dojo.confirm = function (args) {
+    // Parameters can be passed in an object or in the following order.
+    //
+    // title: String
+    //              The text for the title bar of the dialog.
+    // content: String
+    //              The text for the body of the dialog.
+    // yes: Function (optional)
+    //              The callback for the 'Yes' button.
+    // no: Function (optional)
+    //              The callback for the 'No' or dialog cancel buttons.
+
+    var btn, btn_div, dialog, events, handler, no_cb, nodes;
+
+    var _args, params;
+
+    if (arguments.length > 1) {
+        _args = {};
+        params = ['title', 'content', 'yes', 'no'];
+        for (i=0; i<arguments.length; i++) {
+            _args[params[i]] = arguments[i];
+        }
+        args = _args;
+    } else if (typeof args != "object") {
+        throw new Error("Invalid argument.");
+    }
+
+    dialog = new dijit.Dialog({title: args.title || 'Confirm'});
+
+    events = [];
+    handler = function (cb) {
+        dialog.hide();
+        dojo.forEach(events, dojo.disconnect);
+        if (cb) {
+            cb();
+        }
+    };
+
+    btn_div = dojo.create('div', {style: 'text-align: right; width: 100%;'});
+
+    btn = new dijit.form.Button({label: 'No'});
+    btn_div.appendChild(btn.domNode);
+    no_cb = dojo.partial(handler, args.no);
+    events.push(dojo.connect(btn, 'onClick', no_cb));
+    events.push(dojo.connect(dialog, 'onCancel', no_cb));
+
+    btn = new dijit.form.Button({label: 'Yes'});
+    btn_div.appendChild(btn.domNode);
+    events.push(
+        dojo.connect(btn, 'onClick', dojo.partial(handler, args.yes)));
+
+    nodes = new dojo.NodeList(
+                dojo.create('div', {
+                    innerHTML: args.content,
+                    style: 'margin-bottom: 10%;'}));
+    nodes.push(btn_div);
+    dialog.attr('content', nodes);
+    dialog.show();
+};
+
 
 zc.dojo.call_server = function (args) {
     var content, k;
@@ -119,13 +201,13 @@ zc.dojo.call_server = function (args) {
     /* Subscribers might be listening to this event. Do not remove. */
     dojo.publish(zc.dojo.beforeContentFormSubmittedTopic, [args.form_id]);
     content = zc.dojo.get_recordlist_data(args);
-    if (args.content == null) {
+    if (!args.content) {
         args.content = {};
     }
     for (k in content) {
         args.content[k] = content[k];
     }
-    if (args.form_id == undefined) {
+    if (!args.form_id) {
         dojo.xhrPost({
             url: args.url,
             handleAs: "json",
@@ -165,16 +247,18 @@ zc.dojo.widgets['zope.schema.TextLine'] = function (config, node, order) {
 };
 
 function update(a, b) {
-    for (var k in b)
-        if (b.hasOwnProperty(k))
+    for (var k in b) {
+        if (b.hasOwnProperty(k)) {
             a[k] = b[k];
+        }
+    }
 }
 
 zc.dojo.widgets['zope.schema.Password'] = function (config, node, order) {
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
     wconfig.type = "password";
-    if (config.max_size !== undefined)
+    if (config.max_size !== undefined9)
     {
         wconfig.maxLength = config.max_size;
         if (config.min_size) {
@@ -191,7 +275,7 @@ zc.dojo.widgets['zope.schema.Password'] = function (config, node, order) {
 zc.dojo.widgets['zope.schema.Text'] = function (config, node, order, readOnly) {
     var wconfig = zc.dojo.parse_config(config, order);
     wconfig.style = 'width:auto';
-    if (config.display_options != null) {
+    if (config.display_options) {
         update(wconfig, config.display_options);
     }
     return new dijit.form.SimpleTextarea(wconfig, node).domNode;
@@ -208,14 +292,17 @@ zc.dojo.widgets['zc.ajaxform.widgets.RichText'] =
         value: wconfig.value
     });
     // iframes = :[
-    if (wconfig.style == null)
+    if (!wconfig.style) {
         wconfig.style = '';
-    if (wconfig.width == null)
+    }
+    if (!wconfig.width) {
         wconfig.width = '400px';
-    if (wconfig.height == null)
+    }
+    if (!wconfig.height) {
         wconfig.height = '200px';
+    }
 
-    if (config.display_options != null) {
+    if (config.display_options) {
         update(wconfig, config.display_options);
     }
 
@@ -507,7 +594,7 @@ function build_record_form(widget_name, grid, index_map) {
     edit_dlg.startup();
     edit_dlg.editForm = rec_form;
     dojo.forEach(edit_dlg.form_widgets, function (w) {
-        if (w.postStartup != null) {
+        if (w.postStartup) {
             w.postStartup(edit_dlg);
         }
     });
@@ -516,7 +603,7 @@ function build_record_form(widget_name, grid, index_map) {
 
 function edit_record(widget_name, grid, row_value, index_map) {
     grid.select.clearDrugDivs();
-    if (grid.edit_dlg == null) {
+    if (!grid.edit_dlg) {
         grid.edit_dlg = build_record_form(widget_name, grid, index_map);
     }
     var form_values = {record_id: grid.store.getValue(row_value, 'name')};
@@ -791,7 +878,7 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
         }
     }
     dojo.forEach(widgets, function (widget, idx) {
-        if (widget.postStartup != null) {
+        if (widget.postStartup) {
             widget.postStartup(node);
         }
     });
