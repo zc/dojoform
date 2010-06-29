@@ -86,21 +86,21 @@ class SeleniumTests(zc.selenium.pytest.Test):
         s.type('weight', '23.5')
 
         s.click('//div[@id=\'dojox_grid__View_1\']/div/div/div/div[2]/table/tbody/tr/td[1]/div')
-        s.click('dijit_form_Button_14')
+        s.click('dijit_form_Button_1')
         s.type('addresses.awesomeness', '2')
-        s.click('dijit_form_Button_29')
+        s.click('dijit_form_Button_4')
 
         # check delete & immediate add
         s.click(
             '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[2]/table/tbody/tr/td[1]/div')
-        s.click('dijit_form_Button_15')
+        s.click('dijit_form_Button_2')
 
         # add a new record
-        s.click('dijit_form_Button_13')
+        s.click('dijit_form_Button_0')
         s.type('addresses.street', 'The thirteenth Floor')
         s.type('addresses.city', 'Somewhere')
         s.type('addresses.awesomeness', '1')
-        s.click('dijit_form_Button_29')
+        s.click('dijit_form_Button_3')
 
         s.click('ExampleForm.actions.register')
 
@@ -121,7 +121,7 @@ class SeleniumTests(zc.selenium.pytest.Test):
         # now try a delete & save
         s.click(
             '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[1]/table/tbody/tr/td[1]/div')
-        s.click('dijit_form_Button_15')
+        s.click('dijit_form_Button_2')
         s.click('ExampleForm.actions.register')
 
         s.verifyTextNotPresent('123 fake street')
