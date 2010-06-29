@@ -352,10 +352,10 @@ function build_layout(record) {
             if (data.thumbnail_tag != null) {
                 return unescape(data.thumbnail_tag);
             }
-            else if (data.thumbnail_url != null){
+            else if (data.thumbnail_url != null) {
                 return '<img src="' + unescape(data.thumbnail_url) + '" />';
             }
-            else if (data.filename != null){
+            else if (data.filename != null) {
                 return data.filename;
             }
             else {
