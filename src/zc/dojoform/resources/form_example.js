@@ -18,18 +18,22 @@ dojo.addOnLoad( function () {
 
     console.log('form loaded');
 
-    actionify_buttons = function (config) {
-        for (action_i in config.definition.actions) {
-            action = config.definition.actions[action_i];
-            button = dijit.byId(action.name);
-            dojo.connect(button, 'onClick', function () {
-                zc.dojo.submit_form({
-                    url: action.url,
-                    form_id: config.definition.prefix,
-                    task: 'Submitting Form'
-                });
+    actionify_buttons = function (config, success_handler) {
+      for (action_i in config.definition.actions) {
+        // overcome the wrong values being captured by the closure
+        var _ = function (action_index) {
+          var action = config.definition.actions[action_index];
+          button = dijit.byId(action.name);
+          dojo.connect(button, 'onClick', function () {
+            zc.dojo.submit_form({
+              url: action.url,
+              form_id: config.definition.prefix,
+              task: 'Submitting Form',
+              success: success_handler
             });
-        }
-    }
+          });
+        }(action_i);
+      }
+    };
 
 });
