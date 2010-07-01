@@ -131,6 +131,7 @@ zc.dojo.confirm = function (args) {
         if (cb) {
             cb();
         }
+        dialog.destroyRecursively();
     };
 
     btn_div = dojo.create('div', {style: 'text-align: right; width: 100%;'});
@@ -549,6 +550,7 @@ function build_record_form(widget_name, grid, index_map) {
     var buttons_div = dojo.create('div', null, buttons_cp.domNode);
     new dijit.form.Button({
         label: 'Save',
+        id: widget_name + '.dojo.save.btn',
         tabIndex: index_map[widget_name + '.dojo.save'],
         onClick: function (e) {
             if (!rec_form.validate()) {
@@ -584,6 +586,7 @@ function build_record_form(widget_name, grid, index_map) {
     }, dojo.create('div', null, buttons_div));
     new dijit.form.Button({
         label: 'Cancel',
+        id: widget_name + '.dojo.cancel.btn',
         tabIndex: index_map[widget_name + '.dojo.cancel'],
         onClick: function (evt) {
             edit_dlg.hide();
@@ -713,6 +716,7 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, i
     if (!rc.readonly) {
         new dijit.form.Button({
             label: 'New',
+            id: config.name + '.dojo.new.btn',
             tabIndex: index_map[config.name + '.dojo.new'],
             onClick: function (evt) {
                 if (!grid.edit_dlg) {
@@ -728,6 +732,7 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, i
         }, dojo.create('div', null, node.domNode));
         new dijit.form.Button({
             label: 'Edit',
+            id: config.name + '.dojo.edit.btn',
             tabIndex: index_map[config.name + '.dojo.edit'],
             onClick: function (evt) {
                 var row_values = grid.selection.getSelected();
@@ -742,6 +747,7 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, i
         }, dojo.create('div', null, node.domNode));
         new dijit.form.Button({
             label: 'Delete',
+            id: config.name + '.dojo.delete.btn',
             tabIndex: index_map[config.name + '.dojo.delete'],
             onClick: function (evt) {
                 var selected = grid.selection.getSelected();

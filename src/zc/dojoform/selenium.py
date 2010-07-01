@@ -79,28 +79,31 @@ class SeleniumTests(zc.selenium.pytest.Test):
             '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[2]/table/tbody/tr/td[3]/div',
             '9001')
         s.click('ExampleForm.actions.register')
-        s.verifyTextPresent('Submitting Form failed')
+        s.waitForText("//span[@class='dijitDialogTitle']",
+                      'Submitting Form failed')
         s.verifyTextPresent('Value is too big')
         s.verifyTextPresent('Weight: Missing Input')
-        s.click("//div[@id='dijit_Dialog_0']/div[1]/span[2]")
+        s.click(
+            "//div/@class[contains(string(), 'dijitDialog')]/.."
+            "//span/@class[contains(string(), 'dijitButton')]/..")
         s.type('weight', '23.5')
 
         s.click('//div[@id=\'dojox_grid__View_1\']/div/div/div/div[2]/table/tbody/tr/td[1]/div')
-        s.click('dijit_form_Button_1')
+        s.click('addresses.dojo.edit.btn')
         s.type('addresses.awesomeness', '2')
-        s.click('dijit_form_Button_4')
+        s.click('addresses.dojo.save.btn')
 
         # check delete & immediate add
         s.click(
             '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[2]/table/tbody/tr/td[1]/div')
-        s.click('dijit_form_Button_2')
+        s.click('addresses.dojo.delete.btn')
 
         # add a new record
-        s.click('dijit_form_Button_0')
+        s.click('addresses.dojo.new.btn')
         s.type('addresses.street', 'The thirteenth Floor')
         s.type('addresses.city', 'Somewhere')
         s.type('addresses.awesomeness', '1')
-        s.click('dijit_form_Button_3')
+        s.click('addresses.dojo.save.btn')
 
         s.click('ExampleForm.actions.register')
 
@@ -121,7 +124,7 @@ class SeleniumTests(zc.selenium.pytest.Test):
         # now try a delete & save
         s.click(
             '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[1]/table/tbody/tr/td[1]/div')
-        s.click('dijit_form_Button_2')
+        s.click('addresses.dojo.delete.btn')
         s.click('ExampleForm.actions.register')
 
         s.verifyTextNotPresent('123 fake street')
