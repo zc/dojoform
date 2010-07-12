@@ -2,41 +2,47 @@ import zc.ajaxform.application
 import zc.ajaxform.calculator_example
 import zc.ajaxform.calculator_subapplication_example
 import zc.ajaxform.form_example
+import zope.formlib.form
 
-class Calculator(zc.ajaxform.calculator_example.Calculator):
+DOJO_VERSION = '1.4'
 
-    def template(self):
-        return """<html><head>
-               <style type="text/css">@import "http://o.aolcdn.com/dojo/1.4.0/dijit/themes/tundra/tundra.css";</style>
-               <script type="text/javascript" src="http://o.aolcdn.com/dojo/1.4.0/dojo/dojo.xd.js"></script>
-               <script type="text/javascript" src="/@@/zc.dojoform/zc.dojo.js"></script>
-               <script type="text/javascript" src="/@@/zc.dojoform/calculator_example.js"></script>
-               </head><body class=tundra></body></html>"""
-
-
-class Container(zc.ajaxform.calculator_subapplication_example.Container):
-
-    def template(self):
-        return """<html><head>
-               <style type="text/css">@import "http://o.aolcdn.com/dojo/1.4.0/dijit/themes/tundra/tundra.css";</style>
-               <script type="text/javascript" src="http://o.aolcdn.com/dojo/1.4.0/dojo/dojo.xd.js"></script>
-               <script type="text/javascript" src="/@@/zc.dojoform/zc.dojo.js"></script>
-               <script type="text/javascript" src="/@@/zc.dojoform/container_example.js"></script>
-               </head><body class=tundra></body></html>"""
+template = """
+<html>
+    <head>
+        <style type="text/css" medial="all">
+            @import url("http://o.aolcdn.com/dojo/%(dojo)s/dijit/themes/tundra/tundra.css");
+            @import url("http://o.aolcdn.com/dojo/%(dojo)s/dojox/grid/enhanced/resources/tundraEnhancedGrid.css");
+        </style>
+        <script type="text/javascript" src="http://o.aolcdn.com/dojo/%(dojo)s/dojo/dojo.xd.js"></script>
+        <script type="text/javascript" src="/@@/zc.dojoform/zc.dojo.js"></script>
+        <script type="text/javascript" src="/@@/zc.dojoform/%(name)s_example.js"></script>
+    </head>
+    <body class=tundra>
+    </body>
+</html>""".strip()
 
 
-class Form(zc.ajaxform.form_example.FormExample):
+class Base:
 
     def template(self):
-        return """<html><head>
-               <style type="text/css">
-               @import "http://o.aolcdn.com/dojo/1.4.0/dijit/themes/tundra/tundra.css";</style>
+        return template % dict(dojo=DOJO_VERSION,
+                               name=self.__class__.__name__.lower())
 
-               <style type="text/css" media="all">
-               @import url("http://o.aolcdn.com/dojo/1.4.0/dojox/grid/enhanced/resources/tundraEnhancedGrid.css");
-               </style>
-               <script type="text/javascript" src="http://o.aolcdn.com/dojo/1.4.0/dojo/dojo.xd.js"></script>
-               <script type="text/javascript" src="/@@/zc.dojoform/zc.dojo.js"></script>
-               <script type="text/javascript" src="/@@/zc.dojoform/form_example.js"></script>
-               </head><body class=tundra></body></html>"""
 
+class Calculator(Base, zc.ajaxform.calculator_example.Calculator):
+    pass
+
+
+class Container(Base, zc.ajaxform.calculator_subapplication_example.Container):
+    pass
+
+
+class Form(Base, zc.ajaxform.form_example.FormExample):
+
+    class ExampleForm(zc.ajaxform.form_example.FormExample.ExampleForm):
+
+        actions = zc.ajaxform.form_example.FormExample.ExampleForm.actions
+
+        @zope.formlib.form.action('Validate')
+        def validate(self, action, data):
+            return dict(success=True, message='Form validated.')
