@@ -1,3 +1,4 @@
+/*global dijit, dojo, dojox, zc, escape, unescape */
 dojo.provide('zc.dojo');
 dojo.require('dijit.form.ValidationTextBox');
 dojo.require('dijit.form.TextBox');
@@ -23,6 +24,7 @@ dojo.require("dojox.grid.enhanced.plugins.Menu");
 dojo.require("dojox.grid.enhanced.plugins.NestedSorting");
 dojo.require("dojox.grid.enhanced.plugins.IndirectSelection");
 
+
 zc.dojo.widgets = {};
 
 zc.dojo.beforeContentFormSubmittedTopic = "ZC_DOJO_BEFORE_CONTENT_FORM_SUBMITTED";
@@ -36,14 +38,14 @@ zc.dojo.get_recordlist_data = function (args) {
         content = {};
         dojo.forEach(dojo.query('div.dojoxGrid', args.form_id), function (g) {
             var form_grid = dijit.byId(g.id);
-            var idx = 0;
-            var k;
-            while (idx < form_grid.rowCount) {
-                rec = form_grid.getItem(idx);
+            var i, k;
+            for (i=0; i<form_grid.rowCount; i++) {
+                rec = form_grid.getItem(i);
                 for (k in rec) {
-                    content[k + '.' + idx] = form_grid.store.getValue(rec, k);
+                    if (rec.hasOwnProperty(k)) {
+                        content[k + '.' + i] = form_grid.store.getValue(rec, k);
+                    }
                 }
-                idx += 1;
             }
         });
         return content;
@@ -65,7 +67,7 @@ zc.dojo.alert = function (args) {
     if (arguments.length > 1) {
         _args = {};
         params = ['title', 'content'];
-        for (i=0; i<arguments.length; i++) {
+        for (var i=0; i<arguments.length; i++) {
             _args[params[i]] = arguments[i];
         }
         args = _args;
@@ -114,7 +116,7 @@ zc.dojo.confirm = function (args) {
     if (arguments.length > 1) {
         _args = {};
         params = ['title', 'content', 'yes', 'no'];
-        for (i=0; i<arguments.length; i++) {
+        for (var i=0; i<arguments.length; i++) {
             _args[params[i]] = arguments[i];
         }
         args = _args;
@@ -161,18 +163,24 @@ zc.dojo.call_server = function (args) {
     var content, k;
     var callback_error = function (error) {
         var result;
-        result = dojo.fromJson(error.responseText);
-        if (!('error' in result) && !('session_expired' in result)) {
-            zc.dojo.system_error(args.task);
+        if (error.responseText) {
+            result = dojo.fromJson(error.responseText);
         }
-        else if (result.session_expired) {
-            return zc.dojo.session_expired(error);
-        }
-        else if (result.error) {
-            zc.dojo.alert({
-                title: args.task + ' failed',
-                content: result.error
-            });
+
+        if (result) {
+            if (!('error' in result) && !('session_expired' in result)) {
+                zc.dojo.system_error(args.task);
+            }
+            else if (result.session_expired) {
+                zc.dojo.session_expired(error);
+                return;
+            }
+            else if (result.error) {
+                zc.dojo.alert({
+                    title: args.task + ' failed',
+                    content: result.error
+                });
+            }
         }
         if (args.failure) {
             args.failure(error);
@@ -188,7 +196,9 @@ zc.dojo.call_server = function (args) {
             result = '';
             errors = data.errors;
             for (error in errors) {
-                result += errors[error] + '<br>';
+                if (errors.hasOwnProperty(error)) {
+                    result += errors[error] + '<br>';
+                }
             }
             zc.dojo.alert({
                 title: args.task + ' failed',
@@ -206,7 +216,9 @@ zc.dojo.call_server = function (args) {
         args.content = {};
     }
     for (k in content) {
-        args.content[k] = content[k];
+        if (content.hasOwnProperty(k)) {
+            args.content[k] = content[k];
+        }
     }
     if (!args.form_id) {
         dojo.xhrPost({
@@ -259,7 +271,7 @@ zc.dojo.widgets['zope.schema.Password'] = function (config, node, order) {
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
     wconfig.type = "password";
-    if (config.max_size !== undefined9)
+    if (config.max_size !== undefined)
     {
         wconfig.maxLength = config.max_size;
         if (config.min_size) {
@@ -391,20 +403,21 @@ zc.dojo.widgets['zc.ajaxform.widgets.RichTextDisplay'] = function (config, node,
 
 
 var _choiceConfig = function (config, node, order) {
-    var wconfig, values, index;
+    var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
     var store_data = {
         identifier: 'value',
         label: 'label'
     };
     var items = [];
-    values = config.values;
-    for (index in values) {
+
+    dojo.forEach(config.values, function (item) {
         items.push({
-            label: values[index][1],
-            value: values[index][0]
+            label: item[1],
+            value: item[0]
         });
-    }
+    });
+
     store_data.items = items;
     var select_store = new dojo.data.ItemFileReadStore({
         data: store_data
@@ -431,19 +444,18 @@ var makeComboBox = function (config, node, order) {
 zc.dojo.widgets['zc.ajaxform.widgets.ComboBox'] = makeComboBox;
 
 function build_layout(record) {
-    var rc_wid, new_name;
     var record_layout = [];
 
     var formatter = function (v) {
         if (v) {
             var data = dojo.fromJson(v);
-            if (data.thumbnail_tag != null) {
+            if (data.thumbnail_tag) {
                 return unescape(data.thumbnail_tag);
             }
-            else if (data.thumbnail_url != null) {
+            else if (data.thumbnail_url) {
                 return '<img src="' + unescape(data.thumbnail_url) + '" />';
             }
-            else if (data.filename != null) {
+            else if (data.filename) {
                 return data.filename;
             }
             else {
@@ -454,26 +466,27 @@ function build_layout(record) {
             return '';
         }
     };
-    for (rc_wid in record.widgets) {
-        rc_wid = dojo.clone(record.widgets[rc_wid]);
-        new_name = record.name + '.' + rc_wid.name;
-        rc_wid.name = new_name;
-        rc_wid.id = new_name;
-        var column_label = rc_wid.fieldLabel;
+    dojo.forEach(record.widgets, function (widget) {
+        var new_name;
+        widget = dojo.clone(widget);
+        new_name = record.name + '.' + widget.name;
+        widget.id = widget.name = new_name;
+        var column_label = widget.fieldLabel;
         var column = {
             name: column_label,
-            field: rc_wid.name,
+            field: widget.name,
             width: 'auto',
-            widget_constructor: rc_wid.widget_constructor,
-            rc_wid: rc_wid,
+            widget_constructor: widget.widget_constructor,
+            rc_wid: widget,
             draggable: false,
             cellStyles: 'vertical-align: top;'
         };
-        if (rc_wid.type == "file") {
+        if (widget.type == "file") {
             column.formatter = formatter;
         }
         record_layout.push(column);
-    }
+
+    });
     record_layout.push({
         name: '',
         field: '',
@@ -486,10 +499,11 @@ function build_layout(record) {
 }
 
 function build_record(record, pnode, suffix, record_value) {
-    var rc_wid, indexed_name, k;
+    var k, rec;
     var record_json = '"name": "' + suffix + '", ';
-    for (rc_wid in record.widgets) {
-        rc_wid = dojo.clone(record.widgets[rc_wid]);
+    dojo.forEach(record.widgets, function (rc_wid) {
+        var indexed_name;
+        rc_wid = dojo.clone(rc_wid);
         indexed_name = rc_wid.name;
         rc_wid.name = record.name + '.' + indexed_name;
         rc_wid.id = record.name + '.' + indexed_name;
@@ -497,10 +511,12 @@ function build_record(record, pnode, suffix, record_value) {
             rc_wid.value = escape(record_value[indexed_name] || '');
         }
         record_json += '"' + rc_wid.name + '": "' + rc_wid.value + '",';
-    }
-    var rec = dojo.fromJson('{' + record_json + '}');
+    });
+    rec = dojo.fromJson('{' + record_json + '}');
     for (k in rec) {
-        rec[k] = unescape(rec[k]);
+        if (rec.hasOwnProperty(k)) {
+            rec[k] = unescape(rec[k]);
+        }
     }
     return rec;
 }
@@ -517,7 +533,7 @@ function build_record_form(widget_name, grid, index_map) {
         style: 'max-height: 500px; overflow: auto;',
         encType: 'multipart/form-data'
     }, dojo.create('div', null, edit_dlg.domNode));
-    new dijit.form.TextBox({
+    var widget = new dijit.form.TextBox({
         name: 'record_id',
         type: 'hidden'
     }, dojo.create('div', null, rec_form.domNode));
@@ -550,7 +566,7 @@ function build_record_form(widget_name, grid, index_map) {
         {}, dojo.create('div', null, rec_form.domNode));
     var buttons_div = dojo.create('div', null, buttons_cp.domNode);
 
-    new dijit.form.Button({
+    widget = new dijit.form.Button({
         label: 'Save',
         id: widget_name + '.dojo.save.btn',
         tabIndex: index_map[widget_name + '.dojo.save'],
@@ -586,7 +602,7 @@ function build_record_form(widget_name, grid, index_map) {
             edit_dlg.hide();
         }
     }, dojo.create('div', null, buttons_div));
-    new dijit.form.Button({
+    widget = new dijit.form.Button({
         label: 'Cancel',
         id: widget_name + '.dojo.cancel.btn',
         tabIndex: index_map[widget_name + '.dojo.cancel'],
@@ -632,7 +648,7 @@ function edit_record(widget_name, grid, row_value, index_map) {
 }
 
 zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, index_map) {
-    var record, records;
+
     var node = new dijit.layout.BorderContainer({
             design: "headline",
             gutters: "false"
@@ -641,12 +657,12 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, i
     rc.name = config.name;
     var num = 0;
     var item_list = [];
-    records = config.value;
-    for (record in records) {
-        record = records[record];
-        item_list.push(build_record(rc, node, '.' + String(num), record));
+
+    dojo.forEach(config.value, function (record) {
+        item_list.push(build_record(rc, node, '.' + num, record));
         num += 1;
-    }
+    });
+
     var records_data = {
         "items": item_list,
         "identifier": "name",
@@ -683,7 +699,7 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, i
     grid.select.getExceptionalColOffsetWidth = dojo.hitch(grid.select, function () {
         // We override the method in dojox.grid.enhanced.dnd._DndMovingManager
         // because we don't use the IndirectSelection plugin, but still want DnD.
-        var offsetWidth = (normalizedOffsetWidth = 0);
+        var normalizedOffsetWidth = 0, offsetWidth = 0;
         dojo.forEach(this.getHeaderNodes(), function (node, index) {
             if (index <= this.exceptColumnsTo) {
                 var coord = dojo.coords(node);
@@ -716,7 +732,7 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, i
     }
 
     if (!rc.readonly) {
-        new dijit.form.Button({
+        var widget = new dijit.form.Button({
             label: 'New',
             id: config.name + '.dojo.new.btn',
             tabIndex: index_map[config.name + '.dojo.new'],
@@ -732,7 +748,7 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, i
                 grid.edit_dlg.show();
             }
         }, dojo.create('div', null, node.domNode));
-        new dijit.form.Button({
+        widget = new dijit.form.Button({
             label: 'Edit',
             id: config.name + '.dojo.edit.btn',
             tabIndex: index_map[config.name + '.dojo.edit'],
@@ -748,7 +764,7 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, i
                 edit_record(config.name, grid, row_values[0], index_map);
             }
         }, dojo.create('div', null, node.domNode));
-        new dijit.form.Button({
+        widget = new dijit.form.Button({
             label: 'Delete',
             id: config.name + '.dojo.delete.btn',
             tabIndex: index_map[config.name + '.dojo.delete'],
@@ -775,7 +791,6 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, i
 
 zc.dojo.build_form = function (config, pnode, tabIndexOffset)
 {
-    var action, actions, action_index;
     if (!tabIndexOffset) {
         tabIndexOffset = 0;
     }
@@ -802,11 +817,9 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
     node.addChild(bottom_pane);
     var widgets = [];
     var index_map = zc.dojo.tab_index_map(config.definition);
-    for (var i in config.definition.widgets)
-    {
+    dojo.forEach(config.definition.widgets, function (widget) {
         var cp = new dijit.layout.ContentPane({}, dojo.create('div'));
         dojo.addClass(cp.domNode, 'widget');
-        var widget = config.definition.widgets[i];
         if (!(left_pane) && (!right_pane)) {
             node.addChild(cp);
         }
@@ -845,7 +858,7 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
         );
         cp.domNode.appendChild(wid);
         widgets.push(wid);
-    }
+    });
 
     node.fit = function () {
         var margin = 17;
@@ -858,13 +871,11 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
         );
         var max = function (xs) {
             var m = null;
-            var x;
-            for (var i in xs) {
-                x = xs[i];
+            xs.forEach(function (x) {
                 if (x > m) {
                     m = x;
                 }
-            }
+            });
             return m;
         };
         var h = max(heights) + getHeight(bottom_pane.domNode) + margin;
@@ -872,28 +883,24 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
     };
 
     var fireSubmitEvent = function () {
-        var event = document.createEvent('Event');
+        var event = dojo.doc.createEvent('Event');
         event.initEvent('beforeSubmit', true, true);
-        document.dispatchEvent(event);
+        dojo.doc.dispatchEvent(event);
     };
 
     if (bottom_pane) {
-        if (config.definition.actions) {
-            actions = config.definition.actions;
-            for (action_index in actions) {
-                action = actions[action_index];
-                var button = new dijit.form.Button({
+        dojo.forEach(config.definition.actions, function (action) {
+            var button = new dijit.form.Button({
                     label: action.label,
                     id: action.name,
                     onClick: fireSubmitEvent,
                     type: 'button',
                     tabIndex: index_map[action.name] + tabIndexOffset
                 });
-                bottom_pane.domNode.appendChild(button.domNode);
-             }
-        }
+            bottom_pane.domNode.appendChild(button.domNode);
+        });
     }
-    dojo.forEach(widgets, function (widget, idx) {
+    dojo.forEach(widgets, function (widget) {
         if (widget.postStartup) {
             widget.postStartup(node);
         }
@@ -907,20 +914,17 @@ zc.dojo.tab_index_map = function (definition) {
     var left = definition.left_fields;
     var right = [];
     var index = 0;
-    var widget, k, i;
     var list_widgets = [];
-    for (k in definition.widgets) {
-        widget = definition.widgets[k];
+
+    dojo.forEach(definition.widgets, function (widget) {
         if (left[widget.name]) {
-            indices[widget.name] = index;
-            index += 1;
+            indices[widget.name] = index++;
             if (widget.widget_constructor == 'zope.schema.List') {
                 /* for the New, Edit, and Delete buttons */
                 dojo.forEach(['new', 'edit', 'delete'], function (item) {
-                    indices[widget.name + '.dojo.' + item] = index;
-                    index += 1;
+                    indices[widget.name + '.dojo.' + item] = index++;
                 });
-                for (inner_k in widget.record_schema.widgets) {
+                for (var inner_k in widget.record_schema.widgets) {
                     if (widget.record_schema.widgets.hasOwnProperty(inner_k)) {
                         var list_widget = widget.record_schema.widgets[inner_k];
                         list_widgets.push(widget.name + '.' + list_widget.name);
@@ -933,21 +937,16 @@ zc.dojo.tab_index_map = function (definition) {
         } else {
             right.push(widget);
         }
-    }
-    for (i in right) {
-        widget = right[i];
-        indices[widget.name] = index;
-        index += 1;
-    }
-    for (k in definition.actions) {
-        widget = definition.actions[k];
-        indices[widget.name] = index;
-        index += 1;
-    }
+    });
+
+    var fn = function (widget) {indices[widget.name] = index++;};
+
+    dojo.forEach(right, fn);
+    dojo.forEach(definition.actions, fn);
+
     /* Handle widgets for list type if any*/
-    dojo.forEach(list_widgets, function (item, idx, arr) {
-        indices[item] = index;
-        index += 1;
+    dojo.forEach(list_widgets, function (item) {
+        indices[item] = index++;
     });
     return indices;
 };

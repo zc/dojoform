@@ -28,6 +28,7 @@ Changes
 
 - Fix issue with the RichText widget when no default value is provided.
 
+- Quell all jslint errors and warnings.
 
 0.16.1 (2010-06-29)
 ===================

@@ -1,17 +1,30 @@
+/*global dijit, dojo, zc */
+/*jslint devel: true */
 dojo.require('zc.dojo');
 
 dojo.addOnLoad( function () {
 
-    success_handler = function (res) {
+    var success_handler = function (res) {
         if (res.success && res.message) {
             zc.dojo.alert('Success!', res.message);
         }
     };
 
-    createForm = function (form_data) {
-        result = zc.dojo.build_form(form_data,
-            dojo.create('div', {}, dojo.body())
-        );
+    var actionify_buttons = function (config, success_handler) {
+        dojo.forEach(config.definition.actions, function (action) {
+            dojo.connect(dijit.byId(action.name), 'onClick', function () {
+                zc.dojo.submit_form({
+                url: action.url,
+                form_id: config.definition.prefix,
+                task: 'Submitting Form',
+                success: success_handler
+                });
+            });
+        });
+    };
+
+    var createForm = function (form_data) {
+        zc.dojo.build_form(form_data, dojo.create('div', {}, dojo.body()));
         actionify_buttons(form_data, success_handler);
         dijit.byId(form_data.definition.prefix).startup();
     };
@@ -23,23 +36,5 @@ dojo.addOnLoad( function () {
     });
 
     console.log('form loaded');
-
-    actionify_buttons = function (config, success_handler) {
-      for (action_i in config.definition.actions) {
-        // overcome the wrong values being captured by the closure
-        var _ = function (action_index) {
-          var action = config.definition.actions[action_index];
-          button = dijit.byId(action.name);
-          dojo.connect(button, 'onClick', function () {
-            zc.dojo.submit_form({
-              url: action.url,
-              form_id: config.definition.prefix,
-              task: 'Submitting Form',
-              success: success_handler
-            });
-          });
-        }(action_i);
-      }
-    };
 
 });

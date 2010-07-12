@@ -1,3 +1,5 @@
+/*global dijit, dojo, zc */
+/*jslint devel: true */
 dojo.require('zc.dojo');
 dojo.require('dijit.layout.BorderContainer');
 dojo.require('dijit.form.TextBox');
@@ -17,9 +19,7 @@ dojo.addOnLoad( function () {
         });
 
         var BC = new dijit.layout.BorderContainer({}, dojo.body());
-        var result = dojo.create('div', {
-            id: 'value',
-            }, BC.domNode);
+        dojo.create('div', {id: 'value'}, BC.domNode);
         var input = new dijit.form.TextBox({
             id: 'input',
             regExp: '/[0-9]/',
@@ -56,7 +56,7 @@ dojo.addOnLoad( function () {
         dojo.connect(FailButton, 'onClick', function () {
             zc.dojo.call_server({
                 url: 'doh',
-                task: 'Failing',
+                task: 'Failing'
             });
         });
 
