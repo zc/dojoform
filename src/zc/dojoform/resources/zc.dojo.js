@@ -683,7 +683,7 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, i
     grid.select.getExceptionalColOffsetWidth = dojo.hitch(grid.select, function () {
         // We override the method in dojox.grid.enhanced.dnd._DndMovingManager
         // because we don't use the IndirectSelection plugin, but still want DnD.
-        var offsetWidth = (normalizedOffsetWidth = 0);
+        var normalizedOffsetWidth = 0, offsetWidth = 0;
         dojo.forEach(this.getHeaderNodes(), function (node, index) {
             if (index <= this.exceptColumnsTo) {
                 var coord = dojo.coords(node);
