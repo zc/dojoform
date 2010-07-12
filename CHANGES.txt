@@ -2,7 +2,7 @@
 Changes
 =======
 
-0.17.0 (????-??-??)
+0.17.0 (2010-07-12)
 ===================
 
 - Add convenience function (zc.dojo.alert) for displaying alert messages.
