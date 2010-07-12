@@ -131,7 +131,7 @@ zc.dojo.confirm = function (args) {
         if (cb) {
             cb();
         }
-        dialog.destroyRecursively();
+        dialog.destroyRecursive();
     };
 
     btn_div = dojo.create('div', {style: 'text-align: right; width: 100%;'});
@@ -528,7 +528,8 @@ function build_record_form(widget_name, grid, index_map) {
             var order = index_map[rc_wid.name];
             rc_wid.tabIndex = order;
             var widget_div = dojo.create(
-                'div', {'class': 'widget', style: 'margin: 5px;'}, rec_form.domNode);
+                'div', {'class': 'widget', style: 'margin: 5px;'},
+                rec_form.domNode);
             var label = dojo.create('label', {
                 innerHTML:  rc_wid.fieldLabel + ': '
             }, widget_div);
@@ -548,6 +549,7 @@ function build_record_form(widget_name, grid, index_map) {
     var buttons_cp = new dijit.layout.ContentPane(
         {}, dojo.create('div', null, rec_form.domNode));
     var buttons_div = dojo.create('div', null, buttons_cp.domNode);
+
     new dijit.form.Button({
         label: 'Save',
         id: widget_name + '.dojo.save.btn',
@@ -590,6 +592,7 @@ function build_record_form(widget_name, grid, index_map) {
         tabIndex: index_map[widget_name + '.dojo.cancel'],
         onClick: function (evt) {
             edit_dlg.hide();
+
         }
     }, dojo.create('div', null, buttons_div));
 

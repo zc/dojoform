@@ -2,11 +2,17 @@ dojo.require('zc.dojo');
 
 dojo.addOnLoad( function () {
 
+    success_handler = function (res) {
+        if (res.success && res.message) {
+            zc.dojo.alert('Success!', res.message);
+        }
+    };
+
     createForm = function (form_data) {
         result = zc.dojo.build_form(form_data,
             dojo.create('div', {}, dojo.body())
         );
-        actionify_buttons(form_data);
+        actionify_buttons(form_data, success_handler);
         dijit.byId(form_data.definition.prefix).startup();
     };
 

@@ -79,13 +79,17 @@ class SeleniumTests(zc.selenium.pytest.Test):
             '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[2]/table/tbody/tr/td[3]/div',
             '9001')
         s.click('ExampleForm.actions.register')
-        s.waitForText("//span[@class='dijitDialogTitle']",
+        s.waitForText("//div[contains(@class, 'dijitDialog')]"
+                      "/div[@class='dijitDialogTitleBar']"
+                      "/span[@class='dijitDialogTitle']",
                       'Submitting Form failed')
         s.verifyTextPresent('Value is too big')
         s.verifyTextPresent('Weight: Missing Input')
-        s.click(
-            "//div/@class[contains(string(), 'dijitDialog')]/.."
-            "//span/@class[contains(string(), 'dijitButton')]/..")
+
+        s.click("//div[contains(@class, 'dijitDialog')]"
+                "/div[@class='dijitDialogPaneContent']"
+                "/div[2]/span[contains(@class, 'dijitButton')]")
+
         s.type('weight', '23.5')
 
         s.click('//div[@id=\'dojox_grid__View_1\']/div/div/div/div[2]/table/tbody/tr/td[1]/div')
@@ -129,3 +133,27 @@ class SeleniumTests(zc.selenium.pytest.Test):
 
         s.verifyTextNotPresent('123 fake street')
         s.verifyTextNotPresent('fakeville')
+
+        # Verify that multiple actions work
+        s.type('weight', 'abcdefg')
+        s.click('ExampleForm.actions.validate')
+        s.waitForText("//div[contains(@class, 'dijitDialog')]"
+                      "/div[@class='dijitDialogTitleBar']"
+                      "/.[@title='Submitting Form failed']"
+                      "/span[@class='dijitDialogTitle']",
+                      'Submitting Form failed')
+        s.verifyTextPresent('Weight: Missing Input')
+        s.click("//div[contains(@class, 'dijitDialog')]"
+                "/div[@class='dijitDialogPaneContent']"
+                "/div[2]/span[contains(@class, 'dijitButton')]")
+        s.type('weight', '3')
+        s.click('ExampleForm.actions.validate')
+        s.waitForText("//div[contains(@class, 'dijitDialog')]"
+                      "/div[@class='dijitDialogTitleBar']"
+                      "/.[@title='Success!']"
+                      "/span[@class='dijitDialogTitle']",
+                      'Success!')
+        s.verifyTextPresent('Form validated')
+        s.click("//div[contains(@class, 'dijitDialog')]"
+                "/div[@class='dijitDialogPaneContent']"
+                "/div[2]/span[contains(@class, 'dijitButton')]")
