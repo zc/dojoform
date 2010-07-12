@@ -15,7 +15,7 @@
 name = 'zc.dojoform'
 version = '0'
 
-import os, re
+import os
 from setuptools import setup, find_packages
 
 
@@ -37,7 +37,6 @@ setup(
     author_email = 'jim@zope.com',
     description = '',
     license = 'ZPL 2.1',
-
     packages = find_packages('src'),
     namespace_packages = ['zc'],
     package_dir = {'': 'src'},
