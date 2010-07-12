@@ -92,14 +92,51 @@ class SeleniumTests(zc.selenium.pytest.Test):
 
         s.type('weight', '23.5')
 
-        s.click('//div[@id=\'dojox_grid__View_1\']/div/div/div/div[2]/table/tbody/tr/td[1]/div')
+        # If we click the Edit button without selecting a row, we get an error
+        # message.
         s.click('addresses.dojo.edit.btn')
+        s.verifyTextPresent('Error!')
+        s.verifyTextPresent('Please select a single row to Edit.')
+        s.click("//div[contains(@class, 'dijitDialog')]"
+                "/div[@class='dijitDialogPaneContent']"
+                "/div[2]/span[contains(@class, 'dijitButton')]")
+        # If we click the Delete button without selecting a row, we also get
+        # an error message.
+        s.click('addresses.dojo.delete.btn')
+        s.verifyTextPresent('Error!')
+        s.verifyTextPresent('No row selected.')
+        s.click("//div[contains(@class, 'dijitDialog')]"
+                "/div[@class='dijitDialogPaneContent']"
+                "/div[2]/span[contains(@class, 'dijitButton')]")
+
+        # If we select a row and click the Edit button, we get a pop-up form
+        # containing the current values.
+        s.click("//div[@id='dojox_grid__View_1']"
+                "/div/div/div/div[1]/table/tbody/tr/td[1]/div")
+        s.click('addresses.dojo.edit.btn')
+        s.verifyValue('addresses.street', '123 fake street')
+        s.verifyValue('addresses.city', 'fakeville')
+        s.verifyValue('addresses.awesomeness', '9')
+        s.click('addresses.dojo.cancel.btn')
+
+        s.click("//div[@id='dojox_grid__View_1']"
+                "/div/div/div/div[2]/table/tbody/tr/td[1]/div")
+        s.click('addresses.dojo.edit.btn')
+        s.verifyValue('addresses.street', '345 false street')
+        s.verifyValue('addresses.city', 'falsetown')
+        s.verifyValue('addresses.awesomeness', '9001')
+
+        # Clicking the save button when the form contains invalid data results
+        # in an error message being displayed.
+        s.click('addresses.dojo.save.btn')
+        s.verifyTextPresent('This value is out of range.')
         s.type('addresses.awesomeness', '2')
         s.click('addresses.dojo.save.btn')
 
         # check delete & immediate add
         s.click(
-            '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[2]/table/tbody/tr/td[1]/div')
+            "//div[@id='dojox_grid__View_1']"
+            "/div/div/div/div[2]/table/tbody/tr/td[1]/div")
         s.click('addresses.dojo.delete.btn')
 
         # add a new record

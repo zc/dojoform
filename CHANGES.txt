@@ -14,6 +14,16 @@ Changes
 
 - Make zope.schema.List widget give consistent ids to its Buttons.
 
+- Make zope.schema.List widget display an error message when its Delete
+  button is clicked with no rows selected.
+
+- Fix an issue where the Edit dialog of the zope.schema.List widget wasn't 
+  filling in the values for zope.schema.Int fields.
+
+- Fix an issue where the zope.schema.List widget's Edit button wasn't
+  bailing out when clicked without a row selected, thus causing
+  Javascript errors.
+
 - Fix broken selenium tests.
 
 - Fix issue with the RichText widget when no default value is provided.

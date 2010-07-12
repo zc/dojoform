@@ -619,16 +619,15 @@ function edit_record(widget_name, grid, row_value, index_map) {
         }
     });
     /* order of next two lines is important */
-    dojo.forEach(grid.edit_dlg.editForm.domNode.elements, function (ele) {
-        if (ele.name == 'record_id' || ele.name in form_values) {
-            var wid = dijit.byId(ele.id);
-            if (wid) {
-                wid.attr('value', form_values[ele.name]);
-            }
+    grid.edit_dlg.editForm.getChildren().forEach(function (el) {
+        if (el.name in form_values) {
+            el.attr('value', form_values[el.name]);
         }
     });
+
     dojo.publish(
-        zc.dojo.dialogFormUpdateTopic, [grid.edit_dlg.editForm.id, form_values]);
+        zc.dojo.dialogFormUpdateTopic,
+        [grid.edit_dlg.editForm.id, form_values]);
     grid.edit_dlg.show();
 }
 
@@ -744,6 +743,7 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, i
                         title: 'Error!',
                         content: 'Please select a single row to Edit.'
                     });
+                    return;
                 }
                 edit_record(config.name, grid, row_values[0], index_map);
             }
@@ -754,6 +754,13 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, i
             tabIndex: index_map[config.name + '.dojo.delete'],
             onClick: function (evt) {
                 var selected = grid.selection.getSelected();
+                if (!selected.length) {
+                    zc.dojo.alert({
+                        title: 'Error!',
+                        content: 'No row selected.'
+                    });
+                    return;
+                }
                 dojo.forEach(selected, grid.store.deleteItem, grid.store);
                 grid.store.save();
             }
