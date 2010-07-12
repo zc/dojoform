@@ -12,9 +12,17 @@ Changes
 
 - Make zope.schema.List widget validate contents of the adding form.
 
+- Make zope.schema.List widget give consistent ids to its Buttons.
+
 - Fix broken selenium tests.
 
 - Fix issue with the RichText widget when no default value is provided.
+
+
+0.16.1 (2010-06-29)
+===================
+
+- Increased the height of the form used to edit records
 
 0.16.0 (2010-06-09)
 ===================
