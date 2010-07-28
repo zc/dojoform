@@ -5,19 +5,20 @@ import zc.ajaxform.form_example
 import zope.formlib.form
 
 DOJO_VERSION = '1.4'
+DOJO_THEME = 'tundra'
 
 template = """
 <html>
     <head>
         <style type="text/css" medial="all">
-            @import url("http://o.aolcdn.com/dojo/%(dojo)s/dijit/themes/tundra/tundra.css");
-            @import url("http://o.aolcdn.com/dojo/%(dojo)s/dojox/grid/enhanced/resources/tundraEnhancedGrid.css");
+            @import url("http://o.aolcdn.com/dojo/%(dojo)s/dijit/themes/%(theme)s/%(theme)s.css");
+            @import url("http://o.aolcdn.com/dojo/%(dojo)s/dojox/grid/enhanced/resources/%(theme)sEnhancedGrid.css");
         </style>
         <script type="text/javascript" src="http://o.aolcdn.com/dojo/%(dojo)s/dojo/dojo.xd.js"></script>
         <script type="text/javascript" src="/@@/zc.dojoform/zc.dojo.js"></script>
         <script type="text/javascript" src="/@@/zc.dojoform/%(name)s_example.js"></script>
     </head>
-    <body class=tundra>
+    <body class="%(theme)s">
     </body>
 </html>""".strip()
 
@@ -26,6 +27,7 @@ class Base:
 
     def template(self):
         return template % dict(dojo=DOJO_VERSION,
+                               theme=DOJO_THEME,
                                name=self.__class__.__name__.lower())
 
 
