@@ -403,6 +403,20 @@ zc.dojo.widgets['zc.ajaxform.widgets.RichTextDisplay'] = function (config, node,
     return iframe;
 };
 
+zc.dojo.widgets['zope.schema.Date'] = function (config, node, order, readOnly) {
+        wconfig = zc.dojo.parse_config(config, order);
+        wconfig.value = eval(wconfig.value);
+        var widget = new dijit.form.DateTextBox(wconfig, dojo.create('div'));
+        return widget.domNode;
+}
+
+zc.dojo.widgets['zope.schema.Time'] = function (config, node, order, readOnly) {
+
+        wconfig = zc.dojo.parse_config(config, order);
+        wconfig.value = eval(wconfig.value);
+        var widget = new dijit.form.TimeTextBox(wconfig, dojo.create('div'));
+        return widget.domNode;
+}
 
 var _choiceConfig = function (config, node, order) {
     var wconfig;
