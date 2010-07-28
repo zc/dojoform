@@ -1,3 +1,4 @@
+import cgi
 import zc.ajaxform.application
 import zc.ajaxform.calculator_example
 import zc.ajaxform.calculator_subapplication_example
@@ -26,8 +27,10 @@ template = """
 class Base:
 
     def template(self):
-        return template % dict(dojo=DOJO_VERSION,
-                               theme=DOJO_THEME,
+        version = cgi.escape(self.request.form.get('dojo', DOJO_VERSION))
+        theme = cgi.escape(self.request.form.get('theme', DOJO_THEME))
+        return template % dict(dojo=version,
+                               theme=theme,
                                name=self.__class__.__name__.lower())
 
 
