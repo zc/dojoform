@@ -86,11 +86,13 @@ zc.dojo.alert = function (args) {
         onClick: dtor
     });
     el = dojo.create('div', {
-            style: 'text-align: left; width: 100%; margin-bottom: 15%;',
+            style: 'text-align: left; margin-bottom: 15%;',
             innerHTML: args.content
         });
+
     nodes = new dojo.NodeList(el);
-    el = dojo.create('div', {style: 'text-align: right; width: 100%;'});
+    el = dojo.create('div', {style: 'text-align: right;'});
+    dojo.addClass(el, 'dijitDialogPaneActionBar');
     el.appendChild(button.domNode);
     nodes.push(el);
     dialog.attr('content', nodes);
@@ -136,8 +138,8 @@ zc.dojo.confirm = function (args) {
         dialog.destroyRecursive();
     };
 
-    btn_div = dojo.create('div', {style: 'text-align: right; width: 100%;'});
-
+    btn_div = dojo.create('div', {style: 'text-align: right;'});
+    dojo.addClass(btn_div, 'dijitDialogPaneActionBar');
     btn = new dijit.form.Button({label: 'No'});
     btn_div.appendChild(btn.domNode);
     no_cb = dojo.partial(handler, args.no);
@@ -562,9 +564,8 @@ function build_record_form(widget_name, grid, index_map) {
             edit_dlg.form_widgets.push(wid);
         }
     });
-    var buttons_cp = new dijit.layout.ContentPane(
-        {}, dojo.create('div', null, rec_form.domNode));
-    var buttons_div = dojo.create('div', null, buttons_cp.domNode);
+    var buttons_div = dojo.create('div', {style: 'text-align: right;'});
+    dojo.addClass(buttons_div, 'dijitDialogPaneActionBar');
 
     widget = new dijit.form.Button({
         label: 'Save',
@@ -601,7 +602,8 @@ function build_record_form(widget_name, grid, index_map) {
             }
             edit_dlg.hide();
         }
-    }, dojo.create('div', null, buttons_div));
+    });
+    buttons_div.appendChild(widget.domNode);
     widget = new dijit.form.Button({
         label: 'Cancel',
         id: widget_name + '.dojo.cancel.btn',
@@ -610,9 +612,14 @@ function build_record_form(widget_name, grid, index_map) {
             edit_dlg.hide();
 
         }
-    }, dojo.create('div', null, buttons_div));
+    });
+    buttons_div.appendChild(widget.domNode);
 
-    edit_dlg.attr('content', rec_form);
+
+    var nodes = new dojo.NodeList(rec_form.domNode);
+    nodes.push(buttons_div);
+
+    edit_dlg.attr('content', nodes);
     edit_dlg.startup();
     edit_dlg.editForm = rec_form;
     dojo.forEach(edit_dlg.form_widgets, function (w) {
