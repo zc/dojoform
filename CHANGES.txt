@@ -5,7 +5,11 @@ Changes
 0.18.0 (unreleased)
 ===================
 
-- No changes yet.
+- Add date and time widgets.
+
+- Add UI improvements for dialogs when using Dojo 1.5.
+
+- Clean up dependencies.
 
 0.17.0 (2010-07-12)
 ===================
