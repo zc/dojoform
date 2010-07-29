@@ -51,6 +51,7 @@ zc.dojo.get_recordlist_data = function (args) {
         });
         return content;
     }
+    return null;
 };
 
 zc.dojo.alert = function (args) {
@@ -269,7 +270,7 @@ zc.dojo._update = function(a, b) {
             a[k] = b[k];
         }
     }
-}
+};
 
 zc.dojo.widgets['zope.schema.Password'] = function (config, node, order) {
     var wconfig;
@@ -517,7 +518,7 @@ zc.dojo._build_layout = function (record) {
         value: '<div>||</div>'
     });
     return record_layout;
-}
+};
 
 zc.dojo._build_record = function (record, pnode, suffix, record_value) {
     var k, rec;
@@ -540,7 +541,7 @@ zc.dojo._build_record = function (record, pnode, suffix, record_value) {
         }
     }
     return rec;
-}
+};
 
 zc.dojo._build_record_form = function (widget_name, grid, index_map) {
     var layout = grid.structure[0].cells;
@@ -648,7 +649,7 @@ zc.dojo._build_record_form = function (widget_name, grid, index_map) {
         }
     });
     return edit_dlg;
-}
+};
 
 zc.dojo._edit_record = function (widget_name, grid, row_value, index_map) {
     grid.select.clearDrugDivs();
@@ -673,7 +674,7 @@ zc.dojo._edit_record = function (widget_name, grid, row_value, index_map) {
         zc.dojo.dialogFormUpdateTopic,
         [grid.edit_dlg.editForm.id, form_values]);
     grid.edit_dlg.show();
-}
+};
 
 zc.dojo.widgets['zope.schema.List'] = function (
     config, pnode, order, widgets, index_map) {
