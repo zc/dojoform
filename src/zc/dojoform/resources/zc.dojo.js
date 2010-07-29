@@ -27,7 +27,8 @@ dojo.require("dojox.grid.enhanced.plugins.IndirectSelection");
 
 zc.dojo.widgets = {};
 
-zc.dojo.beforeContentFormSubmittedTopic = "ZC_DOJO_BEFORE_CONTENT_FORM_SUBMITTED";
+zc.dojo.beforeContentFormSubmittedTopic =
+    "ZC_DOJO_BEFORE_CONTENT_FORM_SUBMITTED";
 zc.dojo.beforeRecordFormSubmittedTopic = "ZC_DOJO_BEFORE_RECORD_FORM_SUBMITTED";
 zc.dojo.dialogFormResetTopic = "ZC_DOJO_DIALOG_FORM_RESET";
 zc.dojo.dialogFormUpdateTopic = "ZC_DOJO_DIALOG_FORM_UPDATE";
@@ -251,7 +252,8 @@ zc.dojo.widgets['zope.schema.TextLine'] = function (config, node, order) {
     {
         wconfig.maxLength = config.max_size;
         if (config.min_size) {
-            wconfig.regExp = ".{" + config.min_size + "," + config.max_size + "}";
+            wconfig.regExp =
+                ".{" + config.min_size + "," + config.max_size + "}";
         } else {
             wconfig.regExp = ".{0," + config.max_size + "}";
         }
@@ -277,7 +279,8 @@ zc.dojo.widgets['zope.schema.Password'] = function (config, node, order) {
     {
         wconfig.maxLength = config.max_size;
         if (config.min_size) {
-            wconfig.regExp = ".{" + config.min_size + "," + config.max_size + "}";
+            wconfig.regExp =
+                ".{" + config.min_size + "," + config.max_size + "}";
         } else {
             wconfig.regExp = ".{0," + config.max_size + "}";
         }
@@ -287,7 +290,8 @@ zc.dojo.widgets['zope.schema.Password'] = function (config, node, order) {
     return new dijit.form.ValidationTextBox(wconfig, node).domNode;
 };
 
-zc.dojo.widgets['zope.schema.Text'] = function (config, node, order, readOnly) {
+zc.dojo.widgets['zope.schema.Text'] = function (
+    config, node, order, readOnly) {
     var wconfig = zc.dojo.parse_config(config, order);
     wconfig.style = 'width:auto';
     if (config.display_options) {
@@ -364,7 +368,8 @@ zc.dojo.widgets['zope.schema.Int'] = function (config, node, order) {
     return new dijit.form.NumberTextBox(wconfig, node).domNode;
 };
 
-zc.dojo.widgets['zc.ajaxform.widgets.NumberSpinner'] = function (config, node, order) {
+zc.dojo.widgets['zc.ajaxform.widgets.NumberSpinner'] = function (
+    config, node, order) {
     var wconfig;
     wconfig = zc.dojo.parse_number_config(config, order);
     return new dijit.form.NumberSpinner(wconfig, node).domNode;
@@ -384,7 +389,8 @@ zc.dojo.widgets['zope.schema.Bool'] = function (config, node, order) {
 
 };
 
-zc.dojo.widgets['zc.ajaxform.widgets.BasicDisplay'] = function (config, node, order) {
+zc.dojo.widgets['zc.ajaxform.widgets.BasicDisplay'] = function (
+    config, node, order) {
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
     wconfig.readOnly = true;
@@ -392,7 +398,8 @@ zc.dojo.widgets['zc.ajaxform.widgets.BasicDisplay'] = function (config, node, or
 
 };
 
-zc.dojo.widgets['zc.ajaxform.widgets.RichTextDisplay'] = function (config, node, order) {
+zc.dojo.widgets['zc.ajaxform.widgets.RichTextDisplay'] = function (
+    config, node, order) {
     var iframe = dojo.create('iframe', {'frameborder': 1}, node);
     iframe.postStartup = function (node) {
         var doc = this.contentDocument;
@@ -403,7 +410,8 @@ zc.dojo.widgets['zc.ajaxform.widgets.RichTextDisplay'] = function (config, node,
     return iframe;
 };
 
-zc.dojo.widgets['zope.schema.Date'] = function (config, node, order, readOnly) {
+zc.dojo.widgets['zope.schema.Date'] = function (
+    config, node, order, readOnly) {
         var wconfig;
         wconfig = zc.dojo.parse_config(config, order);
         wconfig.value = eval(wconfig.value);
@@ -411,7 +419,8 @@ zc.dojo.widgets['zope.schema.Date'] = function (config, node, order, readOnly) {
         return widget.domNode;
 };
 
-zc.dojo.widgets['zope.schema.Time'] = function (config, node, order, readOnly) {
+zc.dojo.widgets['zope.schema.Time'] = function (
+    config, node, order, readOnly) {
         var wconfig;
         wconfig = zc.dojo.parse_config(config, order);
         wconfig.value = eval(wconfig.value);
@@ -608,7 +617,8 @@ function build_record_form(widget_name, grid, index_map) {
                     onItem: function (item) {
                         dojo.forEach(grid.structure[0].cells, function (fld) {
                             if (fld.rc_wid) {
-                                grid.store.setValue(item, fld.field, record_data[fld.field]);
+                                grid.store.setValue(
+                                    item, fld.field, record_data[fld.field]);
                                 grid.store.save();
                             }
                         });
@@ -669,7 +679,8 @@ function edit_record(widget_name, grid, row_value, index_map) {
     grid.edit_dlg.show();
 }
 
-zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, index_map) {
+zc.dojo.widgets['zope.schema.List'] = function (
+    config, pnode, order, widgets, index_map) {
 
     var node = new dijit.layout.BorderContainer({
             design: "headline",
@@ -690,7 +701,8 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, i
         "identifier": "name",
         "label": "name"
     };
-    var records_jsonStore = new dojo.data.ItemFileWriteStore({data: records_data});
+    var records_jsonStore = new dojo.data.ItemFileWriteStore(
+        {data: records_data});
     var record_fields = build_layout(rc);
     var layout = [{
         cells: record_fields
@@ -718,9 +730,11 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, i
     grid_container.attr('content', grid);
     // To limit DnD activity to the DnD Handle.
     grid.select.exceptColumnsTo = record_fields.length - 2;
-    grid.select.getExceptionalColOffsetWidth = dojo.hitch(grid.select, function () {
+    grid.select.getExceptionalColOffsetWidth = dojo.hitch(
+        grid.select, function () {
         // We override the method in dojox.grid.enhanced.dnd._DndMovingManager
-        // because we don't use the IndirectSelection plugin, but still want DnD.
+        // because we don't use the IndirectSelection plugin, but
+        // still want DnD.
         var normalizedOffsetWidth = 0, offsetWidth = 0;
         dojo.forEach(this.getHeaderNodes(), function (node, index) {
             if (index <= this.exceptColumnsTo) {
@@ -749,7 +763,8 @@ zc.dojo.widgets['zope.schema.List'] = function (config, pnode, order, widgets, i
         });
         dojo.connect(grid, 'onCellDblClick', function (e) {
             grid.selection.select(e.rowIndex);
-            edit_record(config.name, grid, grid.selection.getSelected()[0], index_map);
+            edit_record(config.name, grid, grid.selection.getSelected()[0],
+                        index_map);
         });
     }
 
