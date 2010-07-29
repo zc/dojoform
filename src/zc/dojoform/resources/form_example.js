@@ -13,6 +13,11 @@ dojo.addOnLoad( function () {
     var actionify_buttons = function (config, success_handler) {
         dojo.forEach(config.definition.actions, function (action) {
             dojo.connect(dijit.byId(action.name), 'onClick', function () {
+                if (action.name == 'ExampleForm.actions.validate') {
+                    if (!dijit.byId(config.definition.prefix).validate()) {
+                        return;
+                    }
+                }
                 zc.dojo.submit_form({
                 url: action.url,
                 form_id: config.definition.prefix,

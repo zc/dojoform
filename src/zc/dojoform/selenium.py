@@ -174,16 +174,39 @@ class SeleniumTests(zc.selenium.pytest.Test):
         # Verify that multiple actions work
         s.type('weight', 'abcdefg')
         s.click('ExampleForm.actions.validate')
-        s.waitForText("//div[contains(@class, 'dijitDialog')]"
-                      "/div[@class='dijitDialogTitleBar']"
-                      "/.[@title='Submitting Form failed']"
-                      "/span[@class='dijitDialogTitle']",
-                      'Submitting Form failed')
-        s.verifyTextPresent('Weight: Missing Input')
-        s.click("//div[contains(@class, 'dijitDialog')]"
-                "/div[@class='dijitDialogPaneContent']"
-                "/div[2]/span[contains(@class, 'dijitButton')]")
+        s.verifyTextNotPresent('Form validated')
+
+        # The validate button validates some of the fields on the client-side.
+        #s.click('weight')
+        #s.waitForText("//div[contains(@class, 'dijitTooltip')]/div[1]/text()",
+        #             'The value entered is not valid.')
+        s.type('weight', '')
+        s.click('ExampleForm.actions.validate')
+        s.verifyTextNotPresent('Form validated')
+        #s.click('weight')
+        #s.waitForText("//div[contains(@class, 'dijitTooltip')]/div[1]/text()",
+        #             'Weight in lbs?')
         s.type('weight', '3')
+        s.type('last_name', '')
+        s.click('ExampleForm.actions.validate')
+        s.verifyTextNotPresent('Form validated')
+        #s.click('last_name')
+        #s.waitForText("//div[contains(@class, 'dijitTooltip')]/div[1]/text()",
+        #             'Family name.')
+        s.type('last_name', 'Barlow')
+        s.type('age', '')
+        s.click('ExampleForm.actions.validate')
+        s.verifyTextNotPresent('Form validated')
+        #s.click('age')
+        #s.waitForText("//div[contains(@class, 'dijitTooltip')]/div[1]/text()",
+        #             'Age in years')
+        s.type('age', '5ab')
+        s.click('ExampleForm.actions.validate')
+        s.verifyTextNotPresent('Form validated')
+        #s.click('age')
+        #s.waitForText("//div[contains(@class, 'dijitTooltip')]/div[1]/text()",
+        #             'The value entered is not valid.')
+        s.type('age', '42')
         s.click('ExampleForm.actions.validate')
         s.waitForText("//div[contains(@class, 'dijitDialog')]"
                       "/div[@class='dijitDialogTitleBar']"

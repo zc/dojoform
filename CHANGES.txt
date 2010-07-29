@@ -11,6 +11,10 @@ Changes
 
 - Clean up dependencies.
 
+- Make the highest-level container a dijit.form.Form, so that 
+  widgets can easily be validated on the client-side by calling
+  the form's validate method.
+
 0.17.0 (2010-07-12)
 ===================
 

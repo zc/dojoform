@@ -829,17 +829,21 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
     if (!tabIndexOffset) {
         tabIndexOffset = 0;
     }
-    var form = dojo.create('form', {
-        id: config.definition.prefix,
-        style: 'position:absolute;'
-    }, pnode);
+    var form = new dijit.form.Form({id: config.definition.prefix}, pnode);
+    form.startup = function () {
+        // First, restore the original startup
+        this.startup = dijit.form.Form.prototype.startup;
+        this.startup();
+        this.getChildren().forEach(function (node) {node.startup();});
+    };
     dojo.addClass(form, 'zcForm');
     var node = new dijit.layout.BorderContainer({
         design: "headline",
         gutters: "false",
         liveSplitters: true,
         style: "height:100%; width:100%;"
-    }, form);
+    });
+    form.domNode.appendChild(node.domNode);
     var left_pane = false;
     var right_pane = new dijit.layout.ContentPane({
         region: 'center',
