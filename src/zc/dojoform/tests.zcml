@@ -1,18 +1,18 @@
 <configure xmlns="http://namespaces.zope.org/zope" package="zc.dojoform">
 
-  <include package="zc.configuration" file="meta.zcml"/>
-  <include package="zope.app.zcmlfiles" file="meta.zcml" /> <!-- Gaaaah -->
+  <include package="zope.component" file="meta.zcml"/>
+  <include package="zope.security" file="meta.zcml"/>
   <include package="zc.dojoform" />
   <exclude package="zc.ajaxform" file="calculator_example.zcml"/>
   <exclude package="zc.ajaxform" file="form_example.zcml"/>
   <exclude package="zc.ajaxform" file="calculator_subapplication_example.zcml"/>
   <include package="zc.ajaxform" file="tests.zcml"/>
-  <include package="zope.app.zcmlfiles" /> <!-- Gaaaah -->
 
   <include file="form_example.zcml"/>
   <include file="calculator_example.zcml"/>
   <include file="calculator_subapplication_example.zcml"/>
-
+ 
+  <include package="zc.resourcelibrary" file="meta.zcml"/>
   <resourceLibrary name="zc.dojoform">
     <directory
        source="resources"

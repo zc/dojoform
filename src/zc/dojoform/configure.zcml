@@ -2,9 +2,9 @@
    xmlns="http://namespaces.zope.org/zope"
    xmlns:browser="http://namespaces.zope.org/browser"
    >
-
+  <include package="zope.app.pagetemplate" file="meta.zcml"/>
   <include package="zc.resourcelibrary" file="meta.zcml"/>
-  <include package="zc.resourcelibrary" />
+  <include package="zc.resourcelibrary"/>
 
   <resourceLibrary name="zc.dojoform">
     <directory

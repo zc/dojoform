@@ -43,15 +43,18 @@ setup(
     include_package_data = True,
     install_requires = [
         'setuptools',
-        'simplejson',
         'zc.ajaxform',
-        'zc.form',
-        'zc.configuration',
+        'zc.resourcelibrary',
         'zope.html >=2.0',
+        'zope.schema',
         ],
     extras_require = dict(
-        test=['zope.app.zcmlfiles',
-              'zope.testbrowser']),
+        test=[
+            'zope.component',
+            'zope.formlib',
+            'zope.security',
+            ]
+        ),
     zip_safe = False,
     entry_points=entry_points,
     )
