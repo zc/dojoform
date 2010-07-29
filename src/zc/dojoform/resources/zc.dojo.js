@@ -899,6 +899,8 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
         widgets.push(wid);
     });
 
+    // XXX The role of this function is unclear.  We need to document what's
+    // going on here.
     node.fit = function () {
         var margin = 17;
         var getHeight = function (node) {
@@ -921,6 +923,8 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
         node.domNode.style.height = h + 'px';
     };
 
+    // XXX The usage of this event is unclear.  We need to document what's
+    // going on here.
     var fireSubmitEvent = function () {
         var event = dojo.doc.createEvent('Event');
         event.initEvent('beforeSubmit', true, true);
