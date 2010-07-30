@@ -826,8 +826,9 @@ zc.dojo.widgets['zope.schema.List'] = function (
 
 zc.dojo.build_form = function (config, pnode, tabIndexOffset)
 {
-    if (config.definition.left_fields == null)
-      config.definition.left_fields = [];
+    if (!config.definition.left_fields) {
+        config.definition.left_fields = [];
+    }
     if (!tabIndexOffset) {
         tabIndexOffset = 0;
     }
