@@ -44,7 +44,7 @@ class SeleniumTests(zc.selenium.pytest.Test):
         s.open('/form.html?login')
         s.waitForValue('first_name', "Happy")
         s.verifyValue('last_name', 'Camper')
-        s.verifyValue('age', '23')
+        s.verifyValue('ExampleForm.age', '23')
         # XXX Iframe selection not implemented yet apparently
         #s.selectFrame('other_iframe')
         #s.verifyTextPresent("I've got a magic toenail")
@@ -55,7 +55,7 @@ class SeleniumTests(zc.selenium.pytest.Test):
         s.verifyValue('pet', '')
         # 1) the combobox has a pulldown menu
         s.click(
-            '//div[@id=\'widget_pet\']/div'
+            '//div[@id=\'widget_ExampleForm.pet\']/div'
             '/div[contains(@class, \'dijitDownArrowButton\')][1]')
         # 2) the combobox has text input
         s.type('pet', 'Cockatiel')
@@ -99,8 +99,7 @@ class SeleniumTests(zc.selenium.pytest.Test):
                 "/div[@class='dijitDialogPaneContent']"
                 "/div[2]/span[contains(@class, 'dijitButton')]")
 
-        s.type('weight', '23.5')
-
+        s.type('ExampleForm.weight', '23.5')
         # If we click the Edit button without selecting a row, we get an error
         # message.
         s.click('addresses.dojo.edit.btn')
@@ -181,7 +180,7 @@ class SeleniumTests(zc.selenium.pytest.Test):
         s.verifyTextNotPresent('fakeville')
 
         # Verify that multiple actions work
-        s.type('weight', 'abcdefg')
+        s.type('ExampleForm.weight', 'abcdefg')
         s.click('ExampleForm.actions.validate')
         s.verifyTextNotPresent('Form validated')
 
@@ -189,13 +188,13 @@ class SeleniumTests(zc.selenium.pytest.Test):
         #s.click('weight')
         #s.waitForText("//div[contains(@class, 'dijitTooltip')]/div[1]/text()",
         #             'The value entered is not valid.')
-        s.type('weight', '')
+        s.type('ExampleForm.weight', '')
         s.click('ExampleForm.actions.validate')
         s.verifyTextNotPresent('Form validated')
         #s.click('weight')
         #s.waitForText("//div[contains(@class, 'dijitTooltip')]/div[1]/text()",
         #             'Weight in lbs?')
-        s.type('weight', '3')
+        s.type('ExampleForm.weight', '3')
         s.type('last_name', '')
         s.click('ExampleForm.actions.validate')
         s.verifyTextNotPresent('Form validated')
@@ -203,19 +202,19 @@ class SeleniumTests(zc.selenium.pytest.Test):
         #s.waitForText("//div[contains(@class, 'dijitTooltip')]/div[1]/text()",
         #             'Family name.')
         s.type('last_name', 'Barlow')
-        s.type('age', '')
+        s.type('ExampleForm.age', '')
         s.click('ExampleForm.actions.validate')
         s.verifyTextNotPresent('Form validated')
-        #s.click('age')
+        #s.click('ExampleForm.age')
         #s.waitForText("//div[contains(@class, 'dijitTooltip')]/div[1]/text()",
         #             'Age in years')
-        s.type('age', '5ab')
+        s.type('ExampleForm.age', '5ab')
         s.click('ExampleForm.actions.validate')
         s.verifyTextNotPresent('Form validated')
         #s.click('age')
         #s.waitForText("//div[contains(@class, 'dijitTooltip')]/div[1]/text()",
         #             'The value entered is not valid.')
-        s.type('age', '42')
+        s.type('ExampleForm.age', '42')
         s.click('ExampleForm.actions.validate')
         s.waitForText("//div[contains(@class, 'dijitDialog')]"
                       "/div[@class='dijitDialogTitleBar']"

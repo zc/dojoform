@@ -860,6 +860,16 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
     var widgets = [];
     var index_map = zc.dojo.tab_index_map(config.definition);
     dojo.forEach(config.definition.widgets, function (widget) {
+        if (config.definition.prefix) {
+            var prefix = config.definition.prefix + '.';
+            if (!widget.id) {
+                widget.id = widget.name;
+            }
+
+            if (widget.id.substr(0, prefix.length) != prefix) {
+                widget.id = prefix + widget.id;
+            }
+        }
         var cp = new dijit.layout.ContentPane({}, dojo.create('div'));
         dojo.addClass(cp.domNode, 'widget');
         if (!(left_pane) && (!right_pane)) {
@@ -1016,7 +1026,7 @@ zc.dojo.parse_config = function (config, order) {
     if (!readonly) { readonly = false; }
     var wconfig = {
         required: config.required,
-        id: config.name,
+        id: config.id,
         name: config.name,
         promptMessage: config.fieldHint,
         tabIndex: order,
