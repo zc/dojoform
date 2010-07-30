@@ -5,8 +5,16 @@
   <include package="zope.app.server" />
   <include package="zc.selenium" />
 
-  <adapter 
-     factory="zc.dojoform.selenium.SeleniumTests" 
+  <page
+     xmlns="http://namespaces.zope.org/browser"
+     name="test_action_onclick.html"
+     template="test_action_onclick.html"
+     permission="zope.Public"
+     for="*"
+     />
+
+  <adapter
+     factory="zc.dojoform.selenium.SeleniumTests"
      name="zc.dojoform.tests.SeleniumTests.html"
      permission="zope.Public"
      />

@@ -30,6 +30,15 @@ class SeleniumTests(zc.selenium.pytest.Test):
         s.click('dijit_form_Button_1')
         s.waitForText('value', '1')
 
+    def test_action_onclick_and_no_left_fields(self):
+        s = self.selenium
+        s.open('/test_action_onclick.html')
+        s.verifyText('result', 'not submitted')
+        s.click('button')
+        s.verifyText('result', 'submitted1')
+        s.click('button')
+        s.verifyText('result', 'submitted2')
+
     def testForm(self):
         s = self.selenium
         s.open('/form.html?login')

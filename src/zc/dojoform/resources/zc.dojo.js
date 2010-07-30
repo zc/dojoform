@@ -826,6 +826,8 @@ zc.dojo.widgets['zope.schema.List'] = function (
 
 zc.dojo.build_form = function (config, pnode, tabIndexOffset)
 {
+    if (config.definition.left_fields == null)
+      config.definition.left_fields = [];
     if (!tabIndexOffset) {
         tabIndexOffset = 0;
     }
@@ -936,7 +938,7 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
             var button = new dijit.form.Button({
                     label: action.label,
                     id: action.name,
-                    onClick: fireSubmitEvent,
+                    onClick: action.onClick || fireSubmitEvent,
                     type: 'button',
                     tabIndex: index_map[action.name] + tabIndexOffset
                 });
