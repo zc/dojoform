@@ -1,4 +1,5 @@
 /*global dijit, dojo, dojox, zc, escape, unescape */
+/*jslint evil: true */
 dojo.provide('zc.dojo');
 dojo.require('dijit.form.ValidationTextBox');
 dojo.require('dijit.form.TextBox');
@@ -676,6 +677,64 @@ zc.dojo._edit_record = function (widget_name, grid, row_value, index_map) {
     grid.edit_dlg.show();
 };
 
+zc.dojo.widgets['zope.schema.Object'] = function (
+    config, pnode, order, widgets, index_map) {
+    var node = new dijit.layout.BorderContainer({
+        design: "headline", gutters: "false"
+    });
+
+    pnode.appendChild(node.domNode);
+
+    var sub_widgets = new dojo.NodeList();
+
+    dojo.forEach(config.schema.widgets, function (widget) {
+            var cp = new dijit.layout.ContentPane({}, dojo.create('div'));
+            if (widget.widget_constructor !== 'zc.ajaxform.widgets.Hidden') {
+                var label = dojo.create(
+                    'label', {innerHTML: widget.fieldLabel}, cp.domNode);
+                if (widget.required) {
+                    var span = dojo.create(
+                        'span', {innerHTML: ' (required)'}, label);
+                    dojo.addClass(span, 'status-marker');
+                }
+                dojo.create('br', null, cp.domNode);
+            }
+            dojo.addClass(cp.domNode, 'widget');
+            var wid = zc.dojo.widgets[widget.widget_constructor](
+                widget,
+                cp.domNode,
+                index_map[widget.name],
+                widgets,
+                index_map
+            );
+            sub_widgets.push(dijit.byId(widget.name));
+            cp.domNode.appendChild(wid);
+            node.domNode.appendChild(cp.domNode);
+        });
+
+    if (!config.required) {
+        var checkbox = new dijit.form.CheckBox({});
+        var label = dojo.byId(config.name + '.label');
+        label.parentNode.insertBefore(checkbox.domNode, label);
+
+        dojo.style(node.domNode, 'opacity', '0');
+        dojo.connect(checkbox, 'onClick', function () {
+            sub_widgets.forEach(function (widget) {
+                widget.disabled = !checkbox.checked;
+            });
+            /* jslint doesn't complain about this ::evil laugh:: */
+            (checkbox.checked ? dojo.fadeIn : dojo.fadeOut)(
+                                                {node: node.domNode}).play();
+
+        });
+        checkbox.onClick();
+    }
+
+
+    return pnode;
+
+};
+
 zc.dojo.widgets['zope.schema.List'] = function (
     config, pnode, order, widgets, index_map) {
 
@@ -847,7 +906,7 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
         style: "height:100%; width:100%;"
     });
     form.domNode.appendChild(node.domNode);
-    var left_pane = false;
+
     var right_pane = new dijit.layout.ContentPane({
         region: 'center',
         splitter: true
@@ -859,6 +918,17 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
     node.addChild(bottom_pane);
     var widgets = [];
     var index_map = zc.dojo.tab_index_map(config.definition);
+    var left_pane;
+    if (config.definition.left_fields) {
+        left_pane = new dijit.layout.ContentPane({
+                    region: 'left',
+                    style: 'width: 60%',
+                    splitter: true
+        });
+        right_pane.style.width = '40%';
+        node.addChild(left_pane);
+    }
+
     dojo.forEach(config.definition.widgets, function (widget) {
         if (config.definition.prefix) {
             var prefix = config.definition.prefix + '.';
@@ -872,19 +942,10 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
         }
         var cp = new dijit.layout.ContentPane({}, dojo.create('div'));
         dojo.addClass(cp.domNode, 'widget');
-        if (!(left_pane) && (!right_pane)) {
+        if (!(left_pane || right_pane)) {
             node.addChild(cp);
         }
         else if (config.definition.left_fields[widget.name]) {
-            if (!left_pane) {
-                left_pane = new dijit.layout.ContentPane({
-                    region: 'left',
-                    style: 'width: 60%',
-                    splitter: true
-                });
-                right_pane.style.width = '40%';
-                node.addChild(left_pane);
-            }
             left_pane.domNode.appendChild(cp.domNode);
         }
         else {
@@ -893,7 +954,9 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
 
         if (widget.widget_constructor !== 'zc.ajaxform.widgets.Hidden') {
             var label = dojo.create(
-                'label', {innerHTML: widget.fieldLabel}, cp.domNode);
+                'label', {id: widget.name + '.label',
+                innerHTML: widget.fieldLabel},
+                cp.domNode);
             if (widget.required) {
                 var span = dojo.create(
                     'span', {innerHTML: ' (required)'}, label);
@@ -989,6 +1052,11 @@ zc.dojo.tab_index_map = function (definition) {
                 dojo.forEach(['save', 'cancel'], function (item) {
                     list_widgets.push(widget.name + '.dojo.' + item);
                 });
+            }
+            else if (widget.widget_constructor == 'zope.schema.Object') {
+                dojo.forEach(widget.record_schema.widgets, function (widget) {
+                        indices[widget.name] = index++;
+                    });
             }
         } else {
             right.push(widget);
