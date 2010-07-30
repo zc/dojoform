@@ -1,0 +1,42 @@
+<html>
+  <head
+     tal:define="dojoroot string:http://ajax.googleapis.com/ajax/libs/dojo/1.5"
+     >
+
+    <style type="text/css"
+           tal:content='string:
+           @import "$dojoroot/dojo/resources/dojo.css";
+           @import "$dojoroot/dijit/themes/tundra/tundra.css";
+           @import "$dojoroot/dojox/grid/resources/Grid.css";
+           '></style>
+
+    <script
+       type="text/javascript"
+       tal:attributes="src string:$dojoroot/dojo/dojo.xd.js.uncompressed.js"
+       ></script>
+
+    <script
+       tal:attributes="src context/++resource++zc.dojoform/zc.dojo.js"
+       type="text/javascript">
+    </script>
+
+    <script type="text/javascript">
+
+dojo.addOnLoad(function () {
+var count=0
+zc.dojo.build_form({definition: {
+  prefix: 'formdiv',
+  actions: [{label: 'Add', name: 'button', onClick: function () {
+      count += 1;
+      dojo.attr(dojo.byId('result'), 'innerHTML', 'submitted'+count);
+  }}],
+  widgets: [{id: 'name', name: 'name', fieldLabel: 'Name',
+             widget_constructor: 'zope.schema.TextLine'}]
+  }}, dojo.byId('formdiv')).startup();
+});
+    </script>
+  </head>
+  <body class="tundra">
+    <div id="result">not submitted</div>
+    <div id="formdiv"></div></body>
+</html>
