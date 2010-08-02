@@ -1,6 +1,7 @@
 /*global dijit, dojo, dojox, zc, escape, unescape */
 /*jslint evil: true */
 dojo.provide('zc.dojo');
+dojo.require('zc.RangeWidget');
 dojo.require('dijit.form.ValidationTextBox');
 dojo.require('dijit.form.TextBox');
 dojo.require('dijit.form.NumberSpinner');
@@ -349,6 +350,59 @@ zc.dojo.widgets['zc.ajaxform.widgets.Hidden'] = function (config, node, order) {
     return new dijit.form.TextBox(wconfig, node).domNode;
 };
 
+zc.dojo.widgets['zc.ajaxform.widgets.DateRange'] = function (config, node, order) {
+    var wconfig;
+    wconfig = zc.dojo.parse_range_config(config, order);
+    wconfig['start_label'] = 'Start';
+    wconfig['end_label'] = 'End';
+    if (wconfig['value']) {
+        wconfig['value'] = dojo.fromJson(wconfig['value']);
+        for (key in wconfig['value']) {
+            var date_str = wconfig['value'][key];
+            var date_val = new Date();
+            var pieces = date_str.split('-');
+            date_val.setUTCFullYear(pieces[0]);
+            date_val.setUTCMonth(pieces[1]);
+            date_val.setUTCDate(pieces[2]);
+            wconfig['value'][key] = date_val;
+        }
+    }
+    return new zc.RangeWidget({
+        config: wconfig,
+        dijit_type: dijit.form.DateTextBox,
+        conversion: function (date_ob) {
+            if (date_ob) {
+                return date_ob.getUTCFullYear() + '-' +
+                       date_ob.getUTCMonth() + '-' +
+                       date_ob.getUTCDate();
+            }
+            else {
+                return null
+            }
+        }
+    }, node).domNode;
+};
+
+zc.dojo.widgets['zc.ajaxform.widgets.IntRange'] = function (config, node, order) {
+    var wconfig;
+    wconfig = zc.dojo.parse_range_config(config, order);
+    wconfig['start_label'] = 'Min';
+    wconfig['end_label'] = 'Max';
+    if (wconfig['value']) {
+        wconfig['value'] = dojo.fromJson(wconfig['value']);
+    }
+    return new zc.RangeWidget({
+        config: wconfig,
+        dijit_type: dijit.form.NumberTextBox,
+        conversion: function (int_ob) {
+            if (!int_ob) {
+                return null;
+            }
+            return int_ob
+        }
+    }, node).domNode;
+};
+
 zc.dojo.parse_number_config = function (config, order) {
     var wconfig, constraints;
     wconfig = zc.dojo.parse_config(config, order);
@@ -360,6 +414,14 @@ zc.dojo.parse_number_config = function (config, order) {
         constraints.max = config.field_max;
     }
     wconfig.constraints = constraints;
+    return wconfig;
+};
+
+zc.dojo.parse_range_config = function (config, order) {
+    var wconfig;
+    wconfig = zc.dojo.parse_number_config(config, order);
+    wconfig['start'] = config.start;
+    wconfig['end'] = config.end;
     return wconfig;
 };
 
@@ -450,6 +512,9 @@ zc.dojo._choiceConfig = function (config, node, order) {
     var select_store = new dojo.data.ItemFileReadStore({
         data: store_data
     });
+    if (wconfig.value === undefined) {
+        wconfig.value = null;
+    }
     wconfig.store = select_store;
     wconfig.searchAttr = "label";
     return wconfig;
@@ -531,7 +596,9 @@ zc.dojo._build_record = function (record, pnode, suffix, record_value) {
         rc_wid.name = record.name + '.' + indexed_name;
         rc_wid.id = record.name + '.' + indexed_name;
         if (record_value) {
-            rc_wid.value = escape(record_value[indexed_name] || '');
+            var val = record_value[indexed_name];
+            if (val === false) { return val};
+            rc_wid.value = escape(val || '');
         }
         record_json += '"' + rc_wid.name + '": "' + rc_wid.value + '",';
     });
@@ -602,6 +669,10 @@ zc.dojo._build_record_form = function (widget_name, grid, index_map) {
                 var row = {name: '.' + grid.rowCount + 1};
                 dojo.forEach(grid.structure[0].cells, function (fld) {
                     if (fld.rc_wid) {
+                        if (fld.widget_constructor == 'zope.schema.Bool') {
+                            record_data[fld.field] = 
+                                Boolean(record_data[fld.field]);
+                        }
                         row[fld.field] = record_data[fld.field];
                     }
                 });
@@ -614,8 +685,13 @@ zc.dojo._build_record_form = function (widget_name, grid, index_map) {
                     onItem: function (item) {
                         dojo.forEach(grid.structure[0].cells, function (fld) {
                             if (fld.rc_wid) {
-                                grid.store.setValue(
-                                    item, fld.field, record_data[fld.field]);
+                                if (fld.widget_constructor == 'zope.schema.Bool') {
+                                    record_data[fld.field] =
+                                        Boolean(record_data[fld.field]);
+                                }
+                                grid.store.setValue(item,
+                                                    fld.field,
+                                                    record_data[fld.field]);
                                 grid.store.save();
                             }
                         });
@@ -668,6 +744,9 @@ zc.dojo._edit_record = function (widget_name, grid, row_value, index_map) {
     grid.edit_dlg.editForm.getChildren().forEach(function (el) {
         if (el.name in form_values) {
             el.attr('value', form_values[el.name]);
+            if (el.checked != undefined) {
+                el.attr('checked', form_values[el.name]);
+            }
         }
     });
 
