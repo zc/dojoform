@@ -35,6 +35,19 @@ zc.dojo.beforeRecordFormSubmittedTopic = "ZC_DOJO_BEFORE_RECORD_FORM_SUBMITTED";
 zc.dojo.dialogFormResetTopic = "ZC_DOJO_DIALOG_FORM_RESET";
 zc.dojo.dialogFormUpdateTopic = "ZC_DOJO_DIALOG_FORM_UPDATE";
 
+zc.dojo.flags = {};
+
+zc.dojo.flag_startup = function () {
+    for (key in zc.dojo.flags) {
+        var flag_wid = dijit.byId(key);
+        var flagged_cps = zc.dojo.flags[key];
+        var state = flag_wid.checked;
+        dojo.forEach(flagged_cps, function(cp) {
+            dojo.style(cp.domNode, 'display', state ? '': 'none');
+        });
+    }
+}
+
 zc.dojo.get_recordlist_data = function (args) {
     var content, rec;
     if (args.form_id) {
@@ -449,6 +462,12 @@ zc.dojo.widgets['zope.schema.Bool'] = function (config, node, order) {
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
     wconfig.checked = config.value;
+    wconfig.onChange = function (state) {
+        var follower_cps = zc.dojo.flags[config.id];
+        dojo.forEach(follower_cps, function (cp) {
+            dojo.style(cp.domNode, 'display', state ? '': 'none');
+        });
+    }
     return new dijit.form.CheckBox(wconfig, node).domNode;
 
 };
@@ -1020,6 +1039,17 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
             }
         }
         var cp = new dijit.layout.ContentPane({}, dojo.create('div'));
+        var bool_flag = widget.bool_flag;
+        if (bool_flag != undefined) {
+            if (config.definition.prefix) {
+                var prefix = config.definition.prefix + '.';
+                bool_flag = prefix + bool_flag;
+            }
+            if (zc.dojo.flags[bool_flag] === undefined) {
+                zc.dojo.flags[bool_flag] = [];
+            }
+            zc.dojo.flags[bool_flag].push(cp);
+        }
         dojo.addClass(cp.domNode, 'widget');
         if (!(left_pane || right_pane)) {
             node.addChild(cp);
@@ -1103,6 +1133,7 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
             widget.postStartup(node);
         }
     });
+    zc.dojo.flag_startup();
     return node;
 };
 
@@ -1170,7 +1201,7 @@ zc.dojo.system_error = function (task) {
 zc.dojo.parse_config = function (config, order) {
     var readonly;
     readonly = config.readonly;
-    if (!readonly) { readonly = false; }
+    if (!readonly) { readonly = false;}
     var wconfig = {
         required: config.required,
         id: config.id,
