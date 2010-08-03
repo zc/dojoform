@@ -12,6 +12,7 @@
 #
 ##############################################################################
 import zc.ajaxform.interfaces
+import zc.ajaxform.schema
 import zc.ajaxform.widgets
 import zope.schema.interfaces
 
@@ -20,7 +21,7 @@ class CKEditorWidget(zc.ajaxform.widgets.InputText):
     """A CKEditor widget.
     """
     zope.component.adapts(
-        zope.schema.interfaces.IText,
+        zc.ajaxform.schema.RichHTML,
         zc.ajaxform.interfaces.IAjaxRequest)
 
     widget_constructor = 'zc.dojoform.ckeditor.CKEditor'
