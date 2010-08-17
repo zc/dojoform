@@ -38,15 +38,17 @@ zc.dojo.dialogFormUpdateTopic = "ZC_DOJO_DIALOG_FORM_UPDATE";
 zc.dojo.flags = {};
 
 zc.dojo.flag_startup = function () {
-    for (key in zc.dojo.flags) {
-        var flag_wid = dijit.byId(key);
-        var flagged_cps = zc.dojo.flags[key];
-        var state = flag_wid.checked;
-        dojo.forEach(flagged_cps, function(cp) {
-            dojo.style(cp.domNode, 'display', state ? '': 'none');
-        });
+    for (var key in zc.dojo.flags) {
+        if (zc.dojo.flags.hasOwnProperty(key)) {
+            var flag_wid = dijit.byId(key);
+            var flagged_cps = zc.dojo.flags[key];
+            var state = flag_wid.checked;
+            dojo.forEach(flagged_cps, function(cp) {
+                dojo.style(cp.domNode, 'display', state ? '': 'none');
+            });
+        }
     }
-}
+};
 
 zc.dojo.get_recordlist_data = function (args) {
     var content, rec;
@@ -366,18 +368,20 @@ zc.dojo.widgets['zc.ajaxform.widgets.Hidden'] = function (config, node, order) {
 zc.dojo.widgets['zc.ajaxform.widgets.DateRange'] = function (config, node, order) {
     var wconfig;
     wconfig = zc.dojo.parse_range_config(config, order);
-    wconfig['start_label'] = 'Start';
-    wconfig['end_label'] = 'End';
-    if (wconfig['value']) {
-        wconfig['value'] = dojo.fromJson(wconfig['value']);
-        for (key in wconfig['value']) {
-            var date_str = wconfig['value'][key];
-            var date_val = new Date();
-            var pieces = date_str.split('-');
-            date_val.setUTCFullYear(pieces[0]);
-            date_val.setUTCMonth(pieces[1]);
-            date_val.setUTCDate(pieces[2]);
-            wconfig['value'][key] = date_val;
+    wconfig.start_label = 'Start';
+    wconfig.end_label = 'End';
+    if (wconfig.value) {
+        wconfig.value = dojo.fromJson(wconfig.value);
+        for (var key in wconfig.value) {
+            if (wconfig.value.hasOwnProperty(key)) {
+                var date_str = wconfig.value[key];
+                var date_val = new Date();
+                var pieces = date_str.split('-');
+                date_val.setUTCFullYear(pieces[0]);
+                date_val.setUTCMonth(pieces[1]);
+                date_val.setUTCDate(pieces[2]);
+                wconfig.value[key] = date_val;
+            }
         }
     }
     return new zc.RangeWidget({
@@ -390,7 +394,7 @@ zc.dojo.widgets['zc.ajaxform.widgets.DateRange'] = function (config, node, order
                        date_ob.getUTCDate();
             }
             else {
-                return null
+                return null;
             }
         }
     }, node).domNode;
@@ -399,10 +403,10 @@ zc.dojo.widgets['zc.ajaxform.widgets.DateRange'] = function (config, node, order
 zc.dojo.widgets['zc.ajaxform.widgets.IntRange'] = function (config, node, order) {
     var wconfig;
     wconfig = zc.dojo.parse_range_config(config, order);
-    wconfig['start_label'] = 'Min';
-    wconfig['end_label'] = 'Max';
-    if (wconfig['value']) {
-        wconfig['value'] = dojo.fromJson(wconfig['value']);
+    wconfig.start_label = 'Min';
+    wconfig.end_label = 'Max';
+    if (wconfig.value) {
+        wconfig.value = dojo.fromJson(wconfig.value);
     }
     return new zc.RangeWidget({
         config: wconfig,
@@ -411,7 +415,7 @@ zc.dojo.widgets['zc.ajaxform.widgets.IntRange'] = function (config, node, order)
             if (!int_ob) {
                 return null;
             }
-            return int_ob
+            return int_ob;
         }
     }, node).domNode;
 };
@@ -433,8 +437,8 @@ zc.dojo.parse_number_config = function (config, order) {
 zc.dojo.parse_range_config = function (config, order) {
     var wconfig;
     wconfig = zc.dojo.parse_number_config(config, order);
-    wconfig['start'] = config.start;
-    wconfig['end'] = config.end;
+    wconfig.start = config.start;
+    wconfig.end = config.end;
     return wconfig;
 };
 
@@ -467,7 +471,7 @@ zc.dojo.widgets['zope.schema.Bool'] = function (config, node, order) {
         dojo.forEach(follower_cps, function (cp) {
             dojo.style(cp.domNode, 'display', state ? '': 'none');
         });
-    }
+    };
     return new dijit.form.CheckBox(wconfig, node).domNode;
 
 };
@@ -616,7 +620,7 @@ zc.dojo._build_record = function (record, pnode, suffix, record_value) {
         rc_wid.id = record.name + '.' + indexed_name;
         if (record_value) {
             var val = record_value[indexed_name];
-            if (val === false) { return val};
+            if (val === false) { return val;}
             rc_wid.value = escape(val || '');
         }
         record_json += '"' + rc_wid.name + '": "' + rc_wid.value + '",';
@@ -689,7 +693,7 @@ zc.dojo._build_record_form = function (widget_name, grid, index_map) {
                 dojo.forEach(grid.structure[0].cells, function (fld) {
                     if (fld.rc_wid) {
                         if (fld.widget_constructor == 'zope.schema.Bool') {
-                            record_data[fld.field] = 
+                            record_data[fld.field] =
                                 Boolean(record_data[fld.field]);
                         }
                         row[fld.field] = record_data[fld.field];
@@ -763,7 +767,7 @@ zc.dojo._edit_record = function (widget_name, grid, row_value, index_map) {
     grid.edit_dlg.editForm.getChildren().forEach(function (el) {
         if (el.name in form_values) {
             el.attr('value', form_values[el.name]);
-            if (el.checked != undefined) {
+            if (el.checked !== undefined) {
                 el.attr('checked', form_values[el.name]);
             }
         }
@@ -1028,8 +1032,9 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
     }
 
     dojo.forEach(config.definition.widgets, function (widget) {
+        var prefix;
         if (config.definition.prefix) {
-            var prefix = config.definition.prefix + '.';
+            prefix = config.definition.prefix + '.';
             if (!widget.id) {
                 widget.id = widget.name;
             }
@@ -1040,9 +1045,8 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
         }
         var cp = new dijit.layout.ContentPane({}, dojo.create('div'));
         var bool_flag = widget.bool_flag;
-        if (bool_flag != undefined) {
+        if (bool_flag) {
             if (config.definition.prefix) {
-                var prefix = config.definition.prefix + '.';
                 bool_flag = prefix + bool_flag;
             }
             if (zc.dojo.flags[bool_flag] === undefined) {
