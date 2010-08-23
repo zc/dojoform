@@ -1,3 +1,5 @@
+/*globals zc, dojo, CKEDITOR, window */
+
 /* Dojo form widget for resource reference list */
 
 zc.dojo.GLOBAL_HANDLERS = [];
@@ -12,19 +14,19 @@ var CKEditorWidget = function (config, parent, order) {
         {'name': config.name},
         parent
     );
-    textarea.value = config.value;
+    textarea.value = config.value || '';
     parent.postStartup = function (formNode) {
         var editor, ckeditorConfig;
-        if (config.display_options != null) {
+        if (config.display_options) {
             ckeditorConfig = config.display_options;
         } else {
             ckeditorConfig = {};
         }
-        if (order != null) {
+        if (order !== null) {
             ckeditorConfig.tabIndex = order;
         }
-        if (ckeditorCustomConfig != '') {
-            ckeditorConfig['customConfig'] = ckeditorCustomConfig;
+        if (ckeditorCustomConfig) {
+            ckeditorConfig.customConfig = ckeditorCustomConfig;
         }
         editor = CKEDITOR.replace(textarea, ckeditorConfig);
         var handler = function () {
@@ -34,23 +36,23 @@ var CKEditorWidget = function (config, parent, order) {
         zc.dojo.GLOBAL_HANDLERS.push(handler);
         dojo.subscribe(zc.dojo.recordFormSubmittedTopic, handler);
         CKEDITOR.on('instanceReady', function (event) {
-            if (formNode.fit != null) {
-                formNode.fit()
+            if (formNode.fit) {
+                formNode.fit();
             }
         });
     };
 
     /* subscribers to reset/set/save photo widget data.
     */
-    if (!zc.dojo.widgets['zc.dojoform.ckeditor.CKEditor'].subscribers) { 
+    if (!zc.dojo.widgets['zc.dojoform.ckeditor.CKEditor'].subscribers) {
         dojo.subscribe(zc.dojo.beforeRecordFormSubmittedTopic, function(frm_id) {
             dojo.forEach(dojo.query('textarea', frm_id), function (textarea) {
                 var editor = CKEDITOR.instances[textarea.name];
                 if (editor) {
                     textarea.value = editor.getData();
                 }
-            })
-        })
+            });
+        });
         dojo.subscribe(zc.dojo.dialogFormResetTopic, function(frm_id) {
             dojo.forEach(dojo.query('textarea', frm_id), function (textarea) {
                 var editor = CKEDITOR.instances[textarea.name];
@@ -58,7 +60,7 @@ var CKEditorWidget = function (config, parent, order) {
                     editor.setData('');
                 }
             });
-        })
+        });
         dojo.subscribe(zc.dojo.dialogFormUpdateTopic, function(frm_id, row) {
             dojo.forEach(dojo.query('textarea', frm_id), function (textarea) {
                 textarea.value = row[textarea.name];
@@ -67,7 +69,7 @@ var CKEditorWidget = function (config, parent, order) {
                     editor.setData(row[textarea.name]);
                 }
             });
-        })
+        });
         zc.dojo.widgets['zc.dojoform.ckeditor.CKEditor'].subscribers = true;
     }
 
