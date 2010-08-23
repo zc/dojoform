@@ -501,7 +501,10 @@ zc.dojo.widgets['zope.schema.Date'] = function (
     config, node, order, readOnly) {
         var wconfig;
         wconfig = zc.dojo.parse_config(config, order);
-        wconfig.value = eval(wconfig.value);
+        wconfig.value = dojo.date.locale.parse(wconfig.value, {
+                                datePattern: "yyyy-MM-dd",
+                                selector: "date"
+                            });
         var widget = new dijit.form.DateTextBox(wconfig, dojo.create('div'));
         return widget.domNode;
 };
