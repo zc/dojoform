@@ -1,5 +1,4 @@
 /*global dijit, dojo, dojox, zc, escape, unescape */
-/*jslint evil: true */
 dojo.provide('zc.dojo');
 dojo.require('zc.RangeWidget');
 dojo.require('dijit.form.ValidationTextBox');
@@ -18,6 +17,7 @@ dojo.require('dijit.form.NumberTextBox');
 dojo.require('dijit.Dialog');
 dojo.require('dojo.data.ItemFileReadStore');
 dojo.require('dojo.data.ItemFileWriteStore');
+dojo.require('dojo.date.stamp');
 dojo.require("dojox.grid.cells.dijit");
 dojo.require("dojox.grid.DataGrid");
 dojo.require("dojox.grid.EnhancedGrid");
@@ -374,13 +374,7 @@ zc.dojo.widgets['zc.ajaxform.widgets.DateRange'] = function (config, node, order
         wconfig.value = dojo.fromJson(wconfig.value);
         for (var key in wconfig.value) {
             if (wconfig.value.hasOwnProperty(key)) {
-                var date_str = wconfig.value[key];
-                var date_val = new Date();
-                var pieces = date_str.split('-');
-                date_val.setUTCFullYear(pieces[0]);
-                date_val.setUTCMonth(pieces[1]);
-                date_val.setUTCDate(pieces[2]);
-                wconfig.value[key] = date_val;
+                wconfig.value[key] = dojo.date.stamp.fromISOString(key);
             }
         }
     }
@@ -389,9 +383,7 @@ zc.dojo.widgets['zc.ajaxform.widgets.DateRange'] = function (config, node, order
         dijit_type: dijit.form.DateTextBox,
         conversion: function (date_ob) {
             if (date_ob) {
-                return date_ob.getUTCFullYear() + '-' +
-                       date_ob.getUTCMonth() + '-' +
-                       date_ob.getUTCDate();
+                return dojo.date.stamp.toISOString(date_ob).split('T')[0];
             }
             else {
                 return null;
@@ -501,10 +493,7 @@ zc.dojo.widgets['zope.schema.Date'] = function (
     config, node, order, readOnly) {
         var wconfig;
         wconfig = zc.dojo.parse_config(config, order);
-        wconfig.value = dojo.date.locale.parse(wconfig.value, {
-                                datePattern: "yyyy-MM-dd",
-                                selector: "date"
-                            });
+        wconfig.value = dojo.date.stamp.fromISOString(wconfig.value);
         var widget = new dijit.form.DateTextBox(wconfig, dojo.create('div'));
         return widget.domNode;
 };
@@ -513,7 +502,13 @@ zc.dojo.widgets['zope.schema.Time'] = function (
     config, node, order, readOnly) {
         var wconfig;
         wconfig = zc.dojo.parse_config(config, order);
-        wconfig.value = eval(wconfig.value);
+        if (wconfig.value) {
+            var ts = wconfig.value;
+            if (ts[0] != 'T') {
+                ts = 'T' + ts;
+            }
+            wconfig.value = dojo.date.stamp.fromISOString(ts);
+        }
         var widget = new dijit.form.TimeTextBox(wconfig, dojo.create('div'));
         return widget.domNode;
 };
@@ -525,19 +520,13 @@ zc.dojo._choiceConfig = function (config, node, order) {
         identifier: 'value',
         label: 'label'
     };
-    var items = [];
+    store_data.items = dojo.map(
+                        config.values,
+                        function (item) {
+                            return {label: item[1], value: item[0]};
+                        });
 
-    dojo.forEach(config.values, function (item) {
-        items.push({
-            label: item[1],
-            value: item[0]
-        });
-    });
-
-    store_data.items = items;
-    var select_store = new dojo.data.ItemFileReadStore({
-        data: store_data
-    });
+    var select_store = new dojo.data.ItemFileReadStore({data: store_data});
     if (wconfig.value === undefined) {
         wconfig.value = null;
     }

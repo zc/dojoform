@@ -43,6 +43,12 @@ Changes
 
 - Quell all jslint errors and warnings.
 
+0.16.2 (2010-09-28)
+===================
+
+- Revert change made in 0.13.0 that removed the call to the form's
+  startup method.
+  
 0.16.1 (2010-06-29)
 ===================
 
