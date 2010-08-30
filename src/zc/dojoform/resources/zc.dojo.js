@@ -977,8 +977,9 @@ zc.dojo.widgets['zope.schema.List'] = function (
     return pnode;
 };
 
-zc.dojo.build_form = function (config, pnode, tabIndexOffset)
+zc.dojo.build_form = function (config, pnode, tabIndexOffset, startup)
 {
+    startup = startup === undefined ? true: startup;
     if (!config.definition.left_fields) {
         config.definition.left_fields = [];
     }
@@ -1124,12 +1125,15 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset)
             bottom_pane.domNode.appendChild(button.domNode);
         });
     }
-    dojo.forEach(widgets, function (widget) {
-        if (widget.postStartup) {
-            widget.postStartup(node);
-        }
-    });
-    zc.dojo.flag_startup();
+    if (startup) {
+        node.startup();
+        dojo.forEach(widgets, function (widget) {
+            if (widget.postStartup) {
+                widget.postStartup(node);
+            }
+        });
+        zc.dojo.flag_startup();
+    }
     return node;
 };
 
