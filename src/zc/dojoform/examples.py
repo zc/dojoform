@@ -42,26 +42,12 @@ class Container(Base, zc.ajaxform.calculator_subapplication_example.Container):
     pass
 
 
-import zope.schema
-import zope.interface
-
-class IBlah(zope.interface.Interface):
-
-    foo = zope.schema.Int(__name__="foo", title=u"Foo")
-    bar = zope.schema.TextLine(__name__="bar", title=u"Bar")
-
-
-
 class Form(Base, zc.ajaxform.form_example.FormExample):
 
     class ExampleForm(zc.ajaxform.form_example.FormExample.ExampleForm):
 
         actions = zc.ajaxform.form_example.FormExample.ExampleForm.actions
         form_fields = zc.ajaxform.form_example.FormExample.ExampleForm.form_fields
-        form_fields += type(form_fields)(zope.schema.Object(__name__="blah",
-            title=u"BLAH", required=False,
-                                                            schema=IBlah))
-
 
         @zope.formlib.form.action('Validate')
         def validate(self, action, data):
