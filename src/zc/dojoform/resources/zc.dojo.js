@@ -477,6 +477,44 @@ zc.dojo.widgets['zc.ajaxform.widgets.BasicDisplay'] = function (
 
 };
 
+zc.dojo.widgets['zc.ajaxform.widgets.RangeDisplay'] = function (
+    config, node, order) {
+    var wconfig;
+    wconfig = zc.dojo.parse_config(config, order);
+    wconfig.readOnly = true;
+    var domNode = dojo.create('div', {}, node);
+    dojo.create('label', {
+        'innerHTML': config.start_label
+    }, dojo.create('div', {}, domNode));
+    var startbox = new dijit.form.TextBox({
+        'value': wconfig.value[config.start],
+        'readOnly': true
+    }, dojo.create('div', {}, domNode));
+    dojo.create('label', {
+        'innerHTML': config.end_label
+    }, dojo.create('div', {}, domNode));
+    var endbox = new dijit.form.TextBox({
+        'value': wconfig.value[config.end],
+        'readOnly': true
+    }, dojo.create('div', {}, domNode));
+    return domNode;
+};
+
+zc.dojo.widgets['zc.ajaxform.widgets.BoolDisplay'] = function (
+    config, node, order) {
+    var wconfig;
+    wconfig = zc.dojo.parse_config(config, order);
+    wconfig.checked = config.value;
+    wconfig.onChange = function (state) {
+        var follower_cps = zc.dojo.flags[config.id];
+        dojo.forEach(follower_cps, function (cp) {
+            dojo.style(cp.domNode, 'display', state ? '': 'none');
+        });
+    };
+    wconfig.readOnly = true;
+    return new dijit.form.CheckBox(wconfig, node).domNode;
+};
+
 zc.dojo.widgets['zc.ajaxform.widgets.RichTextDisplay'] = function (
     config, node, order) {
     var iframe = dojo.create('iframe', {'frameborder': 1}, node);
@@ -570,6 +608,9 @@ zc.dojo._build_layout = function (record) {
         }
     };
     dojo.forEach(record.widgets, function (widget) {
+        if (widget.widget_constructor == "zc.ajaxform.widgets.Hidden") {
+            return
+        }
         var new_name;
         widget = dojo.clone(widget);
         new_name = record.name + '.' + widget.name;
@@ -858,12 +899,6 @@ zc.dojo.widgets['zope.schema.List'] = function (
         cells: record_fields
     }];
 
-    var grid_container = new dijit.layout.ContentPane({
-        autoWidth: true,
-        autoHeight: true,
-        doLayout: true
-    }, dojo.create('div', null, node.domNode));
-
     var grid = new dojox.grid.EnhancedGrid({
         query: { name: '*' },
         store: records_jsonStore,
@@ -876,8 +911,7 @@ zc.dojo.widgets['zope.schema.List'] = function (
             nestedSorting: true,
             dnd: true
         }
-    });
-    grid_container.attr('content', grid);
+    }, dojo.create('div', {}, node.domNode));
     // To limit DnD activity to the DnD Handle.
     grid.select.exceptColumnsTo = record_fields.length - 2;
     grid.select.getExceptionalColOffsetWidth = dojo.hitch(
