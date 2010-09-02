@@ -374,7 +374,8 @@ zc.dojo.widgets['zc.ajaxform.widgets.DateRange'] = function (config, node, order
         wconfig.value = dojo.fromJson(wconfig.value);
         for (var key in wconfig.value) {
             if (wconfig.value.hasOwnProperty(key)) {
-                wconfig.value[key] = dojo.date.stamp.fromISOString(key);
+                var value = wconfig.value[key];
+                wconfig.value[key] = dojo.date.stamp.fromISOString(value);
             }
         }
     }
