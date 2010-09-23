@@ -88,16 +88,18 @@ class SeleniumTests(zc.selenium.pytest.Test):
             '//div[@id=\'dojox_grid__View_1\']/div/div/div/div[2]/table/tbody/tr/td[3]/div',
             '9001')
         s.click('ExampleForm.actions.register')
-        s.waitForText("//div[contains(@class, 'dijitDialog')]"
-                      "/div[@class='dijitDialogTitleBar']"
-                      "/span[@class='dijitDialogTitle']",
-                      'Submitting Form failed')
+        s.waitForText(
+            "//div[contains(@class, 'dijitDialog')]"
+            "/div[@class='dijitDialogTitleBar']"
+            "/span[@class='dijitDialogTitle']",
+            'Submitting Form failed')
         s.verifyTextPresent('Value is too big')
         s.verifyTextPresent('Weight: Missing Input')
 
-        s.click("//div[contains(@class, 'dijitDialog')]"
-                "/div[@class='dijitDialogPaneContent']"
-                "/div[2]/span[contains(@class, 'dijitButton')]")
+        s.click(
+            "//div[contains(@class, 'dijitDialog')]"
+            "/div[@class='dijitDialogPaneContent']"
+            "/div[2]/span[contains(@class, 'dijitButton')]")
 
         s.type('ExampleForm.weight', '23.5')
         # If we click the Edit button without selecting a row, we get an error
@@ -105,9 +107,10 @@ class SeleniumTests(zc.selenium.pytest.Test):
         s.click('addresses.dojo.edit.btn')
         s.verifyTextPresent('Error!')
         s.verifyTextPresent('Please select a single row to Edit.')
-        s.click("//div[contains(@class, 'dijitDialog')]"
-                "/div[@class='dijitDialogPaneContent']"
-                "/div[2]/span[contains(@class, 'dijitButton')]")
+        s.click(
+            "//div[contains(@class, 'dijitDialog')]"
+            "/div[@class='dijitDialogPaneContent']"
+            "/div[2]/span[contains(@class, 'dijitButton')]")
         # If we click the Delete button without selecting a row, we also get
         # an error message.
         s.click('addresses.dojo.delete.btn')
@@ -119,16 +122,18 @@ class SeleniumTests(zc.selenium.pytest.Test):
 
         # If we select a row and click the Edit button, we get a pop-up form
         # containing the current values.
-        s.click("//div[@id='dojox_grid__View_1']"
-                "/div/div/div/div[1]/table/tbody/tr/td[1]/div")
+        s.click(
+            "//div[@id='dojox_grid__View_1']"
+            "/div/div/div/div[1]/table/tbody/tr/td[1]/div")
         s.click('addresses.dojo.edit.btn')
         s.verifyValue('addresses.street', '123 fake street')
         s.verifyValue('addresses.city', 'fakeville')
         s.verifyValue('addresses.awesomeness', '9')
         s.click('addresses.dojo.cancel.btn')
 
-        s.click("//div[@id='dojox_grid__View_1']"
-                "/div/div/div/div[2]/table/tbody/tr/td[1]/div")
+        s.click(
+            "//div[@id='dojox_grid__View_1']"
+            "/div/div/div/div[2]/table/tbody/tr/td[1]/div")
         s.click('addresses.dojo.edit.btn')
         s.verifyValue('addresses.street', '345 false street')
         s.verifyValue('addresses.city', 'falsetown')
@@ -216,12 +221,14 @@ class SeleniumTests(zc.selenium.pytest.Test):
         #             'The value entered is not valid.')
         s.type('ExampleForm.age', '42')
         s.click('ExampleForm.actions.validate')
-        s.waitForText("//div[contains(@class, 'dijitDialog')]"
-                      "/div[@class='dijitDialogTitleBar']"
-                      "/.[@title='Success!']"
-                      "/span[@class='dijitDialogTitle']",
-                      'Success!')
+        s.waitForText(
+            "//div[contains(@class, 'dijitDialog')]"
+            "/div[@class='dijitDialogTitleBar']"
+            "/.[@title='Success!']"
+            "/span[@class='dijitDialogTitle']",
+            'Success!')
         s.verifyTextPresent('Form validated')
-        s.click("//div[contains(@class, 'dijitDialog')]"
-                "/div[@class='dijitDialogPaneContent']"
-                "/div[2]/span[contains(@class, 'dijitButton')]")
+        s.click(
+            "//div[contains(@class, 'dijitDialog')]"
+            "/div[@class='dijitDialogPaneContent']"
+            "/div[2]/span[contains(@class, 'dijitButton')]")
