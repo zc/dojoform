@@ -50,6 +50,8 @@ setup(
         ],
     extras_require = dict(
         test=[
+            'zc.selenium',
+            'zope.app.server',
             'zope.component',
             'zope.formlib',
             'zope.security',
