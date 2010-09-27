@@ -13,9 +13,6 @@
 ##############################################################################
 
 from zope.testing import doctest
-import manuel.doctest
-import manuel.testing
-import re
 import unittest
 import zc.seleniumrc.selenium
 import zc.seleniumrc.client.selenium
@@ -39,9 +36,9 @@ def tearDown(test):
 
 
 def test_suite():
-    mdoc = manuel.doctest.Manuel()
-    return manuel.testing.TestSuite(
-        mdoc, 'README.txt', setUp=setUp, tearDown=tearDown)
+    return unittest.TestSuite([
+        doctest.DocFileSuite('README.txt', setUp=setUp, tearDown=tearDown),
+        ])
 
 
 if __name__ == '__main__':

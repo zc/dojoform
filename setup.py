@@ -50,7 +50,6 @@ setup(
         ],
     extras_require = dict(
         test=[
-            'manuel',
             'zc.seleniumrc',
             'zope.app.server',
             'zope.component',
