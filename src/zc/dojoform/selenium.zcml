@@ -3,7 +3,7 @@
   <include file="tests.zcml" />
 
   <include package="zope.app.server" />
-  <include package="zc.selenium" />
+  <include package="zc.seleniumrc" />
 
   <page
      xmlns="http://namespaces.zope.org/browser"
@@ -11,12 +11,6 @@
      template="test_action_onclick.html"
      permission="zope.Public"
      for="*"
-     />
-
-  <adapter
-     factory="zc.dojoform.selenium.SeleniumTests"
-     name="zc.dojoform.tests.SeleniumTests.html"
-     permission="zope.Public"
      />
 
 </configure>
