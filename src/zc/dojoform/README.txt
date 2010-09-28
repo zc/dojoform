@@ -12,8 +12,8 @@ Using zc.dojoform
 To use dojoform, we need to include ``zc.dojo.js``.  This is
 available as a resource library [1]_.
 
-``zc.dojo.js`` depends on the Dojo framework.  Currently, this must be included
-manually.
+``zc.dojo.js`` depends on the Dojo framework.  Currently, this must be
+included manually.
 
 
 Form building
@@ -80,7 +80,8 @@ Todo
    set in the widget and form implementations directly (classes should be
    used instead)
 
-3. Provide improved widget loading (See `http://wiki.zope.com/Dojoform_Widget_Loading`_)
+3. Provide improved widget loading (See
+   `http://wiki.zope.com/Dojoform_Widget_Loading`_)
 
 
 .. [1] See ``zc.resourcelibrary``
