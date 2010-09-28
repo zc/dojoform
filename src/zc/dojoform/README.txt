@@ -9,8 +9,8 @@ Dojo framework.
 Using zc.dojoform
 =================
 
-To use dojoform, we need to include ``zc.dojo.js``.  This is
-available as a resource library [1]_.
+To use dojoform, we need to include ``zc.dojo.js``.  This is available as a
+resource library [1]_.
 
 ``zc.dojo.js`` depends on the Dojo framework.  Currently, this must be
 included manually.
