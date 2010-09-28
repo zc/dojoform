@@ -89,7 +89,7 @@ Todo
 
    Fixing this will also involve providing some way of specifying script
    configuration sections, since these are sometimes needed in Dojo
-   applications. (Example: ``zc.z4m.quickcontent``)
+   applications. (Example: ``zc.z4m.redirect/redirect.pt``)
 
 
 .. [1] See ``zc.resourcelibrary``
