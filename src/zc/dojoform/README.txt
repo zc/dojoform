@@ -6,6 +6,16 @@ Dojoform provides client-side widget implementations in JavaScript using the
 Dojo framework.
 
 
+Using zc.dojoform
+=================
+
+To use dojoform, we need to include ``zc.dojo.js``.  This is
+available as a resource library [1]_.
+
+``zc.dojo.js`` depends on the Dojo framework.  Currently, this must be included
+manually.
+
+
 Form building
 =============
 
@@ -69,3 +79,8 @@ Todo
 2. All styles should be defined in external CSS files.  No styles should be
    set in the widget and form implementations directly (classes should be
    used instead)
+
+3. Provide improved widget loading (See `http://wiki.zope.com/Dojoform_Widget_Loading`_)
+
+
+.. [1] See ``zc.resourcelibrary``
