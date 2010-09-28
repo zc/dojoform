@@ -11,7 +11,7 @@ Changes
 
 - Clean up dependencies.
 
-- Make the highest-level container a dijit.form.Form, so that 
+- Make the highest-level container a dijit.form.Form, so that
   widgets can easily be validated on the client-side by calling
   the form's validate method.
 
@@ -36,7 +36,7 @@ Changes
 - Make zope.schema.List widget display an error message when its Delete
   button is clicked with no rows selected.
 
-- Fix an issue where the Edit dialog of the zope.schema.List widget wasn't 
+- Fix an issue where the Edit dialog of the zope.schema.List widget wasn't
   filling in the values for zope.schema.Int fields.
 
 - Fix an issue where the zope.schema.List widget's Edit button wasn't
@@ -49,12 +49,12 @@ Changes
 
 - Quell all jslint errors and warnings.
 
-0.16.2 (2010-09-28)
+0.16.2 (2010-08-27)
 ===================
 
 - Revert change made in 0.13.0 that removed the call to the form's
   startup method.
-  
+
 0.16.1 (2010-06-29)
 ===================
 
