@@ -675,6 +675,16 @@ zc.dojo._build_record_form = function (widget_name, grid, index_map) {
         style: 'width: auto;',
         doLayout: true
     });
+    /* A dijit.Dialog widget will prevent keypress events from propagating if
+       the event target isn't a child of its domNode.  We want to supress
+       this behavior for CKEditor text inputs (e.g., for the "Link" and
+       "Anchor" popups).
+    */
+    edit_dlg._onKey = function (evt) {
+        if (!dojo.hasClass(evt.target, 'cke_dialog_ui_input_text')) {
+            return dijit.Dialog.prototype._onKey.call(edit_dlg, evt);
+        }
+    };
     var rec_form = new dijit.form.Form({
         method: 'POST',
         style: 'max-height: 500px; overflow: auto;',

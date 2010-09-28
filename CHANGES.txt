@@ -18,6 +18,9 @@ Changes
 - Reinstate default automatic form startup (added back in 0.16.2), and add
   an argument `startup` to `build_form` to control the behavior.
 
+- Add a workaround to the "Add/Modify Record" dialog for an issue with
+  text fields in CKEditor pop-ups not being editable.
+
 0.17.0 (2010-07-12)
 ===================
 
