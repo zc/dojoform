@@ -2,8 +2,8 @@
 Dojo widgets and forms
 ======================
 
-Dojoform provides client-side widget implementations in JavaScript using the
-Dojo framework.
+Dojoform provides client-side form and widget implementations in JavaScript
+using the Dojo framework.
 
 
 Using zc.dojoform
@@ -82,6 +82,14 @@ Todo
 
 3. Provide improved widget loading (See
    `http://wiki.zope.com/Dojoform_Widget_Loading`_)
+
+4. Improve dojoform resource dependencies.  Right now, it's hard to include
+   dojoform as a resource library because it doesn't depend on a library that
+   provides the Dojo framework (although it should).
+
+   Fixing this will also involve providing some way of specifying script
+   configuration sections, since these are sometimes needed in Dojo
+   applications. (Example: ``zc.z4m.quickcontent``)
 
 
 .. [1] See ``zc.resourcelibrary``
