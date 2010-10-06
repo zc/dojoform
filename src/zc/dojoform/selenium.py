@@ -96,10 +96,7 @@ class SeleniumTests(zc.selenium.pytest.Test):
         s.verifyTextPresent('Value is too big')
         s.verifyTextPresent('Weight: Missing Input')
 
-        s.click(
-            "//div[contains(@class, 'dijitDialog')]"
-            "/div[@class='dijitDialogPaneContent']"
-            "/div[2]/span[contains(@class, 'dijitButton')]")
+        s.click("dijit_form_Button_0_label")
 
         s.type('ExampleForm.weight', '23.5')
         # If we click the Edit button without selecting a row, we get an error
@@ -107,18 +104,15 @@ class SeleniumTests(zc.selenium.pytest.Test):
         s.click('addresses.dojo.edit.btn')
         s.verifyTextPresent('Error!')
         s.verifyTextPresent('Please select a single row to Edit.')
-        s.click(
-            "//div[contains(@class, 'dijitDialog')]"
-            "/div[@class='dijitDialogPaneContent']"
-            "/div[2]/span[contains(@class, 'dijitButton')]")
+
+        s.click("dijit_form_Button_1_label")
         # If we click the Delete button without selecting a row, we also get
         # an error message.
         s.click('addresses.dojo.delete.btn')
         s.verifyTextPresent('Error!')
         s.verifyTextPresent('No row selected.')
-        s.click("//div[contains(@class, 'dijitDialog')]"
-                "/div[@class='dijitDialogPaneContent']"
-                "/div[2]/span[contains(@class, 'dijitButton')]")
+
+        s.click("dijit_form_Button_2_label")
 
         # If we select a row and click the Edit button, we get a pop-up form
         # containing the current values.
@@ -221,14 +215,7 @@ class SeleniumTests(zc.selenium.pytest.Test):
         #             'The value entered is not valid.')
         s.type('ExampleForm.age', '42')
         s.click('ExampleForm.actions.validate')
-        s.waitForText(
-            "//div[contains(@class, 'dijitDialog')]"
-            "/div[@class='dijitDialogTitleBar']"
-            "/.[@title='Success!']"
-            "/span[@class='dijitDialogTitle']",
-            'Success!')
+        #dijit_Dialog_4_title
+        s.waitForTextPresent('Success!')
         s.verifyTextPresent('Form validated')
-        s.click(
-            "//div[contains(@class, 'dijitDialog')]"
-            "/div[@class='dijitDialogPaneContent']"
-            "/div[2]/span[contains(@class, 'dijitButton')]")
+        s.click("dijit_form_Button_3_label")

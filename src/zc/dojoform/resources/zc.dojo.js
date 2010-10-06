@@ -312,9 +312,6 @@ zc.dojo.widgets['zope.schema.Text'] = function (
     config, node, order, readOnly) {
     var wconfig = zc.dojo.parse_config(config, order);
     wconfig.style = 'width:auto';
-    if (config.display_options) {
-        zc.dojo._update(wconfig, config.display_options);
-    }
     return new dijit.form.SimpleTextarea(wconfig, node).domNode;
 };
 
@@ -337,10 +334,6 @@ zc.dojo.widgets['zc.ajaxform.widgets.RichText'] =
     }
     if (!wconfig.height) {
         wconfig.height = '200px';
-    }
-
-    if (config.display_options) {
-        zc.dojo._update(wconfig, config.display_options);
     }
 
     wconfig.height = '100%';
