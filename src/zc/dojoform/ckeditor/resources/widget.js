@@ -16,10 +16,12 @@ var CKEditorWidget = function (config, parent, order) {
     );
     textarea.value = config.value || '';
     parent.postStartup = function (formNode) {
-        var editor;
-        var ckeditorConfig = {};
-        if (config.height) {
-            ckeditorConfig.height = config.height;
+        var editor, ckeditorConfig;
+        if (config.display_options) {
+            ckeditorConfig = config.display_options;
+        }
+        else {
+            ckeditorConfig = {};
         }
         if (order !== null) {
             ckeditorConfig.tabIndex = order;
