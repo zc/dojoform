@@ -1024,12 +1024,17 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset, startup)
     if (!tabIndexOffset) {
         tabIndexOffset = 0;
     }
-    var form = new dijit.form.Form({id: config.definition.prefix}, pnode);
-    form.startup = function () {
-        // First, restore the original startup
-        this.startup = dijit.form.Form.prototype.startup;
-        this.startup();
-        this.getChildren().forEach(function (node) {node.startup();});
+    var form = new dijit.form.Form({
+        id: config.definition.prefix,
+        style: 'height:100%; width:100%;'
+    }, pnode);
+    if (startup) {
+        form.startup = function () {
+            // First, restore the original startup
+            this.startup = dijit.form.Form.prototype.startup;
+            this.startup();
+            this.getChildren().forEach(function (node) {node.startup();});
+        };
     };
     dojo.addClass(form, 'zcForm');
     var node = new dijit.layout.BorderContainer({
