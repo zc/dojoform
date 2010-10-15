@@ -622,6 +622,12 @@ zc.dojo._build_layout = function (record) {
         if (widget.type == "file") {
             column.formatter = formatter;
         }
+        else if (widget.filter_formatter) {
+            column.formatter = function (v) {
+                var str = String(v);
+                return widget.filter_formatter[str] || str;
+            }
+        }
         record_layout.push(column);
 
     });
