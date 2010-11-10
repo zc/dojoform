@@ -213,7 +213,11 @@ zc.dojo.call_server = function (args) {
         if (dojo.isString(data)) {
             data = dojo.fromJson(data);
         }
-        if (data.errors) {
+        if (data.session_expired) {
+            zc.dojo.session_expired(error);
+            return;
+        }
+        else if (data.errors) {
             result = '';
             errors = data.errors;
             for (error in errors) {
