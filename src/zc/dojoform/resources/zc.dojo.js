@@ -648,26 +648,19 @@ zc.dojo._build_layout = function (record) {
 
 zc.dojo._build_record = function (record, pnode, suffix, record_value) {
     var k, rec;
-    var record_json = '"name": "' + suffix + '", ';
+    var rec = {"name": suffix};
     dojo.forEach(record.widgets, function (rc_wid) {
         var indexed_name;
         rc_wid = dojo.clone(rc_wid);
         indexed_name = rc_wid.name;
         rc_wid.name = record.name + '.' + indexed_name;
         rc_wid.id = record.name + '.' + indexed_name;
+        var val = '';
         if (record_value) {
-            var val = record_value[indexed_name];
-            if (val === false) { return val;}
-            rc_wid.value = escape(val || '');
+            val = record_value[indexed_name];
         }
-        record_json += '"' + rc_wid.name + '": "' + rc_wid.value + '",';
+        rec[rc_wid.name] = val;
     });
-    rec = dojo.fromJson('{' + record_json + '}');
-    for (k in rec) {
-        if (rec.hasOwnProperty(k)) {
-            rec[k] = unescape(rec[k]);
-        }
-    }
     return rec;
 };
 
