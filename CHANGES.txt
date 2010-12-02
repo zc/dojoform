@@ -2,6 +2,12 @@
 Changes
 =======
 
+0.21.0 (2010-12-02)
+===================
+
+- Avoid bizarre complication of record building in build_record
+  method, fixing bugs in the process.
+
 0.18.0 (unreleased)
 ===================
 
