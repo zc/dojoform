@@ -1,0 +1,59 @@
+
+.zcFields { border: 1 solid; margin: .5em;  overflow: hidden; }
+.zcActions
+{
+  margin: .5em;
+  margin-left: auto;
+  margin-right: auto;
+  }
+.zcForm .zcField { margin: 1em; overflow: hidden; }
+.zcForm .zcLabel { font-weight: bold; }
+.zcForm .zcLabel:after { content: ": "; }
+.zcForm .required .zcLabel:after { content: " (required): "; }
+.zcForm .zcSmallField { display: inline; }
+
+
+/* Bool */
+.zcForm .zope-schema-Bool
+{
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  }
+.zcForm .zope-schema-Bool .zcWidget
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  }
+.zcForm .zope-schema-Bool .zcLabel
+{
+  margin-left: 2em;
+  width: 90%;
+  display: block;
+}
+.zcForm .zope-schema-Bool .zcLabel:after { content: ""; }
+
+.zcForm .zope-schema-Int .zcWidget { width: 9em; }
+
+
+/* Text(Area)) */
+.zcForm .zope-schema-Text .zcLabel { display: block }
+.zcForm .zope-schema-Text .zcWidget { width: 95%; float: right; }
+
+
+.zcForm .left-widgets
+{
+  width: 59%;
+  overflow: auto;
+  float: left;
+  }
+
+.zcForm .right-widgets
+{
+  width: 40%;
+  float: right;
+  overflow: auto;
+  border-left: 1 solid
+  }
