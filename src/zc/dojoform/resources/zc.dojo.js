@@ -26,6 +26,41 @@ dojo.require("dojox.grid.enhanced.plugins.Menu");
 dojo.require("dojox.grid.enhanced.plugins.NestedSorting");
 dojo.require("dojox.grid.enhanced.plugins.IndirectSelection");
 
+zc.dojo.install_css = function(module, path) {
+
+    var link = dojo.create(
+        'link', {
+            rel: 'stylesheet',
+            type: 'text/css',
+            href: dojo.moduleUrl(module, path || module+'.css').path,
+            'class': 'zcDojoCSS'
+        });
+    var head = document.getElementsByTagName("head")[0];
+    var children = head.childNodes;
+    var before;
+    for (var i=children.length; --i >= 0; ) {
+        var node = children.item(i);
+        try {
+            if (node.getAttribute('class') == 'zcDojoCSS')
+                break;
+        }
+        catch (e) {
+        }
+        before = node;
+    }
+    if (before != null) {
+        head.insertBefore(link, before);
+    }
+    else if (children.length) {
+         head.insertBefore(link, children.item(0));
+    }
+    else {
+        head.appendChild(link);
+    }
+};
+
+zc.dojo.install_css('zc.dojo');
+
 
 zc.dojo.widgets = {};
 
@@ -272,6 +307,8 @@ zc.dojo.widgets['zope.schema.TextLine'] = function (config, node, order) {
     wconfig = zc.dojo.parse_config(config, order);
     if (config.max_size !== undefined)
     {
+        if (config.max_size < 20)
+            wconfig.style = 'width: '+config.max_size+'em;';
         wconfig.maxLength = config.max_size;
         if (config.min_size) {
             wconfig.regExp =
@@ -315,7 +352,6 @@ zc.dojo.widgets['zope.schema.Password'] = function (config, node, order) {
 zc.dojo.widgets['zope.schema.Text'] = function (
     config, node, order, readOnly) {
     var wconfig = zc.dojo.parse_config(config, order);
-    wconfig.style = 'width:auto';
     return new dijit.form.SimpleTextarea(wconfig, node).domNode;
 };
 
@@ -436,6 +472,7 @@ zc.dojo.widgets['zope.schema.Int'] = function (config, node, order) {
     var wconfig;
     wconfig = zc.dojo.parse_number_config(config, order);
     wconfig.constraints.places = 0;
+    wconfig.style = 'width: 9em;';
     return new dijit.form.NumberTextBox(wconfig, node).domNode;
 };
 
@@ -697,7 +734,8 @@ zc.dojo._build_record_form = function (widget_name, grid, index_map) {
             var order = index_map[rc_wid.name];
             rc_wid.tabIndex = order;
             var widget_div = dojo.create(
-                'div', {'class': 'widget', style: 'margin: 5px;'},
+                'div', {'class': 'widget',
+                        style: 'margin: 5px;'},
                 rec_form.domNode);
             var label = dojo.create('label', {
                 innerHTML:  rc_wid.fieldLabel + ': '
@@ -1021,9 +1059,6 @@ zc.dojo.widgets['zope.schema.List'] = function (
 zc.dojo.build_form = function (config, pnode, tabIndexOffset, startup)
 {
     startup = startup === undefined ? true: startup;
-    if (!config.definition.left_fields) {
-        config.definition.left_fields = [];
-    }
     if (!tabIndexOffset) {
         tabIndexOffset = 0;
     }
@@ -1083,6 +1118,8 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset, startup)
             }
         }
         var cp = new dijit.layout.ContentPane({}, dojo.create('div'));
+
+        // WTF: bool_flag???
         var bool_flag = widget.bool_flag;
         if (bool_flag) {
             if (config.definition.prefix) {
@@ -1183,6 +1220,101 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset, startup)
     return node;
 };
 
+zc.dojo.build_form2 = function (config, pnode, tabIndexOffset)
+{
+    var definition = config.definition;
+    var form = new dijit.form.Form({id: definition.prefix}, pnode);
+    dojo.addClass(form.domNode, 'zcForm');
+    if (definition['class'])
+        dojo.addClass(form.domNode, definition['class']);
+
+    var ti=1;
+    var prefix = definition.prefix ? definition.prefix+'.' : '';
+
+    function label_to_id(label) {
+        return label.toLowerCase().split(' ').join('_');
+    }
+
+    function build_widgets(parent, widgets) {
+        dojo.forEach(
+            widgets, function (widget) {
+
+                if (! widget.widget_constructor && widget.widgets) {
+                    build_widgets(
+                        dojo.create(
+                            'div', {'class': widget['class'],
+                                    id: widget.id},
+                            parent),
+                        widget.widgets);
+                    return;
+                }
+                var class_ = ('zcField ' +
+                             widget.widget_constructor.split('.').join('-'));
+                if (widget['class'])
+                    class_ = widget['class'] + ' ' + class_;
+                if (widget.required)
+                    class_ += ' required';
+
+                if (! widget.name)
+                    widget.name = widget.id || label_to_id(widget.fieldLabel);
+
+                if (prefix)
+                    widget.id = prefix + (widget.id || widget.name);
+
+                if (! widget.fieldLabel)
+                    widget.fieldLabel= widget.name;
+
+                var div = { 'class': class_
+                          };
+                if (widget.fieldHint)
+                    div.title = widget.fieldHint;
+                div = dojo.create('div', div, parent);
+
+                dojo.create(
+                    'label',
+                    {innerHTML: widget.fieldLabel,
+                     'for': widget.id, 'class': 'zcLabel'
+                    },
+                    div);
+                zc.dojo.widgets[widget.widget_constructor](
+                    widget, dojo.create('div', {}, div), ti++, widgets, {});
+            });
+    }
+    build_widgets(dojo.create('div', {'class': 'zcFields'
+                                     }, form.domNode),
+                  definition.widgets);
+
+    if (! definition.actions)
+        return form;
+
+    var action_width = 0;
+    dojo.forEach(
+        definition.actions, function (action) {
+            action_width += action.label.length + 2;
+        });
+    var action_div = dojo.create(
+        'div', { 'class': 'zcActions',
+                 style: 'width: '+action_width+'em;'},
+        form.domNode);
+
+    dojo.forEach(
+        definition.actions, function (action) {
+            var button = new dijit.form.Button(
+                {
+                    label: action.label,
+                    id: action.name,
+                    onClick: action.onClick || fireSubmitEvent,
+                    type: 'button',
+                    tabIndex: ti++,
+                    'class': 'zcAction'
+                });
+            action_div.appendChild(button.domNode);
+        });
+
+    return form;
+};
+
+
 /* Return a mapping from name to tab-index for all widgets in the form. */
 zc.dojo.tab_index_map = function (definition) {
     var indices = {};
@@ -1256,7 +1388,7 @@ zc.dojo.parse_config = function (config, order) {
         tabIndex: order,
         value: config.value,
         readonly: readonly,
-        left: config.left
+        'class': 'zcWidget'
     };
     return wconfig;
 };
