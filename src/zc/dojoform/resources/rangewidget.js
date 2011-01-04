@@ -1,6 +1,7 @@
+dojo.require('dijit.form.Button');
 dojo.provide("zc.RangeWidget");
 
-dojo.declare("zc.RangeWidget", dojo._Widget, {
+dojo.declare("zc.RangeWidget", dijit._Widget, {
 
     constructor: function (jsonData, node) {
 
@@ -57,7 +58,7 @@ dojo.declare("zc.RangeWidget", dojo._Widget, {
             type: 'hidden',
             name: this.config.name
         }, dojo.create('div', {}, this.domNode));
-        
+
         this.value_input.value = this.getValue();
 
         this.name = this.config.name
