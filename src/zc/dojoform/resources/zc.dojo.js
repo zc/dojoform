@@ -1222,13 +1222,13 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset, startup)
 
 zc.dojo.build_form2 = function (config, pnode, tabIndexOffset)
 {
-    var definition = config.definition;
+    var definition = config.definition || config;
     var form = new dijit.form.Form({id: definition.prefix}, pnode);
     dojo.addClass(form.domNode, 'zcForm');
     if (definition['class'])
         dojo.addClass(form.domNode, definition['class']);
 
-    var ti=1;
+    var ti=tabIndexOffset || 1;
     var prefix = definition.prefix ? definition.prefix+'.' : '';
 
     function label_to_id(label) {
@@ -1264,8 +1264,9 @@ zc.dojo.build_form2 = function (config, pnode, tabIndexOffset)
                 if (! widget.fieldLabel)
                     widget.fieldLabel= widget.name;
 
-                var div = { 'class': class_
-                          };
+                var div = { 'class': class_};
+                if (widget.id)
+                    div.id = 'zcField-'+widget.id;
                 if (widget.fieldHint)
                     div.title = widget.fieldHint;
                 div = dojo.create('div', div, parent);
@@ -1277,7 +1278,7 @@ zc.dojo.build_form2 = function (config, pnode, tabIndexOffset)
                     },
                     div);
                 zc.dojo.widgets[widget.widget_constructor](
-                    widget, dojo.create('div', {}, div), ti++, widgets, {});
+                    widget, dojo.create('div', {}, div), 1, widgets, {});
             });
     }
     build_widgets(dojo.create('div', {'class': 'zcFields'
@@ -1299,16 +1300,21 @@ zc.dojo.build_form2 = function (config, pnode, tabIndexOffset)
 
     dojo.forEach(
         definition.actions, function (action) {
-            var button = new dijit.form.Button(
+            action = dojo.mixin(
                 {
-                    label: action.label,
-                    id: action.name,
-                    onClick: action.onClick || fireSubmitEvent,
                     type: 'button',
-                    tabIndex: ti++,
-                    'class': 'zcAction'
-                });
-            action_div.appendChild(button.domNode);
+                    tabIndex: ti++
+                }, action);
+            action['class'] = (action['class'] == null
+                               ? 'zcAction'
+                               : action['class'] + ' zcAction');
+            if (definition.onClick != null) {
+                if (action.onClick != null)
+                    dojo.connect(action, 'onClick', null, definition.onClick);
+                else
+                    action.onClick = definition.onClick;
+            }
+            action_div.appendChild((new dijit.form.Button(action)).domNode);
         });
 
     return form;
