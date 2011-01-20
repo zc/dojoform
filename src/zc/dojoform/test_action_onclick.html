@@ -35,6 +35,7 @@ zc.dojo.build_form({definition: {
       count += 1;
       dojo.attr(dojo.byId('result'), 'innerHTML', 'submitted'+count);
   }}],
+  left_fields: {name: false},
   widgets: [{id: 'name', name: 'name', fieldLabel: 'Name',
              widget_constructor: 'zope.schema.TextLine'}]
   }}, dojo.byId('formdiv')).startup();
