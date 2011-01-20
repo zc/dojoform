@@ -1061,14 +1061,12 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset, startup)
     var index_map = zc.dojo.tab_index_map(config.definition);
     var left_pane;
     var have_left_fields = false;
-    if (config.defintion.left_fields !== undefined){
-	for (var key in config.definition.left_fields){
-	    if (config.definition.left_fields[key]){
-		have_left_fields = true;
-		break;
-	    }
-	}	
-    }
+    for (var key in config.definition.left_fields){
+	if (config.definition.left_fields[key]){
+	    have_left_fields = true;
+	    break;
+	}
+    }	
     if (have_left_fields) {
         left_pane = new dijit.layout.ContentPane({
                     region: 'left',
