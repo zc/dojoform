@@ -2,8 +2,13 @@
 Changes
 =======
 
-0.22.0 (2011-1-20)
-==================
+0.23.0 (unreleased)
+===================
+
+- Fix bugs in zc.RangeWidget.
+
+0.22.0 (2011-01-20)
+===================
 
 - Fix build_form to work with the left_fields format that zc.ajaxform
   generates.
@@ -14,7 +19,7 @@ Changes
 - Avoid bizarre complication of record building in build_record
   method, fixing bugs in the process.
 
-0.18.0 (unreleased)
+0.18.0 (2010-10-08)
 ===================
 
 - Add date and time widgets.
