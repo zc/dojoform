@@ -28,12 +28,12 @@ dojo.ready(function () {
             this.constraints = this.config.constraints;
 
             var min_constraint = {};
-            if (this.constraints.min) {
+            if (this.constraints.min !== undefined) {
                 min_constraint.min = this.constraints.min;
             }
 
             var max_constraint = {};
-            if (this.constraints.max) {
+            if (this.constraints.max !== undefined) {
                 max_constraint.max = this.constraints.max;
             }
 
@@ -65,13 +65,6 @@ dojo.ready(function () {
             }, dojo.create('div', {}, this.domNode));
 
             this.value_input.value = this.getValue();
-
-            this.name = this.config.name;
-
-            this.id = this.config.id;
-
-            dijit.registry.add(this);
-
         },
 
         getValue: function () {
