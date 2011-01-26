@@ -65,6 +65,9 @@ dojo.ready(function () {
             }, dojo.create('div', {}, this.domNode));
 
             this.value_input.value = this.getValue();
+
+            this.name = this.config.name;
+            this.id = this.config.id;
         },
 
         getValue: function () {
