@@ -1,12 +1,9 @@
 /*global dojo, dijit */
 
-dojo.require("dijit._Widget");
-
 dojo.provide("zc.RangeWidget");
 
 dojo.ready(function () {
-
-    dojo.declare("zc.RangeWidget", dijit._Widget, {
+    dojo.declare("zc.RangeWidget", null, {
 
         constructor: function (jsonData, node) {
 
@@ -67,7 +64,11 @@ dojo.ready(function () {
             this.value_input.value = this.getValue();
 
             this.name = this.config.name;
+
             this.id = this.config.id;
+
+            dijit.registry.add(this);
+
         },
 
         getValue: function () {
