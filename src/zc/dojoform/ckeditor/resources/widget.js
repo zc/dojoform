@@ -1,5 +1,8 @@
 /*globals zc, dojo, CKEDITOR, window */
 
+dojo.provide('zc.ckeditor');
+dojo.require('zc.dojo');
+
 /* Dojo form widget for resource reference list */
 
 zc.dojo.GLOBAL_HANDLERS = [];
