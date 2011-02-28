@@ -4,6 +4,7 @@ dojo.require('zc.RangeWidget');
 dojo.require('dijit.form.ValidationTextBox');
 dojo.require('dijit.form.TextBox');
 dojo.require('dijit.form.NumberSpinner');
+dojo.require('dijit.form.MultiSelect');
 dojo.require('dijit.form.FilteringSelect');
 dojo.require('dijit.form.CheckBox');
 dojo.require('dijit.form.ComboBox');
@@ -569,6 +570,20 @@ zc.dojo._choiceConfig = function (config, node, order) {
     wconfig.store = select_store;
     wconfig.searchAttr = "label";
     return wconfig;
+};
+
+zc.dojo.widgets['zope.schema.Set'] = function (config, node, order) {
+    wconfig = zc.dojo.parse_config(config, order);
+    var sel = dojo.create('select', {}, node);
+    dojo.forEach(config.values, function (item) {
+        dojo.create('option', {
+            value: item[0],
+            innerHTML: item[1]
+        }, sel);
+    });
+    delete wconfig['value'];
+    var select = new dijit.form.MultiSelect(wconfig, sel);
+    return node
 };
 
 zc.dojo.widgets['zope.schema.Choice'] = function (config, node, order) {
