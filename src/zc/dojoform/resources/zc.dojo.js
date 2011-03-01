@@ -21,6 +21,7 @@ dojo.require('dijit.Dialog');
 dojo.require('dojo.data.ItemFileReadStore');
 dojo.require('dojo.data.ItemFileWriteStore');
 dojo.require('dojo.date.stamp');
+dojo.require("dojox.form.TimeSpinner");
 dojo.require("dojox.grid.cells.dijit");
 dojo.require("dojox.grid.DataGrid");
 dojo.require("dojox.grid.EnhancedGrid");
@@ -55,7 +56,7 @@ dojo.ready(function () {
         dojo.create('span', {
             'innerHTML': 'Time: '
         }, timeNode);
-        var time_box = new dijit.form.TimeTextBox({
+        var time_box = new dojox.form.TimeSpinner({
             value: config.value,
             onChange: function () {change_value()}
         }, dojo.create('div', {}, timeNode));
@@ -602,7 +603,7 @@ zc.dojo.widgets['zope.schema.Time'] = function (
             }
             wconfig.value = dojo.date.stamp.fromISOString(ts);
         }
-        var widget = new dijit.form.TimeTextBox(wconfig, dojo.create('div'));
+        var widget = new dojox.form.TimeSpinner(wconfig, dojo.create('div'));
         return widget.domNode;
 };
 
