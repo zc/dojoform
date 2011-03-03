@@ -11,21 +11,21 @@
   margin: .5em;
   text-align: center;
 }
-.zc-form .zc-field
+.zc-field
 {
   margin: 1em;
   overflow: hidden;
   }
-.zc-form .zc-label { font-weight: bold; }
-.zc-form .zc-label:after { content: ": "; }
-.zc-form .required .zc-label:after { content: " (required): "; }
-.zc-form .zcSmallField { display: inline; }
+.zc-label { font-weight: bold; }
+.zc-label:after { content: ": "; }
+.required .zc-label:after { content: " (required): "; }
+.zcSmallField { display: inline; }
 
 
 
 
 /* Bool */
-.zc-form .zope-schema-Bool
+.zope-schema-Bool
 {
   position: relative;
   top: 0;
@@ -33,42 +33,40 @@
   width: 100%;
   height: auto;
   }
-.zc-form .zope-schema-Bool .zc-widget
+.zope-schema-Bool .zc-widget
 {
   position: absolute;
   top: 0;
   left: 0;
   }
-.zc-form .zope-schema-Bool .zc-label
+.zope-schema-Bool .zc-label
 {
   padding-left: 2em;
   width: 90%;
 }
-.zc-form .zope-schema-Bool .zc-label:after { content: ""; }
+.zope-schema-Bool .zc-label:after { content: ""; }
 
-.zc-form .zope-schema-Int .zc-widget { width: 9em; }
+.zope-schema-Int .zc-widget { width: 9em; }
 
 
 /* Text(Area)) */
 .zope-schema-Text { width: 100%; }
-.zc-form .zope-schema-Text .zc-label { display: block }
-.zc-form .zope-schema-Text .zc-widget
+.zope-schema-Text .zc-label { display: block }
+.zope-schema-Text .zc-widget
 {
   width: 92%;
   margin-left: 2%;
  }
 
 
-.zc-form .zc-left-fields
+.zc-left-fields
 {
   width: 57%;
-  overflow: auto;
   float: left;
   }
 
-.zc-form .zc-right-fields
+.zc-right-fields
 {
   width: 40%;
   float: right;
-  /* overflow: auto; */
   }
