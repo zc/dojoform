@@ -1,0 +1,13 @@
+build_form2 provides for generation of dojo widgets and forms.
+
+Loading:
+
+    js! dojo.require('zc.dojo');
+
+Let's replace the zc.dojo widgets with custom constructors that just
+output their parameters:
+
+Now run through some sample forms:
+
+    >>> for name in test_examples:
+    ...     run_example(name)
