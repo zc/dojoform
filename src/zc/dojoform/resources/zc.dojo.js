@@ -640,6 +640,7 @@ zc.dojo._choiceConfig = function (config, node, order) {
 zc.dojo.widgets['zope.schema.Set'] = function (config, node, order) {
     wconfig = zc.dojo.parse_config(config, order);
     var sel = dojo.create('select', {}, node);
+    config.value = config.value || []; 
     var sel_vals = config.value.join(' ');
     dojo.forEach(config.values, function (item) {
         var op = dojo.create('option', {
