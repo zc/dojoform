@@ -128,7 +128,8 @@ def check_element(expected, observed):
     else:
         oc = listify_nodes(observed.childNodes)
         if len(oc) != len(ec):
-            raise AssertionError("No match for", expected.xml)
+            raise AssertionError(
+                "No match for", len(ec), len(oc), expected, observed)
         for e, o in zip(ec, oc):
             if (e.tagName or o.tagName):
                 check_element(e, o)
@@ -194,6 +195,10 @@ def setUp(test):
     js = zc.customdoctests.js.setUp(test)
     js.load(home+'/parts/envjs/env.js')
     js('Envjs.log = print;')
+
+    # Work around bug in Envjs 1.2 XXX really need to try 1.3 again
+    js('Envjs.sync = function(fn){return fn;};');
+
     js('repr = JSON.stringify;')
     #js.console.error = js.console.log;
     js("djConfig = {baseUrl: 'file://%s/parts/dojo/dojo/'};" % home)
@@ -215,13 +220,12 @@ def setUp(test):
 
     js.pretty_print_dom = pretty_print_dom
 
-    test.globs['test_examples'] = [
-        name[:-3]
-        for name in os.listdir(os.path.join(here, 'test-examples'))
-        if name.endswith('.js')
-        ]
+    js.read_file = lambda path: open(path).read()
 
-    test.globs['run_example'] = lambda name: run_example(js, name)
+    js.test_examples = os.path.join(here, 'test-examples')
+
+    js.check_element = check_element
+    test.globs['js'] = test.globs['JS_']
 
 def test_suite():
     return unittest.TestSuite((
