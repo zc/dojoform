@@ -1284,13 +1284,50 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
                      widgets_by_name[widget.name] = widget;
                  });
 
+    var flag_changed = function (value) {
+        if (value) {
+              dojo.removeClass(this, 'zc-widget-hidden');
+          }
+          else {
+            dojo.addClass(this, 'zc-widget-hidden');
+          }
+    };
+
+    var needed_flags = {};
+
+    var handle_bool_flag = function (def, div) {
+        if (def.bool_flag) {
+            var bool_flag = prefix + def.bool_flag;
+            var flag_widget = dijit.byId(bool_flag);
+            if (flag_widget) {
+                dojo.connect(flag_widget, 'onChange',
+                             div, flag_changed);
+                flag_changed.call(div, flag_widget.get('value'));
+            }
+            else {
+                if (bool_flag in needed_flags) {
+                    needed_flags[bool_flag].push(div);
+                }
+                else {
+                    needed_flags[bool_flag] = [div];
+                }
+            }
+        }
+    };
+
     // Now, iterate through the groups
     var build_group = function(group, parent) {
-        parent = dojo.create(
-            'div', {
-                'class': group['class'] + ' zc-fieldset'
-            },
-            parent);
+        var group_data = dojo.clone(group);
+        delete group_data.widgets;
+        if ('class' in group_data) {
+            group_data['class'] += ' zc-fieldset';
+        }
+        else {
+            group_data['class'] = 'zc-fieldset';
+        }
+        parent = dojo.create('div', group_data, parent);
+        handle_bool_flag(group, parent);
+
         dojo.forEach(
             group.widgets, function (widget) {
                 if (! (typeof widget == 'string')) {
@@ -1311,7 +1348,9 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
                     div.id = 'zc-field-'+widget.id;
                 if (widget.fieldHint)
                     div.title = widget.fieldHint;
-                div = dojo.create('div', div, parent);
+                div = dojo.create('div', div);
+
+                handle_bool_flag(widget, div);
 
                 if (widget.widget_constructor !==
                     'zc.ajaxform.widgets.Hidden') {
@@ -1326,7 +1365,26 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
                     widget, dojo.create('div', {}, div), order, [],
                     true
                 );
+                parent.appendChild(div);
+
+                if (widget.id in needed_flags) {
+                    var flag_widget = dijit.byId(widget.id);
+                    dojo.forEach(
+                        needed_flags[widget.id], function (div) {
+                            dojo.connect(flag_widget, 'onChange',
+                                         div, flag_changed);
+                            flag_changed.call(div, flag_widget.get('value'));
+                        });
+                }
             });
+
+        if (needed_flags) {
+            for (var bool_flag in needed_flags) {
+                if (needed_flags.hasOwnProperty(bool_flag)) {
+                    console.error('Unresolved bool flag: '+bool_flag);
+                }
+            }
+        }
     };
 
     dojo.forEach(

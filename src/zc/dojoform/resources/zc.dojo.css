@@ -21,9 +21,6 @@
 .required .zc-label:after { content: " (required): "; }
 .zcSmallField { display: inline; }
 
-
-
-
 /* Bool */
 .zope-schema-Bool
 {
@@ -58,6 +55,10 @@
   margin-left: 2%;
  }
 
+.zc-widget-hidden
+ {
+   display: none;
+ }
 
 .zc-left-fields
 {
