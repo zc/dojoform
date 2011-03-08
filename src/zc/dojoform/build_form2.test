@@ -4,8 +4,8 @@ Loading:
 
     js! dojo.require('zc.dojo');
 
-Let's replace the zc.dojo widgets with custom constructors that just
-output their parameters:
+ajaxform example with left_fields
+=================================
 
 First example, the first example from the ajaxform tests
 
@@ -38,6 +38,9 @@ check widget cleanup:
     js> dijit.registry.length == nwidgets;
     True
 
+groups rather than left fields and with a bool flag
+===================================================
+
 Now, we'll try a different example. It uses groups to do layout,
 rather than left_fields.
 
@@ -49,11 +52,7 @@ rather than left_fields.
     js! expected_e.innerHTML = read_file(test_examples + '/2.html');
     js! expected = expected_e.childNodes[0];
 
-    >>> try: js.check_element(js.expected, js.form.domNode)
-    ... except AssertionError, v:
-    ...     print v[0:3]
-    ...     js.pretty_print_dom(v[3])
-    ...     js.pretty_print_dom(v[4])
+    js> check_element(expected, form.domNode)
 
 
 Because the happy field was set, none of the fields or the left div have the
@@ -85,5 +84,28 @@ event in EnvJS. Really need to try 1.3 again. :/
     zc-field-ExampleForm.siblings
     zc-field-ExampleForm.other
     left
+
+    js! dojo.body().removeChild(form.domNode);
+    js! form.destroyRecursive();
+
+    js> dijit.registry.length == nwidgets;
+    True
+
+Simple example, no groups and no left_fields (no bool flag)
+===========================================================
+
+    js! load(test_examples + '/3.js')
+    js! form = zc.dojo.build_form2(
+    ...     definition, dojo.create('div', {}, dojo.body()), 3);
+
+    js! expected_e.innerHTML = read_file(test_examples + '/3.html');
+    js! expected = expected_e.childNodes[0];
+
+    >>> try: js.check_element(js.expected, js.form.domNode)
+    ... except AssertionError, v:
+    ...     print v[0:3]
+    ...     js.pretty_print_dom(v[3])
+    ...     js.pretty_print_dom(v[4])
+
 
 

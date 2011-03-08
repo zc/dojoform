@@ -1267,13 +1267,14 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
                     });
             }
         } else {
-            definition.groups.fields = {
-                'class': 'zc-fields',
-                widgets: dojo.map(
-                    widgets, function (widget) {
-                        return widget.name;
-                    })
-            };
+            definition.groups.push(
+                {
+                    'class': 'zc-fields',
+                    widgets: dojo.map(
+                        widgets, function (widget) {
+                            return widget.name;
+                        })
+                });
         }
     }
 
