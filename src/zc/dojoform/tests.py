@@ -199,6 +199,8 @@ def setUp(test):
     # Work around bug in Envjs 1.2 XXX really need to try 1.3 again
     js('Envjs.sync = function(fn){return fn;};');
 
+    js.Envjs.unloadFrame = js.Envjs.sync
+
     js('repr = JSON.stringify;')
     #js.console.error = js.console.log;
     js("djConfig = {baseUrl: 'file://%s/parts/dojo/dojo/'};" % home)
