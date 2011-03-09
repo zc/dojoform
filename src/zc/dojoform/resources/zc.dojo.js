@@ -792,7 +792,9 @@ zc.dojo._build_record_form = function (widget_name, grid, order) {
 };
 
 zc.dojo._edit_record = function (widget_name, grid, row_value, order) {
-    grid.select.clearDrugDivs();
+    if (dojo.version < '1.6') {
+        grid.select.clearDrugDivs();
+    }
     if (!grid.edit_dlg) {
         grid.edit_dlg = zc.dojo._build_record_form(
             widget_name, grid, order);
@@ -916,23 +918,27 @@ zc.dojo.widgets['zope.schema.List'] = function (
         }
     }, dojo.create('div', {}, node.domNode));
     // To limit DnD activity to the DnD Handle.
-    grid.select.exceptColumnsTo = record_fields.length - 2;
-    grid.select.getExceptionalColOffsetWidth = dojo.hitch(
-        grid.select, function () {
-        // We override the method in dojox.grid.enhanced.dnd._DndMovingManager
-        // because we don't use the IndirectSelection plugin, but
-        // still want DnD.
-        var normalizedOffsetWidth = 0, offsetWidth = 0;
-        dojo.forEach(this.getHeaderNodes(), function (node, index) {
-            if (index <= this.exceptColumnsTo) {
-                var coord = dojo.coords(node);
-                offsetWidth += coord.w;
-            }
-        }, this);
-        normalizedOffsetWidth = offsetWidth;
-        return normalizedOffsetWidth > 0 ? normalizedOffsetWidth : 0;
 
-    });
+    // XXX grid.select doesn't exist in dojo 1.6.
+    if (dojo.version < '1.6') {
+        grid.select.exceptColumnsTo = record_fields.length - 2;
+        grid.select.getExceptionalColOffsetWidth = dojo.hitch(
+            grid.select, function () {
+                // We override the method in
+                // dojox.grid.enhanced.dnd._DndMovingManager
+                // because we don't use the IndirectSelection plugin, but
+                // still want DnD.
+                var normalizedOffsetWidth = 0, offsetWidth = 0;
+                dojo.forEach(this.getHeaderNodes(), function (node, index) {
+                                 if (index <= this.exceptColumnsTo) {
+                                     var coord = dojo.coords(node);
+                                     offsetWidth += coord.w;
+                                 }
+                             }, this);
+                normalizedOffsetWidth = offsetWidth;
+                return normalizedOffsetWidth > 0 ? normalizedOffsetWidth : 0;
+            });
+    }
     if (!rc.readonly) {
         dojo.connect(grid, 'onCellMouseOver', function (e) {
             if (e.cell.draggable) {
@@ -1195,13 +1201,25 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
     var definition = config.definition || config;
     order = order || 0;
     var prefix = definition.prefix ? definition.prefix+'.' : '';
-    var form = new zc.dojo.Form(
-        (definition.prefix ? {id: definition.prefix} : {}), pnode);
+
+    var form;
+    if (prefix) {
+        form = dijit.byId(definition.prefix);
+        if (! form) {
+            form = dojo.byId(definition.prefix);
+            if (form) {
+                form = new zc.dojo.Form({id: definition.prefix}, form);
+            }
+        }
+    }
+    if (! form) {
+        form = new zc.dojo.Form((prefix ? {id: definition.prefix} : {}), pnode);
+    }
+
     dojo.addClass(form.domNode, 'zc-form');
     if (definition['class'])
         dojo.addClass(form.domNode, definition['class']);
 
-    var fields_div = dojo.create('div', {'class': 'zc-fields'}, form.domNode);
 
     function label_to_id(label) {
         return label.toLowerCase().split(' ').join('_');
@@ -1242,11 +1260,13 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
                 if (right_widgets.length) {
                     definition.groups.push(
                         {
+                            id: 'zc.dojo.zc-left-fields.'+definition.prefix,
                             'class': 'zc-left-fields',
                             widgets: left_widgets
                         });
                     definition.groups.push(
                         {
+                            id: 'zc.dojo.zc-right-fields.'+definition.prefix,
                             'class': 'zc-right-fields',
                             widgets: right_widgets
                         });
@@ -1254,6 +1274,7 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
                 else {
                     definition.groups.push(
                         {
+                            id: 'zc.dojo.zc-fields.'+definition.prefix,
                             'class': 'zc-fields',
                             widgets: left_widgets
                         });
@@ -1262,6 +1283,7 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
             else {
                 definition.groups.push(
                     {
+                        id: 'zc.dojo.zc-fields.'+definition.prefix,
                         'class': 'zc-fields',
                         widgets: right_widgets
                     });
@@ -1269,6 +1291,7 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
         } else {
             definition.groups.push(
                 {
+                    id: 'zc.dojo.zc-fields.'+definition.prefix,
                     'class': 'zc-fields',
                     widgets: dojo.map(
                         widgets, function (widget) {
@@ -1316,9 +1339,10 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
         }
     };
 
+
     // Now, iterate through the groups
     var build_group = function(group, parent) {
-        var group_data = dojo.clone(group);
+        var group_node, group_data = dojo.clone(group);
         delete group_data.widgets;
         if ('class' in group_data) {
             group_data['class'] += ' zc-fieldset';
@@ -1326,7 +1350,21 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
         else {
             group_data['class'] = 'zc-fieldset';
         }
-        parent = dojo.create('div', group_data, parent);
+
+        if (group.id) {
+            group_node = dijit.byId(group.id);
+            if (group_node) {
+                group_node = group_node.containerNode;
+            }
+            else {
+                group_node = dojo.byId(group.id);
+            }
+        }
+        if (! group_node) {
+            group_node = dojo.create('div', group_data, parent);
+        }
+        parent = group_node;
+
         handle_bool_flag(group, parent);
 
         dojo.forEach(
@@ -1376,27 +1414,58 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
                                          div, flag_changed);
                             flag_changed.call(div, flag_widget.get('value'));
                         });
+                    delete needed_flags[widget.id];
                 }
             });
-
-        if (needed_flags) {
-            for (var bool_flag in needed_flags) {
-                if (needed_flags.hasOwnProperty(bool_flag)) {
-                    console.error('Unresolved bool flag: '+bool_flag);
-                }
-            }
-        }
     };
 
+    var fields_div;
     dojo.forEach(
         definition.groups, function (group) {
+            if (! fields_div && ((! group.id) || ! dojo.byId(group.id))) {
+                fields_div = dojo.create('div', {'class': 'zc-fields'},
+                                         form.domNode);
+            }
             build_group(group, fields_div);
+
+            if (group.id) {
+                var group_widget = dijit.byId(group.id);
+                if (group_widget && group_widget._started) {
+                    dojo.forEach(
+                        group_widget.getChildren(), function(child) {
+                            child.startup();
+                        });
+                }
+            }
         });
 
+
+    if (needed_flags) {
+        for (var bool_flag in needed_flags) {
+            if (needed_flags.hasOwnProperty(bool_flag)) {
+                console.error('Unresolved bool flag: '+bool_flag);
+            }
+        }
+    }
+
     if (definition.actions) {
-        var action_div = dojo.create(
-            'div', { 'class': 'zc-actions'},
-            form.domNode);
+        var action_div_id = 'zc.dojo.zc-actions.'+definition.prefix;
+        var action_div = dijit.byId(action_div_id);
+        if (action_div) {
+            action_div = action_div.containerNode;
+        }
+        else {
+            action_div = dojo.byId(action_div_id);
+        }
+
+        if (! action_div) {
+            action_div = dojo.create(
+                'div', {
+                    id: 'zc.dojo.zc-actions.'+definition.prefix,
+                    'class': 'zc-actions'
+                },
+                form.domNode);
+        }
 
         dojo.forEach(
             definition.actions, function (action) {

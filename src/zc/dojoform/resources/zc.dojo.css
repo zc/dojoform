@@ -31,8 +31,7 @@
   position: relative;
   top: 0;
   left: 0;
-  width: 100%;
-  height: auto;
+  right: 0;
   }
 .zope-schema-Bool .zc-widget
 {
@@ -51,11 +50,10 @@
 
 
 /* Text(Area)) */
-.zope-schema-Text { width: 100%; }
 .zope-schema-Text .zc-label { display: block }
 .zope-schema-Text .zc-widget
 {
-  width: 92%;
+  width: 96%;
   margin-left: 2%;
  }
 

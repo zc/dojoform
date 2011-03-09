@@ -101,11 +101,91 @@ Simple example, no groups and no left_fields (no bool flag)
     js! expected_e.innerHTML = read_file(test_examples + '/3.html');
     js! expected = expected_e.childNodes[0];
 
+    js> check_element(expected, form.domNode)
+
+
+    js! dojo.body().removeChild(form.domNode);
+    js! form.destroyRecursive();
+
+    js> dijit.registry.length == nwidgets;
+    True
+
+Left fields with none or all selected
+=====================================
+
+
+    js! load(test_examples + '/4.js')
+    js! form = zc.dojo.build_form2(
+    ...     definition, dojo.create('div', {}, dojo.body()), 3);
+
+    js> check_element(expected, form.domNode)
+
+    js! dojo.body().removeChild(form.domNode);
+    js! form.destroyRecursive();
+
+    js! load(test_examples + '/5.js')
+    js! form = zc.dojo.build_form2(
+    ...     definition, dojo.create('div', {}, dojo.body()), 3);
+
     >>> try: js.check_element(js.expected, js.form.domNode)
     ... except AssertionError, v:
     ...     print v[0:3]
     ...     js.pretty_print_dom(v[3])
     ...     js.pretty_print_dom(v[4])
 
+    js! dojo.body().removeChild(form.domNode);
+    js! form.destroyRecursive();
 
+    js> dijit.registry.length == nwidgets;
+    True
+
+Supplying layouts
+=================
+
+By default, build_form2 generates a form and generates divs for each
+layout group, however, if you want to have more control, you can
+pre-create the form and layout and have build_form2 just build the
+widgets and insert them into the existing layout.  Let's look at an
+example. Here's html snippit in which we use dojo inline widgets to
+define a form and layout::
+
+   <form id="ExampleForm" dojoType="dijit.form.Form"
+         style="width: 100%; height: 100%">
+     <div dojoType="dijit.layout.BorderContainer"
+          design="heading" gutters="false" livesplitters="true"
+          style="height: 100%; width: 100%;">
+       <div dojoType="dijit.layout.ContentPane"
+            id="zc.dojo.zc-right-fields.ExampleForm"
+            region="center" splitter="true">
+       </div>
+       <div dojoType="dijit.layout.ContentPane"
+            id="zc.dojo.zc-actions.ExampleForm"
+            region="bottom" splitter="true">
+       </div>
+       <div dojoType="dijit.layout.ContentPane"
+            id="zc.dojo.zc-left-fields.ExampleForm"
+            region="left" splitter="true" style="width: 60%">
+       </div>
+     </div>
+   </form>
+
+.. -> src
+
+   >>> js.html_snippet = src
+
+Now, let's add this to the document:
+
+   js! dojo.body().innerHTML = html_snippet;
+   js! dojo.require('dojo.parser');
+   js! dojo.parser.parse(dojo.body());
+
+And call build_form2:
+
+    js! load(test_examples + '/1.js')
+    js! form = zc.dojo.build_form2(definition);
+
+    js! expected_e.innerHTML = read_file(test_examples + '/6.html');
+    js! expected = expected_e.childNodes[0];
+
+    js> check_element(expected, form.domNode)
 
