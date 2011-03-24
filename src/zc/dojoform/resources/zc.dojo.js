@@ -1202,6 +1202,8 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
     order = order || 0;
     var prefix = definition.prefix ? definition.prefix+'.' : '';
 
+    var legacy = !! pnode; // Are we using a build_form-style call
+
     var form;
     if (prefix) {
         form = dijit.byId(definition.prefix);
@@ -1212,8 +1214,15 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
             }
         }
     }
-    if (! form) {
-        form = new zc.dojo.Form((prefix ? {id: definition.prefix} : {}), pnode);
+    if (form) {
+        legacy = false;
+    }
+    else {
+        form = {};
+        if (prefix) {
+            form.id = definition.prefix;
+        }
+        form = new zc.dojo.Form(form, pnode);
     }
 
     dojo.addClass(form.domNode, 'zc-form');
@@ -1241,9 +1250,11 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
             return widget;
         });
 
+    var groups = definition.groups;
+
     // normlize groups
-    if (! definition.groups) {
-        definition.groups = [];
+    if (! groups) {
+        groups = [];
         if (definition.left_fields) {
             var left_widgets=[], right_widgets=[];
             dojo.forEach(
@@ -1258,21 +1269,58 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
             );
             if (left_widgets.length) {
                 if (right_widgets.length) {
-                    definition.groups.push(
+                    groups.push(
                         {
                             id: 'zc.dojo.zc-left-fields.'+definition.prefix,
                             'class': 'zc-left-fields',
                             widgets: left_widgets
                         });
-                    definition.groups.push(
+                    groups.push(
                         {
                             id: 'zc.dojo.zc-right-fields.'+definition.prefix,
                             'class': 'zc-right-fields',
                             widgets: right_widgets
                         });
+
+                    if (legacy) {
+                        dojo.style(form.domNode,
+                                   {height: '100%', width: '100%'});
+                        var border = new dijit.layout.BorderContainer(
+                            {
+                                design:"headline",
+                                gutters: true,
+                                livesplitters: true,
+                                style: "height: 100%; width: 100%;"
+                            }, dojo.create('div', {}, form.domNode));
+
+                        border.addChild(
+                            new dijit.layout.ContentPane(
+                                {
+                                    id: groups[0].id,
+                                    region: "left",
+                                    splitter: true,
+                                    content: '',
+                                    style: "width: 60%"
+                                }));
+                        border.addChild(
+                            new dijit.layout.ContentPane(
+                                {
+                                    id: groups[1].id,
+                                    region: "center",
+                                    content: '',
+                                    splitter: true
+                                }));
+                        border.addChild(
+                            new dijit.layout.ContentPane(
+                                {
+                                    id: "zc.dojo.zc-actions.ExampleForm",
+                                    region: "bottom",
+                                    content: ''
+                                }));
+                    }
                 }
                 else {
-                    definition.groups.push(
+                    groups.push(
                         {
                             id: 'zc.dojo.zc-fields.'+definition.prefix,
                             'class': 'zc-fields',
@@ -1281,7 +1329,7 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
                 }
             }
             else {
-                definition.groups.push(
+                groups.push(
                     {
                         id: 'zc.dojo.zc-fields.'+definition.prefix,
                         'class': 'zc-fields',
@@ -1289,7 +1337,7 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
                     });
             }
         } else {
-            definition.groups.push(
+            groups.push(
                 {
                     id: 'zc.dojo.zc-fields.'+definition.prefix,
                     'class': 'zc-fields',
@@ -1421,7 +1469,7 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
 
     var fields_div;
     dojo.forEach(
-        definition.groups, function (group) {
+        groups, function (group) {
             if (! fields_div && ((! group.id) || ! dojo.byId(group.id))) {
                 fields_div = dojo.create('div', {'class': 'zc-fields'},
                                          form.domNode);

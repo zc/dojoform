@@ -1,16 +1,11 @@
 <FORM id='ExampleForm' class='zc-form'>
   <DIV
-     dojotype='dijit.layout.BorderContainer'
-     design='heading'
-     gutters='false'
-     livesplitters='true'
+     class="dijitContainer"
      style='/height: 100%; width: 100%;/'
      xxx>
     <DIV
-       dojotype='dijit.layout.ContentPane'
+       class="dijitContentPane"
        id='zc.dojo.zc-right-fields.ExampleForm'
-       region='center'
-       splitter='true'
        >
       <DIV
           class='zc-field zope-schema-TextLine'
@@ -166,25 +161,9 @@ Razor sharp scales.'
       </DIV>
     </DIV>
     <DIV
-       dojotype='dijit.layout.ContentPane'
-       id='zc.dojo.zc-actions.ExampleForm'
-       region='bottom'
-       class='dijitContentPane'
-       >
-      <SPAN
-         class='dijit zc-action'
-         widgetId='ExampleForm.actions.register'
-         xxx>
-              Register
-      </SPAN>
-    </DIV>
-    <DIV
-       dojotype='dijit.layout.ContentPane'
+       class="dijitContentPane"
        id='zc.dojo.zc-left-fields.ExampleForm'
-       region='left'
-       splitter='true'
        style='/width: 60%/'
-       class='dijitContentPane'
        >
       <DIV
           class='zc-field zope-schema-TextLine required'
@@ -251,6 +230,17 @@ Razor sharp scales.'
             value="I've got a magic toenail"
             ></TEXTAREA>
       </DIV>
+    </DIV>
+    <DIV
+       class="dijitContentPane"
+       id='zc.dojo.zc-actions.ExampleForm'
+       >
+      <SPAN
+         class='dijit zc-action'
+         widgetId='ExampleForm.actions.register'
+         xxx>
+              Register
+      </SPAN>
     </DIV>
   </DIV>
 </FORM>

@@ -151,7 +151,7 @@ define a form and layout::
        </div>
        <div dojoType="dijit.layout.ContentPane"
             id="zc.dojo.zc-actions.ExampleForm"
-            region="bottom" splitter="true">
+            region="bottom">
        </div>
        <div dojoType="dijit.layout.ContentPane"
             id="zc.dojo.zc-left-fields.ExampleForm"
@@ -183,6 +183,29 @@ And call build_form2:
     js> return dijit.registry.length == nwidgets;
     True
 
-Tear down borwser:
+Legacy layout
+=============
+
+build_form provided a 2-column layout that we've used in some apps.
+build_form2 mimics this layour if you:
+
+- supply left_fields that include some but not all fields,
+
+- don't pre-create the layout, and
+
+- pass in a parent node.
+
+
+    js> form = zc.dojo.build_form2(
+    ...    definition, dojo.create('div', {}, dojo.body()));
+
+    >>> matches(browser.get_page_source(), read_test_file('7.html'))
+
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+    js> return dijit.registry.length == nwidgets;
+    True
+
+.. Tear down borwser:
 
     >>> browser.close()
