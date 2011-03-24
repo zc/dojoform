@@ -824,7 +824,7 @@ zc.dojo._edit_record = function (widget_name, grid, row_value, order) {
 zc.dojo.widgets['zope.schema.Object'] = function (
     config, pnode, order, widgets) {
     var node = new dijit.layout.BorderContainer({
-        design: "headline", gutters: "false"
+        design: "headline", gutters: true
     });
 
     pnode.appendChild(node.domNode);
@@ -1042,7 +1042,7 @@ zc.dojo.build_form = function (config, pnode, order, startup)
     dojo.addClass(form, 'zcForm');
     var node = new dijit.layout.BorderContainer({
         design: "headline",
-        gutters: "false",
+        gutters: true,
         liveSplitters: true,
         style: "height:100%; width:100%;"
     });
