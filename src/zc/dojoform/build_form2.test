@@ -1,41 +1,47 @@
 build_form2 provides for generation of dojo widgets and forms.
 
-Loading:
+Set up a browser:
 
-    js! dojo.require('zc.dojo');
+    >>> browser = selenium.webdriver.Chrome()
+    >>> JS = browser.execute_script
 
-ajaxform example with left_fields
-=================================
+Load a blank page that gets dojo loaded:
 
-First example, the first example from the ajaxform tests
+    >>> browser.get('http://localhost:%s/test/blank.html' % port)
 
-    js! load(test_examples + '/1.js')
-    js! form = zc.dojo.build_form2(definition);
-    js! dojo.body().appendChild(form.domNode);
-    js! form.startup();
+Load zc.dojo:
 
-    js! expected_e = document.createElement('div');
-    js! expected_e.innerHTML = read_file(test_examples + '/1.html');
-    js! expected = expected_e.childNodes[0];
+    js> dojo.require('zc.dojo')
 
-    js> check_element(expected, form.domNode)
+Load the first sample form definition:
+
+    >>> JS(read_test_file('1.js'))
+
+Call build_form2 to build the form:
+
+    js> form = zc.dojo.build_form2(definition);
+    js> dojo.body().appendChild(form.domNode);
+    js> form.startup();
+
+See if it matches what we expect:
+
+    >>> matches(browser.get_page_source(), read_test_file('1.html'))
 
 Try again to make sure there aren't weird side effect, and also to
 check widget cleanup:
 
-    js! dojo.body().removeChild(form.domNode);
-    js! form.destroyRecursive();
-    js! nwidgets = dijit.registry.length;
-    js! form = zc.dojo.build_form2(definition);
-    js! dojo.body().appendChild(form.domNode);
-    js! form.startup();
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+    js> nwidgets = dijit.registry.length;
+    js> form = zc.dojo.build_form2(definition);
+    js> dojo.body().appendChild(form.domNode);
+    js> form.startup();
 
-    js> check_element(expected, form.domNode)
+    >>> matches(browser.get_page_source(), read_test_file('1.html'))
 
-    js! dojo.body().removeChild(form.domNode);
-    js! form.destroyRecursive();
-
-    js> dijit.registry.length == nwidgets;
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+    js> return dijit.registry.length == nwidgets;
     True
 
 groups rather than left fields and with a bool flag
@@ -44,16 +50,12 @@ groups rather than left fields and with a bool flag
 Now, we'll try a different example. It uses groups to do layout,
 rather than left_fields.
 
-    js! load(test_examples + '/2.js')
-    js! form = zc.dojo.build_form2(definition, undefined, 1);
-    js! dojo.body().appendChild(form.domNode);
-    js! form.startup();
+    >>> JS(read_test_file('2.js'))
+    js> form = zc.dojo.build_form2(definition, undefined, 1);
+    js> dojo.body().appendChild(form.domNode);
+    js> form.startup();
 
-    js! expected_e.innerHTML = read_file(test_examples + '/2.html');
-    js! expected = expected_e.childNodes[0];
-
-    js> check_element(expected, form.domNode)
-
+    >>> matches(browser.get_page_source(), read_test_file('2.html'))
 
 Because the happy field was set, none of the fields or the left div have the
 zc-widget-hidden class:
@@ -61,17 +63,13 @@ zc-widget-hidden class:
     >>> for name in ['ExampleForm.first_name', 'ExampleForm.last_name',
     ...              'ExampleForm.happy', 'ExampleForm.siblings',
     ...              'ExampleForm.other', 'left']:
-    ...     if ('zc-widget-hidden' in JS_.dojo.byId(name).className):
+    ...     if ('zc-widget-hidden' in
+    ...          browser.find_element_by_id(name).get_attribute('class')):
     ...         print name
 
 Now, when we set the happy field to false:
 
-    js! dijit.byId('ExampleForm.happy').set('value', false)
-
-XXX Unfortunately, changing values doesn't seem to trogger an onchange
-event in EnvJS. Really need to try 1.3 again. :/
-
-    js> dijit.byId('ExampleForm.happy').onChange()
+    js> dijit.byId('ExampleForm.happy').set('value', false)
 
     >>> for name in ['zc-field-ExampleForm.first_name',
     ...              'zc-field-ExampleForm.last_name',
@@ -79,64 +77,57 @@ event in EnvJS. Really need to try 1.3 again. :/
     ...              'zc-field-ExampleForm.siblings',
     ...              'zc-field-ExampleForm.other',
     ...              'left']:
-    ...     if ('zc-widget-hidden' in js.dojo.byId(name).className):
+    ...     if ('zc-widget-hidden' in
+    ...          browser.find_element_by_id(name).get_attribute('class')):
     ...         print name
     zc-field-ExampleForm.siblings
     zc-field-ExampleForm.other
     left
 
-    js! dojo.body().removeChild(form.domNode);
-    js! form.destroyRecursive();
-
-    js> dijit.registry.length == nwidgets;
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+    js> return dijit.registry.length == nwidgets;
     True
 
 Simple example, no groups and no left_fields (no bool flag)
 ===========================================================
 
-    js! load(test_examples + '/3.js')
-    js! form = zc.dojo.build_form2(
+    >>> JS(read_test_file('3.js'))
+    js> form = zc.dojo.build_form2(
     ...     definition, dojo.create('div', {}, dojo.body()), 3);
 
-    js! expected_e.innerHTML = read_file(test_examples + '/3.html');
-    js! expected = expected_e.childNodes[0];
 
-    js> check_element(expected, form.domNode)
+    >>> matches(browser.get_page_source(), read_test_file('3.html'))
 
 
-    js! dojo.body().removeChild(form.domNode);
-    js! form.destroyRecursive();
-
-    js> dijit.registry.length == nwidgets;
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+    js> return dijit.registry.length == nwidgets;
     True
 
 Left fields with none or all selected
 =====================================
 
 
-    js! load(test_examples + '/4.js')
-    js! form = zc.dojo.build_form2(
+    >>> JS(read_test_file('4.js'))
+
+    js> form = zc.dojo.build_form2(
     ...     definition, dojo.create('div', {}, dojo.body()), 3);
 
-    js> check_element(expected, form.domNode)
+    >>> matches(browser.get_page_source(), read_test_file('3.html'))
 
-    js! dojo.body().removeChild(form.domNode);
-    js! form.destroyRecursive();
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
 
-    js! load(test_examples + '/5.js')
-    js! form = zc.dojo.build_form2(
+    >>> JS(read_test_file('5.js'))
+    js> form = zc.dojo.build_form2(
     ...     definition, dojo.create('div', {}, dojo.body()), 3);
 
-    >>> try: js.check_element(js.expected, js.form.domNode)
-    ... except AssertionError, v:
-    ...     print v[0:3]
-    ...     js.pretty_print_dom(v[3])
-    ...     js.pretty_print_dom(v[4])
+    >>> matches(browser.get_page_source(), read_test_file('3.html'))
 
-    js! dojo.body().removeChild(form.domNode);
-    js! form.destroyRecursive();
-
-    js> dijit.registry.length == nwidgets;
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+    js> return dijit.registry.length == nwidgets;
     True
 
 Supplying layouts
@@ -171,21 +162,27 @@ define a form and layout::
 
 .. -> src
 
-   >>> js.html_snippet = src
+    >>> JS('html_snippet = %r' % src)
 
 Now, let's add this to the document:
 
-   js! dojo.body().innerHTML = html_snippet;
-   js! dojo.require('dojo.parser');
-   js! dojo.parser.parse(dojo.body());
+    js> dojo.body().innerHTML = html_snippet;
+    js> dojo.require('dojo.parser');
+    js> dojo.parser.parse(dojo.body());
 
 And call build_form2:
 
-    js! load(test_examples + '/1.js')
-    js! form = zc.dojo.build_form2(definition);
+    >>> JS(read_test_file('1.js'))
 
-    js! expected_e.innerHTML = read_file(test_examples + '/6.html');
-    js! expected = expected_e.childNodes[0];
+    js> form = zc.dojo.build_form2(definition);
 
-    js> check_element(expected, form.domNode)
+    >>> matches(browser.get_page_source(), read_test_file('6.html'))
 
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+    js> return dijit.registry.length == nwidgets;
+    True
+
+Tear down borwser:
+
+    >>> browser.close()

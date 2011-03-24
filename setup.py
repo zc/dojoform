@@ -50,6 +50,7 @@ setup(
         ],
     extras_require = dict(
         test=[
+            'bobo',
             'manuel',
             'zc.selenium',
             'zope.app.server',
@@ -57,7 +58,8 @@ setup(
             'zope.formlib',
             'zope.security',
             'zc.customdoctests',
-            'python-spidermonkey',
+            'selenium',
+            'BeautifulSoup',
             ]
         ),
     zip_safe = False,

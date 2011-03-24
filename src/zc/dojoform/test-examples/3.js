@@ -1,4 +1,4 @@
-var definition = {
+definition = {
     "definition": {
         "prefix": "ExampleForm",
         "widgets": [

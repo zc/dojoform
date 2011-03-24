@@ -17,7 +17,6 @@
         </LABEL>
         <DIV class='dijit zc-widget' id='widget_ExampleForm.first_name' xxx>
                 <INPUT
-                   readonly=''
                    id='ExampleForm.first_name'
                    tabIndex='0'
                    aria-required='true'
@@ -35,7 +34,6 @@
         </LABEL>
         <DIV class='dijit zc-widget' id='widget_ExampleForm.last_name' xxx>
             <INPUT
-               readonly=''
                id='ExampleForm.last_name'
                tabIndex='0'
                aria-required='true'
@@ -53,7 +51,6 @@
         </LABEL>
         <DIV class='dijit zc-widget' id='widget_ExampleForm.age' xxx>
             <INPUT
-                readonly=''
                 id='ExampleForm.age'
                 tabIndex='0'
                 value='23'
@@ -69,7 +66,6 @@
           Other
         </LABEL>
         <TEXTAREA
-            readonly=''
             id='ExampleForm.other'
             tabIndex='0'
             class='zc-widget'
@@ -87,7 +83,6 @@
         </LABEL>
         <DIV class='dijit zc-widget' id='widget_ExampleForm.favorite_color' xxx>
             <INPUT
-                readonly=''
                 id='ExampleForm.favorite_color'
                 tabIndex='0'
                 aria-required='false'
@@ -106,8 +101,7 @@
         <DIV class='dijit zc-widget'>
           <INPUT
               type='checkbox'
-              checked=''
-              readonly=''
+              checked='/.*/'
               id='ExampleForm.happy'
               tabIndex='0'
               />
@@ -124,7 +118,6 @@
         <DIV class='dijit zc-widget' id='widget_ExampleForm.pet' xxx>
             <INPUT
                 type='text'
-                readonly=''
                 id='ExampleForm.pet'
                 tabIndex='0'
                 aria-required='false'
@@ -143,7 +136,6 @@
         <DIV class='dijit zc-widget' id='widget_ExampleForm.temperment' xxx>
             <INPUT
                 type='text'
-                readonly=''
                 id='ExampleForm.temperment'
                 tabIndex='0'
                 value='Right Neighborly'
@@ -161,7 +153,6 @@
         <DIV class='dijit zc-widget' id='widget_ExampleForm.weight' xxx>
             <INPUT
                 type='text'
-                readonly=''
                 id='ExampleForm.weight'
                 tabIndex='0'
                 value=''
@@ -177,7 +168,6 @@
           Description
         </LABEL>
         <TEXTAREA
-            readonly=''
             id='ExampleForm.description'
             tabIndex='0'
             value='10ft tall
@@ -208,8 +198,6 @@ Razor sharp scales.'
         <DIV class='dijit zc-widget' id='widget_ExampleForm.siblings' xxx>
             <INPUT
                 type='text'
-                readonly=''
-                aria-readonly='false'
                 id='ExampleForm.siblings'
                 tabIndex='0'
                 value='1'
@@ -226,6 +214,9 @@ Razor sharp scales.'
         </LABEL>
         <DIV >
           <DIV role='grid' xxx>
+            Street            City        Awesomeness
+            123 fake street   fakeville    9
+            345 false street  falsetown    9001
           </DIV>
           <SPAN class='dijit dijitButton' xxx>
                 <SPAN id='addresses.dojo.new.btn_label'>New</SPAN>

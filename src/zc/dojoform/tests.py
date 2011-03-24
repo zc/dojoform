@@ -11,13 +11,22 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+from __future__ import absolute_import
+
+import BeautifulSoup
+import bobo
 import doctest
 import manuel.capture
 import manuel.doctest
 import manuel.testing
 import os
-import textwrap
+import re
+import selenium.webdriver
+import signal
+import subprocess
+import threading
 import unittest
+import wsgiref.simple_server
 import zc.customdoctests.js
 
 from zope.testing import doctest
@@ -25,220 +34,179 @@ from zope.testing import doctest
 home = None # set by buildout
 here = os.path.dirname(__file__)
 
-def jsiter(jsob):
-    for i in range(jsob.length):
-        yield jsob[i]
+def maybe_encode(s):
+    if isinstance(s, unicode):
+        s = s.encode('utf8')
+    return s
 
-def _pretty_print_dom(node, indent, out):
-    out.append(indent+'<'+node.tagName)
-    attrs = [("%s=%s" % (attr.name, repr(attr.value)[1:]))
-             for attr in jsiter(node.attributes)]
-    childNodes = [childNode for childNode in jsiter(node.childNodes)
-                  if childNode.tagName or childNode.textContent.strip()]
-    if not childNodes:
-        attrs.append('/')
+def matches(observed, expected):
+    observed = BeautifulSoup.BeautifulSoup(observed).form
+    expected = BeautifulSoup.BeautifulSoup(expected).form
+    try:
+        matches_(observed, expected)
+    except AssertionError, e:
+        message, expected, observed = e.args
+        print maybe_encode(message)
+        print '\nExpected:'
+        if not isinstance(expected, basestring):
+            expected = expected.prettify()
+        print maybe_encode(expected)
+        print '\nObserved:'
+        if not isinstance(observed, basestring):
+            observed = observed.prettify()
+        print maybe_encode(observed)
 
-    indent += '    '
+def beautifulText(node):
+    if isinstance(node, unicode):
+        return node
+    if hasattr(node, 'name'):
+        return u' '.join(beautifulText(c) for c in node)
+    return ''
 
-    if ((len(' '.join(attrs)) + len(out[-1])) > 74):
-        out.append('\n')
-        if childNodes:
-            attrs.append('>')
-        else:
-            attrs[-1] += '>'
-        for attr in attrs:
-            out.append(indent+attr+'\n')
-    else:
-        out.append(' '+' '.join(attrs)+'>\n')
+def matches_(observed, expected):
+    if getattr(expected, 'name', None) != getattr(observed, 'name', None):
+        raise AssertionError("tag names don't match", expected, observed)
 
-    indent = indent[:-2]
-
-    if childNodes:
-        for childNode in childNodes:
-            if childNode.tagName:
-                _pretty_print_dom(childNode, indent, out)
-            else:
-                out.append(
-                    indent+(indent+'\n').join(
-                        textwrap.dedent(
-                            childNode.textContent
-                            ).rstrip().split('\n')
-                        )+'\n'
-                    )
-        out.append(indent[:-2] + '</%s>\n' % node.tagName)
-
-    return out
-
-def check_element(expected, observed):
-    if expected.tagName != observed.tagName:
-        raise AssertionError(
-            "tag names don't match", expected.xml, observed.xml)
     wild = False
-    for i in range(expected.attributes.length):
-        name = expected.attributes[i].name
-        e_val = expected.attributes[i].value
-
+    for name, e_val in expected.attrs:
         if name == 'xxx':
             wild = True
             continue
 
-        o_val = observed.getAttribute(name)
+        o_val = observed.get(name)
         if o_val is None:
-            raise AssertionError("missing "+name, expected.xml, observed.xml)
-        if e_val != o_val:
+            raise AssertionError("missing "+name, expected, observed)
+
+        if (e_val != o_val and not
+            (re.match(r'^/.+/$', e_val) and re.match(e_val[1:-1], o_val))
+            ):
+
             if name == 'class':
                 oclasses = set(o_val.strip().split())
                 for cname in e_val.strip().split():
                     if cname not in oclasses:
                         raise AssertionError("missing class: "+cname,
-                                             expected.xml, observed.xml)
+                                             expected, observed)
             else:
                 raise AssertionError(
-                    "attribute %s has different values" % name, e_val, o_val,
-                    expected.xml, observed.xml)
+                    "attribute %s has different values: %r != %r"
+                    % (name, e_val, o_val),
+                    expected, observed)
 
-    ec = listify_nodes(expected.childNodes)
     if wild:
         match_text = ''
-        for n in ec:
-            if n.tagName:
-                for e in listify_nodes(
-                    observed.getElementsByTagName(n.tagName)):
-                    try:
-                        check_element(n, e);
-                    except AssertionError:
-                        pass
-                    else:
-                        break
+        for enode in expected:
+            if hasattr(enode, 'name'):
+                if enode.get('id'):
+                    onode = observed(id=enode['id'])
+                    if not onode:
+                        raise AssertionError(
+                            "In wildcard id search, couldn't find %r" %
+                            enode['id'],
+                            enode, observed)
+                    matches_(onode[0], enode);
                 else:
-                    raise AssertionError("Couldn't find match for", n.xml)
+                    for onode in observed(enode.name):
+                        try:
+                            matches_(onode, enode);
+                        except AssertionError:
+                            pass
+                        else:
+                            break
+                    else:
+                        raise AssertionError(
+                            "Couldn't find wildcard match", enode, observed)
             else:
-                match_text += ' ' + n.textContent
+                match_text += ' ' + enode.encode('utf8')
+
         match_text = match_text.strip()
         if match_text:
-            text = observed.textContent
-            match_text = match_text.split()
-            while match_text:
-                token = match_text.pop(0)
-                i = text.index(token)
-                if i < 0:
+            text = beautifulText(observed)
+            for token in match_text.split():
+                try:
+                    i = text.index(token)
+                except ValueError:
                     raise AssertionError(token + " not found in text content.",
-                                         expected.xml, observed.xml)
+                                         expected, observed)
                 text = text[i+len(token):]
     else:
-        oc = listify_nodes(observed.childNodes)
-        if len(oc) != len(ec):
+        enodes = [n for n in expected
+                  if not isinstance(n, basestring) or n.strip()]
+        onodes = [n for n in observed
+                  if not isinstance(n, basestring) or n.strip()]
+        if len(enodes) != len(onodes):
             raise AssertionError(
-                "No match for", len(ec), len(oc), expected, observed)
-        for e, o in zip(ec, oc):
-            if (e.tagName or o.tagName):
-                check_element(e, o)
+                "Wrong number of children %r!=%r"
+                % (len(onodes), len(enodes)),
+                expected, observed)
+        for enode, onode in zip(enodes, onodes):
+            if hasattr(enode, 'name') or hasattr(onode, 'name'):
+                matches_(onode, enode)
             else:
-                e = e.textContent.strip()
-                o = o.textContent.strip()
+                e = beautifulText(enode).strip()
+                o = beautifulText(onode).strip()
                 if e != o:
-                    raise AssertionError('text nodes differ', e, o,
-                                         expected.xml, observed.xml)
+                    raise AssertionError(
+                        'text nodes differ %r != %r' % (e, o),
+                        expected, observed)
 
-
-
-
-def listify_nodes(nodes):
-    return [nodes[i] for i in range(nodes.length)
-            if nodes[i].tagName or nodes[i].textContent.strip()]
-
-def pretty_print_dom(node):
-    print ''.join(_pretty_print_dom(node, '', [])),
-
-def run_example(js, name):
-    js('load(%r)' % os.path.join(here, 'test-examples', name+'.js'))
-    js("""
-    form = zc.dojo.build_form2(definition);
-    dojo.body().appendChild(form.domNode);
-    form.startup();
-    """)
-
-    dname = os.path.join(here, 'test-examples', name+'.html')
-    if not os.path.exists(dname):
-        print 'No expected output for', name, 'got:'
-        pretty_print_dom(js.form.domNode)
-    else:
-        js.expected_text = open(dname).read()
-        js("""
-            expected = document.createElement('div');
-            expected.innerHTML = expected_text;
-            expected = expected.childNodes[0];
-            """)
-
-        check_element(js.expected, js.form.domNode)
-
-    js("""
-    dojo.body().removeChild(form.domNode);
-    form.destroyRecursive();
-    nwidgets = dijit.registry.length;
-    form = zc.dojo.build_form2(definition);
-    dojo.body().appendChild(form.domNode);
-    form.startup();
-    """)
-
-    if os.path.exists(dname):
-        check_element(js.expected, js.form.domNode)
-
-    js("""
-    dojo.body().removeChild(form.domNode);
-    form.destroyRecursive();
-    """)
-    if js.nwidgets != js.dijit.registry.length:
-        raise AssertionError('Widget leak', nwidgets, js.dijit.registry.length)
+def read_test_file(name):
+    f = open(os.path.join(here, 'test-examples', name))
+    r = f.read()
+    f.close()
+    return r
 
 def setUp(test):
-    js = zc.customdoctests.js.setUp(test)
-    js.load(home+'/parts/envjs/env.js')
-    js('Envjs.log = print;')
+    test.globs.update(
+        read_test_file = read_test_file,
+        selenium = selenium,
+        matches = matches,
+        port = SeleniumLayer.port,
+        )
 
-    # Work around bug in Envjs 1.2 XXX really need to try 1.3 again
-    js('Envjs.sync = function(fn){return fn;};');
 
-    js.Envjs.unloadFrame = js.Envjs.sync
+bobo_resources_template = """
+boboserver:static('/test', %r)
+boboserver:static('/dojoform', %r)
+boboserver:static('/dojo', %r)
+"""
 
-    js('repr = JSON.stringify;')
-    #js.console.error = js.console.log;
-    js("djConfig = {baseUrl: 'file://%s/parts/dojo/dojo/'};" % home)
-    js.djConfig.modulePaths = {
-        'zc.dojo': 'file://'+home+'/src/zc/dojoform/resources/zc.dojo',
-        'zc.RangeWidget':
-        'file://'+home+'/src/zc/dojoform/resources/rangewidget',
-        }
-    js.load(home+'/src/zc/dojoform/dojo_in_spidermonkey_helper.js')
-    js.Envjs.parseHtmlDocument(
-        '<!doctype html>\n<html><body></body></html>\n',
-        js.document)
-    js.load(js.djConfig.baseUrl+'dojo.js')
+class SeleniumLayer:
+    bobo_running = False
 
-    # XXX dojo hostenv_ff_ext.js should define this:
-    js.dojo.addOnUnload = lambda *a: None
+    @classmethod
+    def setUp(self):
+        if not self.bobo_running:
+            app = bobo.Application(bobo_resources=bobo_resources_template  % (
+                os.path.join(here, 'test-examples'),
+                here,
+                os.path.join(home, 'parts', 'dojo'),
+                ))
+            server = wsgiref.simple_server.make_server('', 0, app)
+            self.port = server.server_port
+            thread = threading.Thread(target=server.serve_forever)
+            thread.setDaemon(True)
+            thread.start()
+            self.bobo_running = True
+        self.java = subprocess.Popen(
+            ['java', '-jar',
+             home+'/parts/selenium.jar/selenium-server-standalone-2.0b2.jar'])
 
-    js.load(home+'/src/zc/dojoform/resources/zc.dojo.js')
-
-    js.pretty_print_dom = pretty_print_dom
-
-    js.read_file = lambda path: open(path).read()
-
-    js.test_examples = os.path.join(here, 'test-examples')
-
-    js.check_element = check_element
-    test.globs['js'] = test.globs['JS_']
+    @classmethod
+    def tearDown(self):
+        os.kill(self.java.pid, signal.SIGTERM)
 
 def test_suite():
-    return unittest.TestSuite((
-        manuel.testing.TestSuite(
+
+    selenium_suite = manuel.testing.TestSuite(
             manuel.doctest.Manuel(parser=zc.customdoctests.js.parser) +
             manuel.doctest.Manuel(parser=zc.customdoctests.js.eq_parser) +
             manuel.doctest.Manuel() +
             manuel.capture.Manuel(),
             'build_form2.test',
-            setUp=setUp),
-        ))
+            setUp=setUp)
+    selenium_suite.layer = SeleniumLayer
+    return selenium_suite
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')
