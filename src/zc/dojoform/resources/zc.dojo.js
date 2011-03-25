@@ -613,7 +613,7 @@ zc.dojo._build_layout = function (record) {
         widget = dojo.clone(widget);
         new_name = record.name + '.' + widget.name;
         widget.id = widget.name = new_name;
-        var column_label = widget.fieldLabel;
+        var column_label = widget.label || widget.fieldLabel;
         var column = {
             name: column_label,
             field: widget.name,
@@ -700,7 +700,7 @@ zc.dojo._build_record_form = function (widget_name, grid, order) {
                 'div', {'class': 'widget', style: 'margin: 5px;'},
                 rec_form.domNode);
             var label = dojo.create('label', {
-                innerHTML:  rc_wid.fieldLabel + ': '
+                innerHTML:  (rc_wid.label || rc_wid.fieldLabel) + ': '
             }, widget_div);
             if (rc_wid.required) {
                 var span = dojo.create(
@@ -835,7 +835,8 @@ zc.dojo.widgets['zope.schema.Object'] = function (
             var cp = new dijit.layout.ContentPane({}, dojo.create('div'));
             if (widget.widget_constructor !== 'zc.ajaxform.widgets.Hidden') {
                 var label = dojo.create(
-                    'label', {innerHTML: widget.fieldLabel}, cp.domNode);
+                    'label', {innerHTML: widget.label || widget.fieldLabel},
+                    cp.domNode);
                 if (widget.required) {
                     var span = dojo.create(
                         'span', {innerHTML: ' (required)'}, label);
@@ -1113,7 +1114,7 @@ zc.dojo.build_form = function (config, pnode, order, startup)
         if (widget.widget_constructor !== 'zc.ajaxform.widgets.Hidden') {
             var label = dojo.create(
                 'label', {id: widget.name + '.label',
-                innerHTML: widget.fieldLabel},
+                innerHTML: widget.label || widget.fieldLabel},
                 cp.domNode);
             if (widget.required) {
                 var span = dojo.create(
@@ -1230,22 +1231,16 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
         dojo.addClass(form.domNode, definition['class']);
 
 
-    function label_to_id(label) {
-        return label.toLowerCase().split(' ').join('_');
-    }
-
     // normalize widget namey data
     var widgets = dojo.map(
         definition.widgets, function (widget) {
             widget = dojo.clone(widget);
-            if (! widget.name)
-                widget.name = widget.id || label_to_id(widget.fieldLabel);
-
             if (prefix)
                 widget.id = prefix + (widget.id || widget.name);
 
-            if (! widget.fieldLabel)
-                widget.fieldLabel= widget.name;
+            if (! widget.label) {
+                widget.label = widget.fieldLabel || widget.name;
+            }
 
             return widget;
         });
@@ -1433,8 +1428,8 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
                 var div = { 'class': class_};
                 if (widget.id)
                     div.id = 'zc-field-'+widget.id;
-                if (widget.fieldHint)
-                    div.title = widget.fieldHint;
+                if (widget.hint || widget.fieldHint)
+                    div.title = widget.hint || widget.fieldHint;
                 div = dojo.create('div', div);
 
                 handle_bool_flag(widget, div);
@@ -1443,7 +1438,7 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
                     'zc.ajaxform.widgets.Hidden') {
                     dojo.create(
                         'label',
-                        {innerHTML: widget.fieldLabel,
+                        {innerHTML: widget.label || widget.fieldLabel,
                          'for': widget.id, 'class': 'zc-label'
                         },
                         div);
@@ -1565,7 +1560,7 @@ zc.dojo.parse_config = function (config, order) {
         required: config.required,
         id: config.id,
         name: config.name,
-        promptMessage: config.fieldHint,
+        promptMessage: config.hint || config.fieldHint,
         tabIndex: order,
         value: config.value,
         readonly: readonly,

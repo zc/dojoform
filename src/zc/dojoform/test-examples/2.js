@@ -23,8 +23,8 @@ definition = {
         "prefix": "ExampleForm",
         "widgets": [
             {
-                "fieldHint": "Given name.",
-                "fieldLabel": "First name",
+                "hint": "Given name",
+                "label": "First name",
                 "id": "first_name",
                 "minLength": 0,
                 "name": "first_name",
@@ -33,8 +33,8 @@ definition = {
                 "widget_constructor": "zope.schema.TextLine"
             },
             {
-                "fieldHint": "Family name.",
-                "fieldLabel": "Last name",
+                "hint": "Family name.",
+                "label": "Last name",
                 "id": "last_name",
                 "minLength": 0,
                 "name": "last_name",
@@ -43,8 +43,8 @@ definition = {
                 "widget_constructor": "zope.schema.TextLine"
             },
             {
-                "fieldHint": "Are they happy?",
-                "fieldLabel": "Happy",
+                "hint": "Are they happy?",
+                "label": "Happy",
                 "id": "happy",
                 "name": "happy",
                 "required": false,
@@ -53,8 +53,8 @@ definition = {
             },
             {
                 bool_flag: 'happy',
-                "fieldHint": "What do they look like?",
-                "fieldLabel": "Description",
+                "hint": "What do they look like?",
+                "label": "Description",
                 "id": "description",
                 "minLength": 0,
                 "name": "description",
@@ -63,8 +63,8 @@ definition = {
                 "widget_constructor": "zope.schema.Text"
             },
             {
-                "fieldHint": "Don't tell anybody",
-                "fieldLabel": "Secret Key",
+                "hint": "Don't tell anybody",
+                "label": "Secret Key",
                 "id": "secret",
                 "name": "secret",
                 "required": true,
@@ -74,8 +74,8 @@ definition = {
             {
                 bool_flag: 'happy',
                 "allowBlank": false,
-                "fieldHint": "Number of siblings",
-                "fieldLabel": "Siblings",
+                "hint": "Number of siblings",
+                "label": "Siblings",
                 "field_max": 8,
                 "field_min": 0,
                 "id": "siblings",
@@ -86,16 +86,16 @@ definition = {
             },
             {
                 bool_flag: 'happy',
-                "fieldHint": "All my wonderful homes",
-                "fieldLabel": "Addresses",
+                "hint": "All my wonderful homes",
+                "label": "Addresses",
                 "id": "addresses",
                 "name": "addresses",
                 "record_schema": {
                     "readonly": false,
                     "widgets": [
                         {
-                            "fieldHint": "The street",
-                            "fieldLabel": "Street",
+                            "hint": "The street",
+                            "label": "Street",
                             "id": "street",
                             "minLength": 0,
                             "name": "street",
@@ -103,8 +103,8 @@ definition = {
                             "widget_constructor": "zope.schema.TextLine"
                         },
                         {
-                            "fieldHint": "The city",
-                            "fieldLabel": "City",
+                            "hint": "The city",
+                            "label": "City",
                             "id": "city",
                             "minLength": 0,
                             "name": "city",
@@ -113,8 +113,8 @@ definition = {
                         },
                         {
                             "allowBlank": false,
-                            "fieldHint": "The awesomeness on a scale of 1 to 10",
-                            "fieldLabel": "Awesomeness",
+                            "hint": "The awesomeness on a scale of 1 to 10",
+                            "label": "Awesomeness",
                             "field_max": 10,
                             "field_min": 1,
                             "id": "awesomeness",
@@ -141,8 +141,8 @@ definition = {
             },
             {
                 bool_flag: 'happy',
-                "fieldHint": "Any other notes",
-                "fieldLabel": "Other",
+                "hint": "Any other notes",
+                "label": "Other",
                 "id": "other",
                 "minLength": 0,
                 "name": "other",
