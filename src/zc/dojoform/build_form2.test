@@ -2,7 +2,7 @@ build_form2 provides for generation of dojo widgets and forms.
 
 Set up a browser:
 
-    >>> browser = selenium.webdriver.Chrome()
+    >>> browser = selenium.webdriver.Firefox()
     >>> JS = browser.execute_script
 
 Load a blank page that gets dojo loaded:
