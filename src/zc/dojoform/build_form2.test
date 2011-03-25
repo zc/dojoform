@@ -206,6 +206,41 @@ build_form2 mimics this layour if you:
     js> return dijit.registry.length == nwidgets;
     True
 
+Nested groups
+=============
+
+    >>> JS(read_test_file('nested-groups.js'))
+    js> form = zc.dojo.build_form2(
+    ...    definition, dojo.create('div', {}, dojo.body()));
+
+    >>> matches(browser.get_page_source(), read_test_file('nested-groups.html'))
+
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+    js> return dijit.registry.length == nwidgets;
+    True
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .. Tear down borwser:
 
     >>> browser.close()
+
+
