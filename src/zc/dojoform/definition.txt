@@ -1,0 +1,202 @@
+================
+Form Definitions
+================
+
+(This isn't the proper home for this, but it will do for now.)
+
+Form definitions expressed in JavaScript (or JSON).  The are consumed
+by client-library-specific form builders. They may be produced by hand, or
+they may be generated application code, typically on the server.
+
+Note when we use the term "object" below, we're refering to a
+JavaScript or JSON object (depending on whether the form definition is
+in JavaScript or JSON form).
+
+A definition is an object with the folliowing top-level properties.
+We'll provide more detail on each field in following sections.
+
+actions (optional)
+   list of buttons to display for the form
+
+groups (optional)
+   list of widget groups.
+
+handler (optional)
+   handler function to call when the form is submitted
+
+   This can be a function or the name of a function.
+
+   See the section on actions for more information on the form handler.
+
+id (optional)
+   HTML id of the form
+
+   The form id is also used, with a dot, as a prefix to compute ids of
+   form contents.
+
+widgets
+   list of field and widget definitions
+
+
+Widgets definitions, the ``widget`` definition property
+=======================================================
+
+The ``widgets`` definition property specifies a list of field widgets.
+Unless a ``groups`` or ``left_fields`` property is used, the form will
+contain the fields in the order given by the ``widgets`` property.
+
+Each widget definition is an object with type-specific properties in
+addition to the following standard properties:
+
+bool_flag (optional)
+   name of another field to make the display of this fields
+   conditional on
+
+   If a ``bool_flag`` property is used, then when the value of the
+   named field is false, the field being defined will have the class:
+   ``zc-widget-hidden``.
+
+hint (optional)
+   field hint
+
+   This may be used to set to the title of the div enclosing the field and
+   may be used by specific widget inplementations to give the user
+   additional informationm.
+
+id (optional, defaults to name)
+   id (suffix) of the field
+
+label (optional, defaults to name)
+   field label
+
+name
+   field input name
+
+required (boolean, optional, defaults to false)
+   Is the field required?
+
+   If a widget is required, a "required" CSS class is added to the widget.
+
+value (optional)
+   initial value
+
+class (optional)
+   extra CSS class to add to the widget
+
+widget_constructor
+   String identifier of a widget constructor.
+
+   The ``widget_constructor`` will be used to look up a constructor
+   function, which will be called with the widget definition.  How
+   these constructors are registered is implementation specific.
+
+
+Grouping
+========
+
+If the ``groups`` property is provided, then it defines a list of
+widget groups.  These are typically implemented in generated forms as
+``div``s containing the widgets or subgroups in the group.
+
+Group objects have the following properties:
+
+bool_flag (optional)
+   name of a field to make the display of the group
+   conditional on
+
+   If a ``bool_flag`` property is used, then when the value of the
+   named field is false, the group's classes will include:
+   ``zc-widget-hidden``.
+
+class (optional)
+   extra CSS class to add to the group
+
+id (optional)
+   HTML id for the group
+
+widgets
+   list of widget names or subgroups
+
+   This is an array containing either:
+
+   - widget names, as given in the widget definitions, or
+
+   - (sub)group objects, allowing nesting of groups.
+
+
+Actions
+=======
+
+Actions define buttons to be placed on the form, typically at the
+bottom.
+
+Each action is defined by an object with the following properties:
+
+name
+    The button input name
+
+id (optional, defaults to name)
+   id (suffix) of the field
+
+label (optional, defaults to name)
+   field label
+
+hint (optional)
+   field hint
+
+   This may be used to set to the title of the div enclosing the field and
+   may be used by specific widget inplementations to give the user
+   additional informationm.
+
+validate (boolean, defaults to false)
+   Must the form be validated before it can be submitted?
+
+class (optional)
+   extra CSS class to add to the button
+
+handler (optional)
+   handler function
+
+   This can be a function or the name of a function.
+   the global namespace.
+
+   When a button is clicked:
+
+   - If the validate property is true, and the form isn't valid, then
+     nothing happens (other than updating form invalid-data markers),
+     otherwise:
+
+   - If an action handler is provided, it is called with 3 arguments:
+     form data, action object (as included in the definition), and the
+     form object.
+
+   - If a form handler is provided, it is called with 3 arguments:
+     form data, action object (as included in the definition), and the
+     form object.
+
+It is an error not to define a form handler or a handler for each
+action.
+
+
+Backward compatibility with build_form
+======================================
+
+At the definition level:
+
+prefix
+   alias for ``id``
+
+left_fields (optional, legacy)
+   an object specifying a set of fields to be included in a "left"
+   grouping of widgets
+
+   This property is ignored if a groups property is used, or it
+   doesn't specify any fields or specifies all fields.
+
+At the widget level:
+
+fieldLabel
+   alias for ``label``
+
+fieldHint
+   alias for ``hint``
