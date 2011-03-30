@@ -1,13 +1,17 @@
 Notes on implementing form widgets
 ==================================
 
+Subclass dijit._Widget.
+
+If you have subwidgets, subclass both dijit._Container and
+dijit._Widget.
+
+
 API:
 
-   - General widget crap. :)  Hopefully, _Widget isn't too obtrusive
+   - Must define domNode
 
-   - Must define domNode, may define containerNode
-
-   - buildRendering() is where you build up your widgets dom.
+   - buildRendering() is where you build up your widget's dom.
 
    - reset() Reset widget values to initial settings
 
@@ -28,9 +32,6 @@ API:
      Important note: Don't set name on internal subwidgets. If you do,
      they'll end up in form values.
 
-   - startup() Implement this if you have children that need startup
-     to get called on them!
-
    - onChange  Call this when you're state changes
 
      Note that because form uses getDescendants, it will connect to
@@ -48,6 +49,6 @@ Note
   break old code.
 
   Because of the above behavior, you may be able to avoid implementing
-  validation and reset methods if you're widget is implemented in
-  terms of subwidgets.
+  validation and reset methods, as well as focus, if you're widget is
+  implemented in terms of subwidgets.
 
