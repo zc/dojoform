@@ -41,7 +41,13 @@ Note
   The form implementation uses getDescendants to find it's
   contents.  This means that it considered subwidgets part of its
   contents, including widgets you might think of as private.
+
   It filters widgets to those that have names only when getting or
   setting values, not when validating or resetting.  I consider this a
   bug, it doubt it will change, unless maybe in 2, as fixing it would
   break old code.
+
+  Because of the above behavior, you may be able to avoid implementing
+  validation and reset methods if you're widget is implemented in
+  terms of subwidgets.
+
