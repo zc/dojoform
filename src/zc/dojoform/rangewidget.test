@@ -1,0 +1,51 @@
+Range Widgets
+=============
+
+Range widgets let you collect a range of values, as in min or max.
+
+To define a range widget, create a new zc.RangeWidget, passing 
+
+
+    >>> browser = selenium.webdriver.Chrome()
+    >>> JS = browser.execute_script
+
+    >>> browser.get('http://localhost:%s/test/blank.html' % port)
+
+    js> dojo.require('zc.dojo');
+
+::
+
+  definition = {
+          widgets: [
+              {
+                  name: 'int_range',
+                  widget_constructor:  'zc.ajaxform.widgets.IntRange',
+                  value: "{min: 1, max: 9}",
+                  start: 'min', end: 'max'
+              },
+              {
+                  name: 'date_range',
+                  widget_constructor: 'zc.ajaxform.widgets.DateRange',
+                  start: 'start_date', end: 'end_data'
+              }
+          ],
+          actions: [
+              {
+                  name: 'reset',
+                  handler: function (data, action, form) {
+                      form.reset();
+                  }
+              }
+
+          ]
+      };
+
+  form = zc.dojo.build_form2(definition, dojo.create('div', {}, dojo.body()));
+
+.. -> js
+
+   >>> JS(js)
+
+XXX Ned to finish test :)
+
+

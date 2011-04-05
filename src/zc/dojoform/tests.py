@@ -161,7 +161,7 @@ def setUp(test):
         read_test_file = read_test_file,
         selenium = selenium,
         matches = matches,
-        port = SeleniumLayer.port,
+        port = bobo_port,
         )
 
 
@@ -171,23 +171,26 @@ boboserver:static('/dojoform', %r)
 boboserver:static('/dojo', %r)
 """
 
+bobo_port = None
+def start_bobo_server(port=0, daemon=True):
+    global bobo_port
+    app = bobo.Application(bobo_resources=bobo_resources_template  % (
+        os.path.join(here, 'test-examples'),
+        here,
+        os.path.join(home, 'parts', 'dojo'),
+        ))
+    server = wsgiref.simple_server.make_server('', port, app)
+    thread = threading.Thread(target=server.serve_forever)
+    thread.setDaemon(daemon)
+    thread.start()
+    bobo_port = server.server_port
+
 class SeleniumLayer:
-    bobo_running = False
 
     @classmethod
     def setUp(self):
-        if not self.bobo_running:
-            app = bobo.Application(bobo_resources=bobo_resources_template  % (
-                os.path.join(here, 'test-examples'),
-                here,
-                os.path.join(home, 'parts', 'dojo'),
-                ))
-            server = wsgiref.simple_server.make_server('', 0, app)
-            self.port = server.server_port
-            thread = threading.Thread(target=server.serve_forever)
-            thread.setDaemon(True)
-            thread.start()
-            self.bobo_running = True
+        if bobo_port is None:
+            start_bobo_server()
         self.java = subprocess.Popen(
             ['java', '-jar',
              home+'/parts/selenium.jar/selenium-server-standalone-2.0b2.jar'])
@@ -204,6 +207,7 @@ def test_suite():
             manuel.doctest.Manuel() +
             manuel.capture.Manuel(),
             'build_form2.test',
+            'rangewidget.test',
             setUp=setUp)
     selenium_suite.layer = SeleniumLayer
     return selenium_suite
