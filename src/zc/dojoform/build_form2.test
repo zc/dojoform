@@ -220,7 +220,14 @@ Nested groups
     js> return dijit.registry.length == nwidgets;
     True
 
+Actions handlers
+================
 
+Typically, buttons have actions that users click on to submit or
+cancel forms.
+
+When you define forms, you can define handlers at both the form and
+individual 
 
 
 
