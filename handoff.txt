@@ -1,0 +1,117 @@
+Dojoform handoff
+================
+
+My initial specific goal was to get dojoform into a more usable
+state. Specifically: resolve weird layour and packaging issues.
+
+I initially scoped our a rather grand project:
+
+  http://wiki.zope.com/Dojoform_Enhancement_Project
+
+For the initial iteration though, I want:
+
+- documentation of form-definition protocol
+
+- Working build_form2 for people to play with, mainly featuring more
+  flexible layout:
+
+  - default CSS-based layout
+
+  - ability to use an existing layout, especially border-container
+    based, allowing user resizing
+
+  - support for legacy layout for legacy definitions
+
+  - New maybe: optional table-based layouts inspired by attractive
+    layouts in ZBP.
+
+- Tests for above
+
+This turned out to be a bigger job that I'd planned for...
+
+Status and challenges
+---------------------
+
+- Work on branch: zc.dojoform/branches/jim-dev2
+
+- First cut at definition spec, excluding widget-specifix details
+
+    http://svn.zope.com/repos/main/zc.dojoform/branches/jim-dev2/src/zc/dojoform/definition.txt?view=markup
+
+- Have:
+
+  - CSS-based default layout with optional grouping
+
+  - Ability to use existing layout
+
+  - Legacy layout
+
+  - Selenium 2 tests for layout
+
+- sub-forms for things like record editing and object fields have
+  ad-hoc layout. They should be rewritten to use build_form2, but
+  later, in another iteration after build_form2 has proved itself.
+
+- Form processing
+
+  build_form uses a combination of:
+
+  - dojo.formToObject (or its equivalent)
+
+  - special code to deal with record-list "widgets"
+
+  - special code to deal ckeditor widgets, but only in record lists
+    afaict.
+
+  I want to use dijit.form.Form API, so, need to convert range, ck and
+  record-list "widgets" to be proper dijit form widgets.  I've made
+  a first cut at defining what that means:
+
+    http://svn.zope.com/repos/main/zc.dojoform/branches/jim-dev2/formwidget.txt?revision=56391&view=markup
+
+- The original selenium tests don't pass any more. I'd like them to be
+  rewritten to use selenium 2 and bobo.  The later is to get rid of a
+  huge # of dependencies.
+
+  BTW, an advantage of using bobo is that bobo can easily run in the
+  same process as the tests, so tests can control the bobo server.  I
+  think this would help for tests that test the existing
+  form-submittal and call_server logic.
+
+- I used an under-development package, customdoctest, to make it
+  easier to call JS from doctests.  This was mainly useful for my
+  experiment with running tests under spidermonkey, but it still
+  provides some noce syntax for running JS in selenium.  We shouldn't
+  use this package because it isn't ready for release. If we want to
+  keep the nice syntax, we can extract the small bit of code that
+  enables it.
+
+- We need to set up the tests to run under various browsers
+  eventually.
+
+Summary/Tasks for first iteration
+=================================
+
+- Finish test for the rangewidget refactoring.  Test doesn't have to
+  be very docy, but should be docy enough for internal use. :)
+
+- Write test for and finish implementing action handling in
+  build_form2. Pay special attention to behavior documented in
+  definition.txt.
+
+- Make proper dijit form widget implementation for the ckeditor with
+  tests. See docy comment above.
+
+- Make proper dijit form widget implementation for the record list
+  widget with tests. See docy comment above.
+
+- Rewrite old tests.
+
+- Make sure tests are at least run with FF3.
+
+- Make an internal release.
+
+I may have forgotten something. :)
+
+I'd like to review the various tasks.
+
