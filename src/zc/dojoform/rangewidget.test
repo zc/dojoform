@@ -26,7 +26,7 @@ To define a range widget, create a new zc.RangeWidget, passing
               {
                   name: 'date_range',
                   widget_constructor: 'zc.ajaxform.widgets.DateRange',
-                  start: 'start_date', end: 'end_data'
+                  start: "2010-09-09", end: "2010-09-10"
               }
           ],
           actions: [
@@ -46,6 +46,35 @@ To define a range widget, create a new zc.RangeWidget, passing
 
    >>> JS(js)
 
-XXX Ned to finish test :)
+We can make all the fields invalid by modifying eachother and thus
+modifying their constraints.
 
+    js> dijit.byId('dijit_form_NumberTextBox_0').setValue(10)
+    js> dijit.byId('dijit_form_NumberTextBox_1').setValue(8)
+    js> return dijit.byId('dijit_form_NumberTextBox_0').isValid()
+    False
+    js> return dijit.byId('dijit_form_NumberTextBox_1').isValid()
+    False
 
+    js> dijit.byId('dijit_form_DateTextBox_0').setValue(new Date(2010, 11, 11))
+    js> dijit.byId('dijit_form_DateTextBox_1').setValue(new Date(2010, 10, 10))
+    js> return dijit.byId('dijit_form_DateTextBox_0').isValid()
+    False
+    js> return dijit.byId('dijit_form_DateTextBox_1').isValid()
+    False
+
+And make them valid again.
+
+    js> dijit.byId('dijit_form_NumberTextBox_0').setValue(9)
+    js> dijit.byId('dijit_form_NumberTextBox_1').setValue(10)
+    js> return dijit.byId('dijit_form_NumberTextBox_0').isValid()
+    True
+    js> return dijit.byId('dijit_form_NumberTextBox_1').isValid()
+    True
+
+    js> dijit.byId('dijit_form_DateTextBox_0').setValue(new Date(2010, 10, 10))
+    js> dijit.byId('dijit_form_DateTextBox_1').setValue(new Date(2010, 11, 11))
+    js> return dijit.byId('dijit_form_DateTextBox_0').isValid()
+    True
+    js> return dijit.byId('dijit_form_DateTextBox_1').isValid()
+    True

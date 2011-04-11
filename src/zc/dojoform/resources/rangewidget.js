@@ -55,7 +55,7 @@ dojo.ready(
                             value: value[this.config.end],
                             onChange: dojo.hitch(
                                 this, function (value) {
-                                    this.min_value.constraints.mac = value;
+                                    this.min_value.constraints.max = value;
                                     this.onChange(this.get('value'));
                                 })
                         }, dojo.create('div', {}, this.domNode));
