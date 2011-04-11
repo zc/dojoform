@@ -92,13 +92,6 @@ Status and challenges
 Summary/Tasks for first iteration
 =================================
 
-- Finish test for the rangewidget refactoring.  Test doesn't have to
-  be very docy, but should be docy enough for internal use. :)
-
-- Write test for and finish implementing action handling in
-  build_form2. Pay special attention to behavior documented in
-  definition.txt.
-
 - Make proper dijit form widget implementation for the ckeditor with
   tests. See docy comment above.
 

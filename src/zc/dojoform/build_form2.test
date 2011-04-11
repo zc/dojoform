@@ -226,27 +226,76 @@ Actions handlers
 Typically, buttons have actions that users click on to submit or
 cancel forms.
 
-When you define forms, you can define handlers at both the form and
-individual 
+When you define forms, you can define handlers through actions. 
 
+    >>> JS(read_test_file('1.js'))
+    js> form = zc.dojo.build_form2(definition);
+    js> dojo.body().appendChild(form.domNode);
+    js> form.startup();
 
+We'll need to define a function for the handler we provided to the action.
 
+    js> register = function (arg1, arg2, arg3) {
+    ...    action_test = [arg1, arg2, String(arg3)]; }
+    js> dijit.byId('ExampleForm.actions.register').onClick()
 
+    >>> import pprint
+    >>> pprint.pprint(JS('return action_test'))
+    [{u'ExampleForm': {u'actions': {u'register': u''}},
+      u'age': 23,
+      u'description': u'10ft tall\nRazor sharp scales.',
+      u'favorite_color': u'Blue',
+      u'first_name': u'Happy',
+      u'happy': [True],
+      u'last_name': u'Camper',
+      u'other': u"I've got a magic toenail",
+      u'pet': u'',
+      u'secret': u'5ecret sauce',
+      u'siblings': 1,
+      u'temperment': u'Right Neighborly',
+      u'weight': None},
+     {u'class': u'zc-action',
+      u'handler': u'register',
+      u'id': u'ExampleForm.actions.register',
+      u'label': u'Register',
+      u'name': u'ExampleForm.actions.register',
+      u'onClick': u'function () {...}',
+      u'tabIndex': 0},
+     u'[Widget dijit.form.Form, ExampleForm]']
 
+We should also confirm that validation is enforced when specified and that we
+can directly pass a function as our handler argument.
 
+    js> action_test = null;
 
+    js> definition.definition.actions[0].handler = register;
+    js> definition.definition.actions[0].validate = true;
 
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+    js> form = zc.dojo.build_form2(definition);
+    js> dojo.body().appendChild(form.domNode);
+    js> form.startup();
 
+We should not be valid because the weight field is empty, so the function will
+not be called.
 
+    js> dijit.byId('ExampleForm.actions.register').onClick()
 
+    >>> import pprint
+    >>> pprint.pprint(JS('return action_test'))
+    None
 
+If the form is valid it will work as expected.
 
+    js> dijit.byId('ExampleForm.weight').setValue(175);
 
+    js> dijit.byId('ExampleForm.actions.register').onClick()
 
+    >>> pprint.pprint(JS('return action_test'))
+    [{u'ExampleForm':...]
 
-
-
-.. Tear down borwser:
+.. Tear down browser:
 
     >>> browser.close()
 

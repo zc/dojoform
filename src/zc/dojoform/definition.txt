@@ -144,8 +144,8 @@ label (optional, defaults to name)
 hint (optional)
    field hint
 
-   This may be used to set to the title of the div enclosing the field and
-   may be used by specific widget inplementations to give the user
+   This may be used to set the title of the div enclosing the field and
+   may be used by specific widget implementations to give the user
    additional informationm.
 
 validate (boolean, defaults to false)
@@ -157,8 +157,8 @@ class (optional)
 handler (optional)
    handler function
 
-   This can be a function or the name of a function.
-   the global namespace.
+   This can be a function or the name of a function available in the global
+   namespace.
 
    When a button is clicked:
 

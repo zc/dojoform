@@ -1163,11 +1163,12 @@ zc.dojo.build_form = function (config, pnode, order, startup)
     if (bottom_pane) {
         dojo.forEach(config.definition.actions, function (action) {
             var button = new dijit.form.Button({
-                    label: action.label,
-                    id: action.name,
-                    onClick: action.onClick || fireSubmitEvent,
-                    type: 'button',
-                    tabIndex: order
+                    'label': action.label,
+                    'id': action.id,
+                    'class': action['class'],
+                    'onClick': action.onClick || fireSubmitEvent,
+                    'type': 'button',
+                    'tabIndex': order
                 });
             bottom_pane.domNode.appendChild(button.domNode);
         });
@@ -1516,16 +1517,28 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
             definition.actions, function (action) {
                 action = dojo.mixin(
                     {
-                        id: (prefix &&
+                        id: action.id || (prefix &&
                              action.name.slice(0, prefix.length) == prefix ?
                              action.name :
                              prefix+action.name
                             ),
-                        label: action.name,
+                        label: action.label || action.name,
                         tabIndex: order,
                         onClick: function () {
+                            if (action.validate) {
+                                if (!form.isValid()) {
+                                    return;
+                                }
+                            }
                             if (action.handler) {
-                                action.handler(form.getValues(), action, form);
+                                if (action.handler instanceof Object) {
+                                    action.handler(form.getValues(),
+                                        action, form);
+                                }
+                                else {
+                                    window[action.handler](form.getValues(),
+                                        action, form);
+                                }
                             }
                             if (definition.handler) {
                                 definition.handler(

@@ -200,14 +200,17 @@ class SeleniumLayer:
         os.kill(self.java.pid, signal.SIGTERM)
 
 def test_suite():
+    optionflags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
 
     selenium_suite = manuel.testing.TestSuite(
             manuel.doctest.Manuel(parser=zc.customdoctests.js.parser) +
             manuel.doctest.Manuel(parser=zc.customdoctests.js.eq_parser) +
-            manuel.doctest.Manuel() +
+            manuel.doctest.Manuel(optionflags=optionflags) +
             manuel.capture.Manuel(),
             'build_form2.test',
             'rangewidget.test',
+            'ckwidget.test',
+            'recordlistwidget.test',
             setUp=setUp)
     selenium_suite.layer = SeleniumLayer
     return selenium_suite
