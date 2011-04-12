@@ -157,12 +157,19 @@ def read_test_file(name):
     return r
 
 def setUp(test):
+    browser = selenium.webdriver.Firefox()
     test.globs.update(
         read_test_file = read_test_file,
         selenium = selenium,
         matches = matches,
         port = bobo_port,
+        browser = browser
         )
+    test.globs['JS'] = browser.execute_script
+
+
+def tearDown(test):
+    test.globs['browser'].close()
 
 
 bobo_resources_template = """
@@ -209,9 +216,9 @@ def test_suite():
             manuel.capture.Manuel(),
             'build_form2.test',
             'rangewidget.test',
-            'ckwidget.test',
+            #'ckwidget.test',
             'recordlistwidget.test',
-            setUp=setUp)
+            setUp=setUp, tearDown=tearDown)
     selenium_suite.layer = SeleniumLayer
     return selenium_suite
 

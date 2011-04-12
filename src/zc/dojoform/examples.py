@@ -16,6 +16,7 @@ template = """
             @import url("http://o.aolcdn.com/dojo/%(dojo)s/dojox/grid/enhanced/resources/%(theme)sEnhancedGrid.css");
         </style>
         <script type="text/javascript" src="http://o.aolcdn.com/dojo/%(dojo)s/dojo/dojo.xd.js"></script>
+        <script type="text/javascript" src="/@@/zc.dojoform/recordlist.js"></script>
         <script type="text/javascript" src="/@@/zc.dojoform/rangewidget.js"></script>
         <script type="text/javascript" src="/@@/zc.dojoform/zc.dojo.js"></script>
         <script type="text/javascript" src="/@@/zc.dojoform/%(name)s_example.js"></script>

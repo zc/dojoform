@@ -11,6 +11,10 @@ API:
 
    - Must define domNode
 
+   - Must define containerNode, which will almost always be the same as
+     domNode. dijit._Widget uses this node to find subwidgets to destroy
+     when calling destroyRecursive.
+
    - buildRendering() is where you build up your widget's dom.
 
    - reset() Reset widget values to initial settings

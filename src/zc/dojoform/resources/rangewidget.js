@@ -17,6 +17,7 @@ dojo.ready(
                     this.name = this.config.name;
                     this.id = this.config.id;
                     this.domNode = node || dojo.create('div');
+                    this.containerNode = this.domNode;
                     this.inherited(arguments);
                 },
 

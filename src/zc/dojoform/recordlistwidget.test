@@ -1,0 +1,192 @@
+Record List Widgets
+===================
+
+A record list is used when we expect to have a collection of items which
+all share a schema. We epxect the schema definition to be buildable
+using build_form2.
+
+    >>> browser.get('http://localhost:%s/test/blank.html' % port)
+
+    js> dojo.require('zc.dojo');
+
+::
+
+  definition = {
+          actions: [
+              {
+                  name: 'reset',
+                  handler: function (data, action, form) {
+                      form.reset();
+                  }
+              }
+          ],
+          widgets: [
+              {
+               "fieldHint": "All my wonderful homes",
+               "fieldLabel": "Addresses",
+               "id": "addresses",
+               "name": "addresses",
+               "required": true,
+               "widget_constructor": "zope.schema.List",
+               "record_schema": {
+                   "readonly": false,
+                   "widgets": [
+                      {
+                       "fieldHint": "The city",
+                       "fieldLabel": "City",
+                       "id": "city",
+                       "minLength": 0,
+                       "name": "city",
+                       "required": true,
+                       "widget_constructor": "zope.schema.TextLine"
+                      },
+                      {
+                       "allowBlank": false,
+                       "fieldHint": "The awesomeness on a scale of 1 to 10",
+                       "fieldLabel": "Awesomeness",
+                       "field_max": 10,
+                       "field_min": 1,
+                       "id": "awesomeness",
+                       "name": "awesomeness",
+                       "required": true,
+                       "widget_constructor": "zope.schema.Int"
+                      }
+                   ]
+               },
+               "value": [
+                   {
+                    "awesomeness": "9",
+                    "city": "fakeville",
+                    "street": "123 fake street"
+                   },
+                   {
+                    "awesomeness": "9001",
+                    "city": "falsetown",
+                    "street": "345 false street"
+                   }
+               ],
+        }]
+      };
+
+  form = zc.dojo.build_form2(definition, dojo.create('div', {}, dojo.body()));
+  form.startup();
+
+.. -> js
+
+    >>> JS(js)
+
+We can see that the generation of a record list widget creates many widgets
+to represent it and its available actions.
+
+    js> widget_names = [];
+    ... for (i in dijit.registry._hash) {
+    ...     widget_names.push(i);
+    ... }
+
+    >>> import pprint
+    >>> pprint.pprint(JS('return widget_names'))
+    [u'dijit_form_Form_0',
+     u'zc_RecordList_0',
+     u'dojox_grid_EnhancedGrid_0',
+     u'dojox_grid__RowSelector_1',
+     u'dojox_grid__View_1',
+     u'addresses.dojo.new.btn',
+     u'addresses.dojo.edit.btn',
+     u'addresses.dojo.delete.btn',
+     u'reset']
+    
+
+The data presented is an accurate representation of our input value with
+respect to the record schema. Note that the street values are not returned
+since they are not included in the schema.
+
+    js> widget = dijit.byId('zc_RecordList_0')
+
+    >>> pprint.pprint(JS("return widget._getValueAttr()"))
+    {u'addresses.awesomeness.0': u'9',
+     u'addresses.awesomeness.1': u'9001',
+     u'addresses.city.0': u'fakeville',
+     u'addresses.city.1': u'falsetown'}
+
+We can modify a record
+
+    js> widget._edit_record(widget.config.name, widget.grid, widget.grid.getItem(0), widget.order);
+    js> dijit.byId('addresses.awesomeness').setValue(10)
+    js> dijit.byId('addresses.dojo.save.btn').onClick() 
+
+    >>> pprint.pprint(JS("return dijit.byId('zc_RecordList_0')._getValueAttr()"
+    ...     ))
+    {u'addresses.awesomeness.0': u'10',
+     u'addresses.awesomeness.1': u'9001',
+     u'addresses.city.0': u'fakeville',
+     u'addresses.city.1': u'falsetown'}
+
+And add one
+
+    js> dijit.byId('addresses.dojo.new.btn').onClick()
+    js> dijit.byId('addresses.city').setValue('new city')
+    js> dijit.byId('addresses.awesomeness').setValue(1)
+    js> dijit.byId('addresses.dojo.save.btn').onClick()
+
+    >>> pprint.pprint(JS("return dijit.byId('zc_RecordList_0')._getValueAttr()"
+    ...     ))
+    {u'addresses.awesomeness.0': u'10',
+     u'addresses.awesomeness.1': u'9001',
+     u'addresses.awesomeness.2': u'1',
+     u'addresses.city.0': u'fakeville',
+     u'addresses.city.1': u'falsetown',
+     u'addresses.city.2': u'new city'}
+
+And delete one
+
+    js> widget.grid.selection.selected = [true]
+    js> dijit.byId('addresses.dojo.delete.btn').onClick()
+
+    >>> pprint.pprint(JS("return dijit.byId('zc_RecordList_0')._getValueAttr()"
+    ...     ))
+    {u'addresses.awesomeness.0': u'9001',
+     u'addresses.awesomeness.1': u'1',
+     u'addresses.city.0': u'falsetown',
+     u'addresses.city.1': u'new city'}
+
+If we reset the form our initial data is returned
+
+    js> dijit.byId('reset').onClick()
+
+    >>> pprint.pprint(JS("return dijit.byId('zc_RecordList_0')._getValueAttr()"
+    ...     ))
+    {u'addresses.awesomeness.0': u'9',
+     u'addresses.awesomeness.1': u'9001',
+     u'addresses.city.0': u'fakeville',
+     u'addresses.city.1': u'falsetown'}
+
+We can also conduct validity tests. Since the validity of this widget's data
+is handled on a per record basis it will always be valid.
+
+    js> return widget.isValid()
+    True
+
+    js> return widget.validate()
+
+We can focus on the widget, which will direct focus to the first available
+cell in the grid.
+
+    js> return widget.grid.focus.rowIndex
+    -1
+
+    js> widget.focus()
+
+    js> return widget.grid.focus.rowIndex
+    0
+
+We can assign an onChange function and it will fire when the underlying
+data of the widget is modified.
+
+    js> dojo.connect(widget, 'onChange', function (value) {
+    ...     result = value;
+    ... });
+    js> new_value = [{'awesomeness': '2', 'city': 'newest city'}]
+    js> widget.attr('value', new_value)
+
+    >>> pprint.pprint(JS("return result"))
+    [{u'awesomeness': u'2', u'city': u'newest city'}] 
