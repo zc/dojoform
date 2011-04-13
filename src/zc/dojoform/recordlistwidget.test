@@ -73,6 +73,9 @@ using build_form2.
 
 .. -> js
 
+    >>> while not browser.find_elements_by_tag_name('body'):
+    ...     continue
+
     >>> JS(js)
 
 We can see that the generation of a record list widget creates many widgets

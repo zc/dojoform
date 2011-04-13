@@ -32,13 +32,16 @@ To define a range widget, create a new zc.RangeWidget, passing
                       form.reset();
                   }
               }
-
           ]
       };
 
   form = zc.dojo.build_form2(definition, dojo.create('div', {}, dojo.body()));
+  form.startup();
 
 .. -> js
+
+   >>> while not browser.find_elements_by_tag_name('body'):
+   ...     continue
 
    >>> JS(js)
 
