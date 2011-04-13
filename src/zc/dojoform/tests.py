@@ -216,7 +216,7 @@ def test_suite():
             manuel.capture.Manuel(),
             'build_form2.test',
             'rangewidget.test',
-            #'ckwidget.test',
+            'ckwidget.test',
             'recordlistwidget.test',
             setUp=setUp, tearDown=tearDown)
     selenium_suite.layer = SeleniumLayer

@@ -31,7 +31,8 @@ dojo.ready(
                                 return unescape(data.thumbnail_tag);
                             }
                             else if (data.thumbnail_url) {
-                                return '<img src="' + unescape(data.thumbnail_url) + '" />';
+                                return '<img src="' + unescape(
+                                    data.thumbnail_url) + '" />';
                             }
                             else if (data.filename) {
                                 return data.filename;
@@ -103,7 +104,8 @@ dojo.ready(
                     return rec;
                 },
 
-                _build_record_form: function (widget_name, grid, order) {
+                _build_record_form: function (widget_name, order) {
+                    var grid = this.grid;
                     var layout = grid.structure[0].cells;
                     var edit_dlg = new dijit.Dialog({
                         title: 'Add/Modify Record',
@@ -111,13 +113,15 @@ dojo.ready(
                         doLayout: true
                     });
                     /* A dijit.Dialog widget will prevent keypress events from propagating if
-                     *        the event target isn't a child of its domNode.  We want to supress
-                     *               this behavior for CKEditor text inputs (e.g., for the "Link" and
-                     *                      "Anchor" popups).
-                     *                          */
+                     * the event target isn't a child of its domNode.  We want to supress
+                     * this behavior for CKEditor text inputs (e.g., for the "Link" and
+                     * "Anchor" popups).
+                     * */
                     edit_dlg._onKey = function (evt) {
-                        if (!dojo.hasClass(evt.target, 'cke_dialog_ui_input_text')) {
-                            return dijit.Dialog.prototype._onKey.call(edit_dlg, evt);
+                        if (!dojo.hasClass(evt.target,
+                            'cke_dialog_ui_input_text')) {
+                                return dijit.Dialog.prototype._onKey.call(
+                                    edit_dlg, evt);
                         }
                         return null;
                     };
@@ -136,7 +140,8 @@ dojo.ready(
                             var rc_wid = dojo.clone(fld.rc_wid);
                             rc_wid.tabIndex = order;
                             var widget_div = dojo.create(
-                                'div', {'class': 'widget', style: 'margin: 5px;'},
+                                'div', {'class': 'widget',
+                                        'style': 'margin: 5px;'},
                                 rec_form.domNode);
                             var label = dojo.create('label', {
                                 innerHTML:  (rc_wid.label || rc_wid.fieldLabel) + ': '
@@ -149,12 +154,15 @@ dojo.ready(
                             dojo.create('br', null, widget_div);
                             var wid = zc.dojo.widgets[rc_wid.widget_constructor](
                                 rc_wid,
-                                dojo.create('div', {style: 'height: auto;'}, widget_div),
+                                dojo.create('div', {style: 'height: auto;'
+                                }, widget_div),
                                 order);
                             edit_dlg.form_widgets.push(wid);
                         }
                     });
-                    var buttons_div = dojo.create('div', {style: 'text-align: right;'});
+                    var buttons_div = dojo.create('div', {
+                        style: 'text-align: right;'
+                    });
                     dojo.addClass(buttons_div, 'dijitDialogPaneActionBar');
 
                     widget = new dijit.form.Button({
@@ -165,8 +173,11 @@ dojo.ready(
                             if (!rec_form.validate()) {
                                 return;
                             }
-                            dojo.publish(zc.dojo.beforeRecordFormSubmittedTopic, [rec_form.id]); 
-                            var record_data = dojo.formToObject(rec_form.domNode);
+                            dojo.publish(
+                                zc.dojo.beforeRecordFormSubmittedTopic,
+                                [rec_form.id]); 
+                            var record_data = dojo.formToObject(
+                                rec_form.domNode);
                             if (! record_data.record_id) {
                                 var row = {name: '.' + grid.rowCount + 1};
                                 dojo.forEach(grid.structure[0].cells, function (fld) {
@@ -230,13 +241,14 @@ dojo.ready(
                     return edit_dlg;
                 },
 
-                _edit_record: function (widget_name, grid, row_value, order) {
+                _edit_record: function (widget_name, row_value, order) {
+                    var grid = this.grid;
                     if (dojo.version < '1.6') {
                         grid.select.clearDrugDivs();
                     }
                     if (!grid.edit_dlg) {
                         grid.edit_dlg = this._build_record_form(
-                            widget_name, grid, order);
+                            widget_name, order);
                     }
                     var form_values = {record_id: grid.store.getValue(row_value, 'name')};
                     dojo.forEach(grid.structure[0].cells, function (fld) {
@@ -314,7 +326,7 @@ dojo.ready(
                         dojo.connect(grid, 'onCellDblClick', function (e) {
                             grid.selection.select(e.rowIndex);
                             this._edit_record(
-                                this.config.name, grid, grid.selection.getSelected()[0], this.order);
+                                this.config.name, grid.selection.getSelected()[0], this.order);
                         });
                     }
                     if (!this.rc.readonly) {
@@ -325,7 +337,7 @@ dojo.ready(
                             onClick: dojo.hitch(this, function (evt) {
                                 if (!grid.edit_dlg) {
                                     grid.edit_dlg = this._build_record_form(
-                                        this.config.name, grid, this.order);
+                                        this.config.name, this.order);
                                 }
                                 grid.edit_dlg.reset();
                                 dojo.publish(zc.dojo.dialogFormResetTopic,
@@ -348,7 +360,7 @@ dojo.ready(
                                     return;
                                 }
                                 this._edit_record(
-                                    this.config.name, grid, row_values[0], this.order);
+                                    this.config.name, row_values[0], this.order);
                             })
                         }, dojo.create('div', null, this.domNode));
                         widget = new dijit.form.Button({

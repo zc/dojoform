@@ -135,7 +135,6 @@ dojo.ready(
                          );
                 },
 
-
                 // Note that the methods below are superfluous in
                 // forms, since dijit forms will call our subwidgets,
                 // but we've implemented them here for completeness

@@ -113,7 +113,7 @@ since they are not included in the schema.
 
 We can modify a record
 
-    js> widget._edit_record(widget.config.name, widget.grid, widget.grid.getItem(0), widget.order);
+    js> widget._edit_record(widget.config.name, widget.grid.getItem(0), widget.order);
     js> dijit.byId('addresses.awesomeness').setValue(10)
     js> dijit.byId('addresses.dojo.save.btn').onClick() 
 

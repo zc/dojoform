@@ -22,7 +22,9 @@ To define a range widget, create a new zc.RangeWidget, passing
               {
                   name: 'date_range',
                   widget_constructor: 'zc.ajaxform.widgets.DateRange',
-                  start: "2010-09-09", end: "2010-09-10"
+                  start: 'start_date',
+                  end: 'end_date',
+                  value: "{start_date: '2010-09-09', end_date: '2010-09-10'}"
               }
           ],
           actions: [
@@ -81,4 +83,47 @@ And make them valid again.
 We can get the value of the rangewidget, which will attainable as json and
 include values for the minimum and maximum values.
 
-XXX
+    js> int_widget = dijit.byId('zc_RangeWidget_0');
+    js> date_widget = dijit.byId('zc_RangeWidget_1');
+
+    >>> import pprint
+
+    >>> pprint.pprint(JS("return dojo.fromJson(int_widget.attr('value'))"))
+    {u'max': 10, u'min': 9}
+
+    >>> pprint.pprint(JS("return dojo.fromJson(date_widget.attr('value'))"))
+    {u'end_date': u'2010-12-11T00:00:00-05:00',
+     u'start_date': u'2010-11-10T00:00:00-05:00'}
+
+We can focus the rangewidget, which will focus on the first invalid field,
+defaulting to the first field.
+
+    js> int_widget.focus()
+    js> return int_widget.min_value._focused
+    True
+
+    js> date_widget.focus()
+    js> return date_widget.min_value._focused
+    True
+
+We can tests for validity
+
+    js> return int_widget.isValid()
+    True
+
+    js> return int_widget.validate()
+    True
+
+    js> return date_widget.validate()
+    True
+
+And we can reset the form, which will reset the value of our widgets
+
+    js> dijit.byId('reset').onClick()
+
+    >>> pprint.pprint(JS("return dojo.fromJson(int_widget.attr('value'))"))
+    {u'max': 9, u'min': 1}
+
+    >>> pprint.pprint(JS("return dojo.fromJson(date_widget.attr('value'))"))
+    {u'end_date': u'2010-09-10T00:00:00-04:00',
+     u'start_date': u'2010-09-09T00:00:00-04:00'}
