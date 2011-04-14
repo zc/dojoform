@@ -127,3 +127,7 @@ And we can reset the form, which will reset the value of our widgets
     >>> pprint.pprint(JS("return dojo.fromJson(date_widget.attr('value'))"))
     {u'end_date': u'2010-09-10T00:00:00-04:00',
      u'start_date': u'2010-09-09T00:00:00-04:00'}
+
+onChange
+
+XXX

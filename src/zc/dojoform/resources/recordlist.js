@@ -432,7 +432,9 @@ dojo.ready(
                     return store;
                 },
 
-                onChange: function () {},
+                onChange: function (value) {
+                    this.inherited(arguments);
+                },
 
                 _on_change: function () {
                     this.onChange(this.attr('value'));

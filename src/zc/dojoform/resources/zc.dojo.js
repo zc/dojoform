@@ -31,6 +31,7 @@ dojo.require("dojox.grid.enhanced.plugins.Menu");
 dojo.require("dojox.grid.enhanced.plugins.NestedSorting");
 dojo.require('zc.RangeWidget');
 dojo.require('zc.RecordList');
+dojo.require('zc.ckeditor');
 
 zc.dojo.widgets = {};
 
