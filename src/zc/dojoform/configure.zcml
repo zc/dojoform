@@ -9,7 +9,14 @@
   <resourceLibrary name="zc.dojoform">
     <directory
        source="resources"
-       include="recordlist.js rangewidget.js zc.dojo.js" 
+       include="ckwidget.js recordlist.js rangewidget.js zc.dojo.js" 
+       />
+  </resourceLibrary>
+
+  <resourceLibrary name="zc.ckeditor">
+    <directory
+       source="ckeditor/resources/ckeditor"
+       include="ckeditor.js"
        />
   </resourceLibrary>
 

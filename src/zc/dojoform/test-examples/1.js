@@ -21,7 +21,7 @@ definition = {
       "siblings": false,
       "temperment": false,
       "weight": false,
-        'story': true
+      "story": true
     },
     "prefix": "ExampleForm",
     "widgets": [

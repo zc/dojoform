@@ -128,6 +128,12 @@ And we can reset the form, which will reset the value of our widgets
     {u'end_date': u'2010-09-10T00:00:00-04:00',
      u'start_date': u'2010-09-09T00:00:00-04:00'}
 
-onChange
+We can connect to the onChange event as well
 
-XXX
+    js> dojo.connect(int_widget, 'onChange', function (value) {
+    ...     result = value;
+    ... });
+    js> int_widget.set('value', {'min': 1, 'max':2})
+
+    >>> pprint.pprint(JS("return result"))
+    u'{"min":1,"max":2}'

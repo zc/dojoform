@@ -763,9 +763,9 @@ zc.dojo.build_form = function (config, pnode, order, startup)
         dojo.forEach(config.definition.actions, function (action) {
             var button = new dijit.form.Button({
                     'label': action.label,
-                    'id': action.id,
+                    'id': action.name,
                     'class': action['class'],
-                    'onClick': action.onClick || fireSubmitEvent,
+                    'onClick': fireSubmitEvent,
                     'type': 'button',
                     'tabIndex': order
                 });

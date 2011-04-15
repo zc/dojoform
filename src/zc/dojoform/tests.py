@@ -27,6 +27,7 @@ import subprocess
 import threading
 import unittest
 import wsgiref.simple_server
+import zc.dojoform.testing
 import zc.customdoctests.js
 
 from zope.testing import doctest
@@ -150,16 +151,11 @@ def matches_(observed, expected):
                         'text nodes differ %r != %r' % (e, o),
                         expected, observed)
 
-def read_test_file(name):
-    f = open(os.path.join(here, 'test-examples', name))
-    r = f.read()
-    f.close()
-    return r
 
 def setUp(test):
     browser = selenium.webdriver.Firefox()
     test.globs.update(
-        read_test_file = read_test_file,
+        read_test_file = zc.dojoform.testing.read_test_file,
         selenium = selenium,
         matches = matches,
         port = bobo_port,
@@ -176,6 +172,7 @@ bobo_resources_template = """
 boboserver:static('/test', %r)
 boboserver:static('/dojoform', %r)
 boboserver:static('/dojo', %r)
+zc.dojoform.testing
 """
 
 bobo_port = None
@@ -214,6 +211,7 @@ def test_suite():
             manuel.doctest.Manuel(parser=zc.customdoctests.js.eq_parser) +
             manuel.doctest.Manuel(optionflags=optionflags) +
             manuel.capture.Manuel(),
+            'build_form.test',
             'build_form2.test',
             'rangewidget.test',
             'ckwidget.test',

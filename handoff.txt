@@ -92,9 +92,6 @@ Status and challenges
 Summary/Tasks for first iteration
 =================================
 
-- Make proper dijit form widget implementation for the ckeditor with
-  tests. See docy comment above.
-
 - Rewrite old tests.
 
 - Make an internal release.

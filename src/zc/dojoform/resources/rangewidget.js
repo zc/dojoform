@@ -72,7 +72,6 @@ dojo.ready(
                 },
 
                 onChange: function (value) {
-                    this.value_input.value = value;
                     this.inherited(arguments);
                 },
 
@@ -103,7 +102,9 @@ dojo.ready(
 
                 _values_from: function (value) {
                     if (value) {
-                        value = dojo.fromJson(value);
+                        if (!(value instanceof Object)) {
+                            value = dojo.fromJson(value);
+                        }
                         if (this.convert_from) {
                             value[this.config.start] =
                                 this.convert_from(value[this.config.start]);
