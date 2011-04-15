@@ -71,11 +71,13 @@ We can also try to submit the form.
     js> dijit.byId('ExampleForm.actions.register').onClick()
 
     >>> attempt = 0
+    >>> import time
     >>> while 1 and attempt < 5:
     ...     try:
     ...         browser.find_element_by_id('dijit_form_Button_0')
     ...     except:
     ...         attempt += 1
+    ...         time.sleep(0.1)
     ...         continue
     ...     else:
     ...         break

@@ -387,20 +387,31 @@ dojo.ready(
                     };
 
                     this.domNode.postStartup = this.startup;
+                    this.input_value = dojo.create('input', {
+                        type: 'hidden',
+                    }, this.domNode);
+                    this.input_parent = dojo.create('div', null, this.domNode);
+                    dojo.connect(this.grid, 'startup', dojo.hitch(this, function () {
+                        this._set_inputs(this.get('value'));
+                    }));
                 },
 
                 _getValueAttr: function () {
-                    var i, k;
+                    var i = 0;
                     var content = {};
-                    var add_to_content = dojo.hitch(this, function (def) {
-                        var name = this.config.name + '.' + def.name;
-                        content[name + '.' + i] = rec[name][0];
-                    });
-                    for (i=0; i < this.grid.rowCount; i++) {
-                        var rec = this.grid.getItem(i);
-                        dojo.forEach(this.rc.widgets, add_to_content);
-                    }
-                    return content
+                    dojo.forEach(this.grid.store._arrayOfAllItems,
+                        dojo.hitch(this, function (item) {
+                            if (item === null) { return } 
+                            dojo.forEach(this.rc.widgets, dojo.hitch(this,
+                                function (def) {
+                                    var name = this.config.name + '.' + def.name;
+                                    if (item[name] !== undefined) {
+                                        content[name + '.' + i] = item[name][0];
+                                    }
+                            }))
+                            i++;
+                    }))
+                    return dojo.toJson(content)
                 },
 
                 _values_from: function (value) {
@@ -432,7 +443,21 @@ dojo.ready(
                     return store;
                 },
 
+                _set_inputs: function (value) {
+                    this.input_value.value = value;
+                    this.input_parent.innerHTML = '';
+                    var values = dojo.fromJson(value);
+                    for (name in values) {
+                        dojo.create('input', {
+                            type: 'hidden',
+                            name: name,
+                            value: values[name]
+                        }, this.input_parent);
+                    }
+                },
+
                 onChange: function (value) {
+                    this._set_inputs(value);
                     this.inherited(arguments);
                 },
 
@@ -442,7 +467,7 @@ dojo.ready(
 
                 _setValueAttr: function (value) {
                     this.grid.setStore(this._store_from_data(value));
-                    this.onChange(value);
+                    this.onChange(this.get('value'));
                 },
 
                 isValid: function () {

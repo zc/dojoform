@@ -238,12 +238,7 @@ We'll need to define a function for the handler we provided to the action.
     >>> import pprint
     >>> pprint.pprint(JS('return action_test'))
     [{u'ExampleForm': {u'actions': {u'register': u''}},
-      u'addresses': {u'addresses.awesomeness.0': u'9',
-                     u'addresses.awesomeness.1': u'9001',
-                     u'addresses.city.0': u'fakeville',
-                     u'addresses.city.1': u'falsetown',
-                     u'addresses.street.0': u'123 fake street',
-                     u'addresses.street.1': u'345 false street'},
+      u'addresses': u'{"addresses.street.0":"123 fake street","addresses.city.0":"fakeville","addresses.awesomeness.0":"9","addresses.street.1":"345 false street","addresses.city.1":"falsetown","addresses.awesomeness.1":"9001"}',
       u'age': 23,
       u'description': u'10ft tall\nRazor sharp scales.',
       u'favorite_color': u'Blue',

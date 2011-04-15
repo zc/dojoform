@@ -92,8 +92,8 @@ include values for the minimum and maximum values.
     {u'max': 10, u'min': 9}
 
     >>> pprint.pprint(JS("return dojo.fromJson(date_widget.attr('value'))"))
-    {u'end_date': u'2010-12-11T00:00:00-05:00',
-     u'start_date': u'2010-11-10T00:00:00-05:00'}
+    {u'end_date': u'2010-12-11',
+     u'start_date': u'2010-11-10'}
 
 We can focus the rangewidget, which will focus on the first invalid field,
 defaulting to the first field.
@@ -125,8 +125,8 @@ And we can reset the form, which will reset the value of our widgets
     {u'max': 9, u'min': 1}
 
     >>> pprint.pprint(JS("return dojo.fromJson(date_widget.attr('value'))"))
-    {u'end_date': u'2010-09-10T00:00:00-04:00',
-     u'start_date': u'2010-09-09T00:00:00-04:00'}
+    {u'end_date': u'2010-09-10',
+     u'start_date': u'2010-09-09'}
 
 We can connect to the onChange event as well
 

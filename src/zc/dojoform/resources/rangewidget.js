@@ -72,6 +72,7 @@ dojo.ready(
                 },
 
                 onChange: function (value) {
+                    this.value_input.value = value;
                     this.inherited(arguments);
                 },
 
@@ -85,8 +86,14 @@ dojo.ready(
                 _getValueAttr: function () {
                     var value = {};
                     var min = this.min_value.get('value');
-                    value[this.config.start] = this.min_value.value;
-                    value[this.config.end] = this.max_value.value;
+                    value[this.config.start] = this.min_value.getValue();
+                    if (isNaN(value[this.config.start])) {
+                        value[this.config.start] = null;
+                    }
+                    value[this.config.end] = this.max_value.getValue();
+                    if (isNaN(value[this.config.end])) {
+                        value[this.config.end] = null;
+                    }
                     if (this.convert_to) {
                         if (value[this.config.start] != null) {
                             value[this.config.start] =

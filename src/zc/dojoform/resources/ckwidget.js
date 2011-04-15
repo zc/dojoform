@@ -48,9 +48,9 @@ dojo.ready(
                         ckeditorConfig.customConfig = ckeditorCustomConfig;
                     }
                     this.ckeditor = CKEDITOR.replace(textarea, ckeditorConfig);
-                    var handler = function () {
+                    var handler = dojo.hitch(this, function () {
                         textarea.value = this.ckeditor.getData();
-                    };
+                    });
                     window.addEventListener('beforeSubmit', handler, true);
                     zc.dojo.GLOBAL_HANDLERS.push(handler);
                     dojo.subscribe(zc.dojo.recordFormSubmittedTopic, handler);
@@ -104,7 +104,10 @@ dojo.ready(
                 },
 
         })
-        zc.dojo.widgets['zc.dojoform.ckeditor.CKEditor'] = zc.ckeditor;
+        zc.dojo.widgets['zc.dojoform.ckeditor.CKEditor'] = function (config,
+            node, order) {
+                return zc.ckeditor(config, node, order).domNode;
+        }
 
         dojo.subscribe(
             zc.dojo.beforeRecordFormSubmittedTopic, function(frm_id) {

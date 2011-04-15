@@ -347,16 +347,16 @@ zc.dojo.RangeConversion = function (v) {
     return v;
 };
 
-// zc.dojo.DateConversion = function (v) {
+zc.dojo.DateConversion = function (v) {
 
-//     if (typeof v == 'string') {
-//         v = dojo.date.stamp.fromISOString(value);
-//     }
-//     else if (v) {
-//         v = dojo.date.stamp.toISOString(value);
-//     }
-//     return v;
-// }
+    if (typeof v == 'string') {
+        v = dojo.date.stamp.fromISOString(v);
+    }
+    else if (v) {
+        v = dojo.date.stamp.toISOString(v).split('T')[0];
+    }
+    return v;
+}
 
 zc.dojo.widgets['zc.ajaxform.widgets.DateRange'] =
     function (config, node, order) {
@@ -368,8 +368,8 @@ zc.dojo.widgets['zc.ajaxform.widgets.DateRange'] =
             {
                 config: wconfig,
                 dijit_type: dijit.form.DateTextBox,
-                convert_from: dojo.date.stamp.fromISOString,
-                convert_to: dojo.date.stamp.toISOString
+                convert_from: zc.dojo.DateConversion,
+                convert_to: zc.dojo.DateConversion
             }, node).domNode;
 };
 
@@ -784,16 +784,18 @@ zc.dojo.build_form = function (config, pnode, order, startup)
     return node;
 };
 
-zc.dojo.Form = dojo.declare(
-    dijit.form.Form, {
-        startup : function () {
-            this.inherited(arguments);
-            this.getChildren().forEach(
-                function (node) {
-                    node.startup();
-                });
-        }
-    });
+dojo.ready( function () {
+    zc.dojo.Form = dojo.declare(
+        dijit.form.Form, {
+            startup : function () {
+                this.inherited(arguments);
+                this.getChildren().forEach(
+                    function (node) {
+                        node.startup();
+                    });
+            }
+        });
+});
 
 zc.dojo.build_form2 = function (config, pnode, order, startup)
 {
