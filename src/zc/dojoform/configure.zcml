@@ -9,7 +9,7 @@
   <resourceLibrary name="zc.dojoform">
     <directory
        source="resources"
-       include="ckwidget.js recordlist.js rangewidget.js zc.dojo.js" 
+       include="ckwidget.js rangewidget.js zc.dojo.js" 
        />
   </resourceLibrary>
 
