@@ -25,20 +25,17 @@ from the server. This will also test our ajax wrappers:
         var actionify_buttons = function (config, success_handler) {
             dojo.forEach(config.definition.actions, function (action) {
                 dojo.connect(dijit.byId(action.name), 'onClick', function () {
-                    console.log('clicked');
                     if (action.name == 'ExampleForm.actions.validate') {
                         if (!dijit.byId(config.definition.prefix).validate()) {
                             return;
                         }
                     }
-                    console.log('sending');
                     zc.dojo.submit_form({
                     url: action.url,
                     form_id: config.definition.prefix,
                     task: 'Submitting Form',
                     success: success_handler
                     });
-                    console.log('sent');
                 });
             });
         };
@@ -47,8 +44,10 @@ from the server. This will also test our ajax wrappers:
             zc.dojo.build_form(form_data, dojo.create('div', {}, dojo.body()));
             actionify_buttons(form_data, success_handler);
             dijit.byId(form_data.definition.prefix).startup();
+            ready = true;
         };
 
+        ready = false;
         zc.dojo.call_server({
             url: '/get_form',
             task: 'Loading Form',
@@ -59,7 +58,7 @@ from the server. This will also test our ajax wrappers:
 
     >>> JS(js)
 
-    >>> while not browser.find_elements_by_tag_name('form'):
+    >>> while not JS('return ready'):
     ...     continue
 
 We will confirm the form rendered as expected:

@@ -1,36 +1,15 @@
 /*global dijit, dojo, dojox, zc, escape, unescape */
 
 dojo.provide('zc.dojo');
+dojo.provide('zc.RangeWidget');
 dojo.provide('zc.RecordList');
 
-zc.dojo.widgets = {};
-
 dojo.require('dijit.Dialog');
-dojo.require('dijit.Editor');
-dojo.require('dijit.form.Button');
-dojo.require('dijit.form.CheckBox');
-dojo.require('dijit.form.ComboBox');
-dojo.require('dijit.form.FilteringSelect');
 dojo.require('dijit.form.Form');
-dojo.require('dijit.form.NumberSpinner');
-dojo.require('dijit.form.NumberTextBox');
-dojo.require('dijit.form.SimpleTextarea');
-dojo.require('dijit.form.TextBox');
-dojo.require('dijit.form.ValidationTextBox');
+dojo.require('dijit.form.Button');
 dojo.require('dijit.layout.BorderContainer');
 dojo.require('dijit.layout.ContentPane');
 dojo.require('dijit._Widget');
-dojo.require('dojo.data.ItemFileReadStore');
-dojo.require('dojo.data.ItemFileWriteStore');
-dojo.require('dojo.date.stamp');
-dojo.require("dojox.grid.cells.dijit");
-dojo.require("dojox.grid.DataGrid");
-dojo.require("dojox.grid.EnhancedGrid");
-dojo.require("dojox.grid.enhanced.plugins.DnD");
-dojo.require("dojox.grid.enhanced.plugins.IndirectSelection");
-dojo.require("dojox.grid.enhanced.plugins.Menu");
-dojo.require("dojox.grid.enhanced.plugins.NestedSorting");
-dojo.require('zc.RangeWidget');
 dojo.require('zc.ckeditor');
 
 zc.dojo.widgets = {};
@@ -247,6 +226,7 @@ zc.dojo.call_server = function (args) {
 zc.dojo.submit_form = zc.dojo.call_server;
 
 zc.dojo.widgets['zope.schema.TextLine'] = function (config, node, order) {
+    dojo.require('dijit.form.ValidationTextBox');
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
     if (config.max_size !== undefined)
@@ -273,6 +253,7 @@ zc.dojo._update = function(a, b) {
 };
 
 zc.dojo.widgets['zope.schema.Password'] = function (config, node, order) {
+    dojo.require('dijit.form.ValidationTextBox');
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
     wconfig.type = "password";
@@ -293,6 +274,7 @@ zc.dojo.widgets['zope.schema.Password'] = function (config, node, order) {
 
 zc.dojo.widgets['zope.schema.Text'] = function (
     config, node, order, _, nostyle) {
+    dojo.require('dijit.form.SimpleTextarea');
     var wconfig = zc.dojo.parse_config(config, order);
     if (! nostyle) wconfig.style = 'width:auto';
     return new dijit.form.SimpleTextarea(wconfig, node).domNode;
@@ -300,6 +282,7 @@ zc.dojo.widgets['zope.schema.Text'] = function (
 
 zc.dojo.widgets['zc.ajaxform.widgets.RichText'] =
     function (config, node, order) {
+    dojo.require('dijit.Editor');
 
     var wconfig = zc.dojo.parse_config(config, order);
     var total_editor = dojo.create('div', {}, node);
@@ -331,6 +314,7 @@ zc.dojo.widgets['zc.ajaxform.widgets.RichText'] =
 };
 
 zc.dojo.widgets['zc.ajaxform.widgets.Hidden'] = function (config, node, order) {
+    dojo.require('dijit.form.TextBox');
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
     wconfig.type = 'hidden';
@@ -360,6 +344,8 @@ zc.dojo.DateConversion = function (v) {
 
 zc.dojo.widgets['zc.ajaxform.widgets.DateRange'] =
     function (config, node, order) {
+        dojo.require('dijit.form.DateTextBox');
+        dojo.require('dojo.date.stamp');
         var wconfig;
         wconfig = zc.dojo.parse_range_config(config, order);
         wconfig.start_label = 'Start';
@@ -375,6 +361,7 @@ zc.dojo.widgets['zc.ajaxform.widgets.DateRange'] =
 
 zc.dojo.widgets['zc.ajaxform.widgets.IntRange'] =
     function (config, node, order) {
+    dojo.require('dijit.form.NumberTextBox');
     var wconfig;
     wconfig = zc.dojo.parse_range_config(config, order);
     wconfig.start_label = 'Min';
@@ -408,6 +395,7 @@ zc.dojo.parse_range_config = function (config, order) {
 };
 
 zc.dojo.widgets['zope.schema.Int'] = function (config, node, order) {
+    dojo.require('dijit.form.NumberTextBox');
     var wconfig;
     wconfig = zc.dojo.parse_number_config(config, order);
     wconfig.constraints.places = 0;
@@ -416,18 +404,21 @@ zc.dojo.widgets['zope.schema.Int'] = function (config, node, order) {
 
 zc.dojo.widgets['zc.ajaxform.widgets.NumberSpinner'] = function (
     config, node, order) {
+    dojo.require('dijit.form.NumberSpinner');
     var wconfig;
     wconfig = zc.dojo.parse_number_config(config, order);
     return new dijit.form.NumberSpinner(wconfig, node).domNode;
 };
 
 zc.dojo.widgets['zope.schema.Decimal'] = function (config, node, order) {
+    dojo.require('dijit.form.NumberTextBox');
     var wconfig;
     wconfig = zc.dojo.parse_number_config(config, order);
     return new dijit.form.NumberTextBox(wconfig, node).domNode;
 };
 
 zc.dojo.widgets['zope.schema.Bool'] = function (config, node, order) {
+    dojo.require('dijit.form.CheckBox');
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
     wconfig.checked = config.value;
@@ -443,6 +434,7 @@ zc.dojo.widgets['zope.schema.Bool'] = function (config, node, order) {
 
 zc.dojo.widgets['zc.ajaxform.widgets.BasicDisplay'] =
     function (config, node, order) {
+    dojo.require('dijit.form.TextBox');
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
     wconfig.readOnly = true;
@@ -475,6 +467,7 @@ zc.dojo.widgets['zc.ajaxform.widgets.RangeDisplay'] = function (
 
 zc.dojo.widgets['zc.ajaxform.widgets.BoolDisplay'] = function (
     config, node, order) {
+    dojo.require('dijit.form.CheckBox');
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
     wconfig.checked = config.value;
@@ -501,25 +494,27 @@ zc.dojo.widgets['zc.ajaxform.widgets.RichTextDisplay'] = function (
 };
 
 zc.dojo.widgets['zope.schema.Date'] = function (config, node, order) {
-        var wconfig;
-        wconfig = zc.dojo.parse_config(config, order);
-        wconfig.value = dojo.date.stamp.fromISOString(wconfig.value);
-        var widget = new dijit.form.DateTextBox(wconfig, dojo.create('div'));
-        return widget.domNode;
+    dojo.require('dijit.form.DateTextBox');
+    var wconfig;
+    wconfig = zc.dojo.parse_config(config, order);
+    wconfig.value = dojo.date.stamp.fromISOString(wconfig.value);
+    var widget = new dijit.form.DateTextBox(wconfig, dojo.create('div'));
+    return widget.domNode;
 };
 
 zc.dojo.widgets['zope.schema.Time'] = function (config, node, order) {
-        var wconfig;
-        wconfig = zc.dojo.parse_config(config, order);
-        if (wconfig.value) {
-            var ts = wconfig.value;
-            if (ts[0] != 'T') {
-                ts = 'T' + ts;
-            }
-            wconfig.value = dojo.date.stamp.fromISOString(ts);
+    dojo.require('dijit.form.TimeTextBox');
+    var wconfig;
+    wconfig = zc.dojo.parse_config(config, order);
+    if (wconfig.value) {
+        var ts = wconfig.value;
+        if (ts[0] != 'T') {
+            ts = 'T' + ts;
         }
-        var widget = new dijit.form.TimeTextBox(wconfig, dojo.create('div'));
-        return widget.domNode;
+        wconfig.value = dojo.date.stamp.fromISOString(ts);
+    }
+    var widget = new dijit.form.TimeTextBox(wconfig, dojo.create('div'));
+    return widget.domNode;
 };
 
 zc.dojo._choiceConfig = function (config, node, order) {
@@ -545,18 +540,23 @@ zc.dojo._choiceConfig = function (config, node, order) {
 };
 
 zc.dojo.widgets['zope.schema.Choice'] = function (config, node, order) {
+    dojo.require('dojo.data.ItemFileReadStore');
+    dojo.require('dijit.form.FilteringSelect');
     var wconfig = zc.dojo._choiceConfig(config, node, order);
     return new dijit.form.FilteringSelect(wconfig, node).domNode;
 };
 
 zc.dojo.widgets['zc.ajaxform.widgets.ComboBox'] = function (
     config, node, order) {
+    dojo.require('dojo.data.ItemFileReadStore');
+    dojo.require('dijit.form.ComboBox');
     var wconfig = zc.dojo._choiceConfig(config, node, order);
     return new dijit.form.ComboBox(wconfig, node).domNode;
 };
 
 zc.dojo.widgets['zope.schema.Object'] = function (
     config, pnode, order, widgets) {
+    dojo.require('dijit.form.CheckBox');
     var node = new dijit.layout.BorderContainer({
         design: "headline", gutters: true
     });
@@ -1209,6 +1209,13 @@ dojo.ready(
             "zc.RecordList", [dijit._Widget], {
 
                 constructor: function (jsonData, node) {
+                    dojo.require('dojo.data.ItemFileWriteStore');
+                    dojo.require("dojox.grid.cells.dijit");
+                    dojo.require("dojox.grid.EnhancedGrid");
+                    dojo.require("dojox.grid.enhanced.plugins.DnD");
+                    dojo.require("dojox.grid.enhanced.plugins.IndirectSelection");
+                    dojo.require("dojox.grid.enhanced.plugins.Menu");
+                    dojo.require("dojox.grid.enhanced.plugins.NestedSorting");
                     this.config = jsonData.config;
                     this.rc = this.config.record_schema;
                     this.rc.name = this.config.name;
@@ -1313,10 +1320,10 @@ dojo.ready(
                         doLayout: true
                     });
                     /* A dijit.Dialog widget will prevent keypress events from propagating if
- *                      * the event target isn't a child of its domNode.  We want to supress
- *                                           * this behavior for CKEditor text inputs (e.g., for the "Link" and
- *                                                                * "Anchor" popups).
- *                                                                                     * */
+                     * the event target isn't a child of its domNode.  We want to supress
+                     * this behavior for CKEditor text inputs (e.g., for the "Link" and
+                     * "Anchor" popups).
+                     * */
                     edit_dlg._onKey = function (evt) {
                         if (!dojo.hasClass(evt.target,
                             'cke_dialog_ui_input_text')) {
@@ -1683,6 +1690,172 @@ dojo.ready(
 
                 focus: function () {
                     this.grid.focus.findAndFocusGridCell();
+                }
+
+            });
+
+        dojo.declare(
+            "zc.RangeWidget", [dijit._Widget], {
+
+                constructor: function (jsonData, node) {
+                    this.config = jsonData.config;
+                    this.dijit_type = jsonData.dijit_type;
+                    this.convert_to = jsonData.convert_to;
+                    this.convert_from = jsonData.convert_from;
+                    this.constraints = this.config.constraints;
+                    this.name = this.config.name;
+                    this.id = this.config.id;
+                    this.domNode = node || dojo.create('div');
+                    this.containerNode = this.domNode;
+                    this.inherited(arguments);
+                },
+
+                buildRendering: function () {
+                    var min_constraint = {};
+                    if (this.constraints.min !== undefined) {
+                        min_constraint.min = this.constraints.min;
+                    }
+
+                    var max_constraint = {};
+                    if (this.constraints.max !== undefined) {
+                        max_constraint.max = this.constraints.max;
+                    }
+                    var value = this._values_from(this.config.value);
+
+                    dojo.create(
+                        'label', {
+                            'innerHTML': this.config.start_label
+                        }, dojo.create('div', {}, this.domNode));
+                    this.min_value = new this.dijit_type(
+                        {
+                            constraints: min_constraint,
+                            value: value[this.config.start],
+                            onChange: dojo.hitch(
+                                this, function (value) {
+                                    this.max_value.constraints.min = value;
+                                    this.onChange(this.get('value'));
+                                })
+                        }, dojo.create('div', {}, this.domNode));
+                    dojo.create('label', {
+                                    'innerHTML': this.config.end_label
+                                }, dojo.create('div', {}, this.domNode));
+                    this.max_value = new this.dijit_type(
+                        {
+                            constraints: max_constraint,
+                            value: value[this.config.end],
+                            onChange: dojo.hitch(
+                                this, function (value) {
+                                    this.min_value.constraints.max = value;
+                                    this.onChange(this.get('value'));
+                                })
+                        }, dojo.create('div', {}, this.domNode));
+
+                    this.value_input = dojo.create(
+                        'input',
+                        {
+                            type: 'hidden',
+                            name: this.name,
+                            value: this.get('value')
+                        },
+                        this.domNode);
+                },
+
+                onChange: function (value) {
+                    this.value_input.value = value;
+                    this.inherited(arguments);
+                },
+
+                conversion: function (v) {
+                    if (v == '') {
+                        v = null;
+                    }
+                    return v;
+                },
+
+                _getValueAttr: function () {
+                    var value = {};
+                    var min = this.min_value.get('value');
+                    value[this.config.start] = this.min_value.getValue();
+                    if (isNaN(value[this.config.start])) {
+                        value[this.config.start] = null;
+                    }
+                    value[this.config.end] = this.max_value.getValue();
+                    if (isNaN(value[this.config.end])) {
+                        value[this.config.end] = null;
+                    }
+                    if (this.convert_to) {
+                        if (value[this.config.start] != null) {
+                            value[this.config.start] =
+                                this.convert_to(value[this.config.start]);
+                        }
+                        if (value[this.config.end] != null) {
+                            value[this.config.end] =
+                                this.convert_to(value[this.config.end]);
+                        }
+                    }
+                    return dojo.toJson(value);
+                },
+
+                _values_from: function (value) {
+                    if (value) {
+                        if (!(value instanceof Object)) {
+                            value = dojo.fromJson(value);
+                        }
+                        if (this.convert_from) {
+                            value[this.config.start] =
+                                this.convert_from(value[this.config.start]);
+                            value[this.config.end] =
+                                this.convert_from(value[this.config.end]);
+                        }
+                    }
+                    else {
+                        value = {};
+                        value[this.config.start] = null;
+                        value[this.config.end] = null;
+                    }
+                    return value;
+                },
+
+                _setValueAttr: function (value) {
+                    value = this._values_from(value);
+                    this.min_value.set('value', value[this.config.start]);
+                    this.max_value.set('value', value[this.config.end]);
+                },
+
+                isValid: function () {
+                    return this.min_value.isValid() &&
+                        this.max_value.isValid() &&
+                        (this.min_value.get('value') == null ||
+                         this.max_value.get('value') == null ||
+                         (this.max_value.get('value') >
+                          this.min_value.get('value'))
+                         );
+                },
+
+                validate: function () {
+                    return this.min_value.validate() &&
+                        this.max_value.validate() &&
+                        (this.min_value.get('value') == null ||
+                         this.max_value.get('value') == null ||
+                         (this.max_value.get('value') >
+                          this.min_value.get('value'))
+                         );
+                },
+
+                reset: function () {
+                  this.set('value', this.original);
+                },
+
+                focus: function () {
+                    if (! this.min_value.isValid()) {
+                        this.min_value.focus();
+                    }
+                    else if (! this.max_value.isValid()) {
+                        this.max_value.focus();
+                    }
+                    else {
+                        this.min_value.focus();
+                    }
                 }
 
             });
