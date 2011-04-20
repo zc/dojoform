@@ -222,7 +222,7 @@ Actions handlers
 Typically, buttons have actions that users click on to submit or
 cancel forms.
 
-When you define forms, you can define handlers through actions. 
+When you define forms, you can define handlers through actions.
 
     >>> JS(read_test_file('1.js'))
     js> form = zc.dojo.build_form2(definition);
