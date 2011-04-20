@@ -24,7 +24,7 @@ groups (optional)
 handler (optional)
    handler function to call when the form is submitted
 
-   This can be a function or the name of a function.
+   This can be a function or the (possibly dotted) name of a function.
 
    See the section on actions for more information on the form handler.
 
@@ -157,8 +157,8 @@ class (optional)
 handler (optional)
    handler function
 
-   This can be a function or the name of a function available in the global
-   namespace.
+   This can be a function or the (possibly dotted) name of a function
+   available (starting) in the global namespace.
 
    When a button is clicked:
 
