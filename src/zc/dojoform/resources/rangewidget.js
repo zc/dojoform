@@ -41,8 +41,12 @@ dojo.ready(function () {
                 constraints: min_constraint,
                 value: this.value[this.config.start],
                 onChange: dojo.hitch(this, function (value) {
-                    this.value_input.value = this.getValue();
-                    this.max_value.constraints.min = value;
+                    console.log(value);
+                    if (value || value === 0) {
+                        this.value_input.value = this.getValue();
+                        this.max_value.constraints.min = value;
+                        this.max_value.validate();
+                    }
                 })
             }, dojo.create('div', {}, this.domNode));
             dojo.create('label', {
@@ -52,8 +56,12 @@ dojo.ready(function () {
                 constraints: max_constraint,
                 value: this.value[this.config.end],
                 onChange: dojo.hitch(this, function (value) {
-                    this.value_input.value = this.getValue();
-                    this.min_value.constraints.max = value;
+                    console.log(value);
+                    if (value || value === 0) {
+                        this.value_input.value = this.getValue();
+                        this.min_value.constraints.max = value;
+                        this.min_value.validate();
+                    }
                 })
             }, dojo.create('div', {}, this.domNode));
             this.value_input = dojo.create('input', {

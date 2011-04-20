@@ -13,6 +13,7 @@ dojo.require('dijit.form.SimpleTextarea');
 dojo.require('dijit.Editor');
 dojo.require('dijit.layout.BorderContainer');
 dojo.require('dijit.layout.ContentPane');
+dojo.require('dijit.form.NumberSpinner');
 dojo.require('dijit.form.NumberTextBox');
 dojo.require('dijit.Dialog');
 dojo.require('dojo.data.ItemFileReadStore');
@@ -400,7 +401,7 @@ zc.dojo.widgets['zc.ajaxform.widgets.IntRange'] = function (config, node, order)
     }
     return new zc.RangeWidget({
         config: wconfig,
-        dijit_type: dijit.form.NumberTextBox,
+        dijit_type: config.spinner ? dijit.form.NumberSpinner : dijit.form.NumberTextBox,
         conversion: function (int_ob) {
             if (!int_ob) {
                 return null;
