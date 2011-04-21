@@ -667,7 +667,7 @@ zc.dojo.build_form = function (config, pnode, order, startup)
     if (have_left_fields) {
         left_pane = new dijit.layout.ContentPane({
                     region: 'left',
-                    style: 'width: 60%',
+                    style: 'width: 60%;',
                     splitter: true
         });
         right_pane.style.width = '40%';
@@ -720,10 +720,11 @@ zc.dojo.build_form = function (config, pnode, order, startup)
             }
             dojo.create('br', null, cp.domNode);
         }
+        var wid_domnode = dojo.create('div');
+        cp.domNode.appendChild(wid_domnode);
         var wid = zc.dojo.widgets[widget.widget_constructor](
-            widget, dojo.create('div'), order, widgets
+            widget, wid_domnode, order, widgets
         );
-        cp.domNode.appendChild(wid);
         widgets.push(wid);
     });
 
