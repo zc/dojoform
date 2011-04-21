@@ -20,6 +20,9 @@ from the server. This will also test our ajax wrappers:
             if (res.success && res.message) {
                 zc.dojo.alert('Success!', res.message);
             }
+            else if (res.error) {
+                zc.dojo.alert('Failure!', res.error);
+            }
         };
 
         var actionify_buttons = function (config, success_handler) {
@@ -43,7 +46,6 @@ from the server. This will also test our ajax wrappers:
         var createForm = function (form_data) {
             zc.dojo.build_form(form_data, dojo.create('div', {}, dojo.body()));
             actionify_buttons(form_data, success_handler);
-            dijit.byId(form_data.definition.prefix).startup();
             ready = true;
         };
 
@@ -58,8 +60,7 @@ from the server. This will also test our ajax wrappers:
 
     >>> JS(js)
 
-    >>> while not JS('return ready'):
-    ...     continue
+    >>> wait_for(lambda: JS('return ready'))
 
 We will confirm the form rendered as expected:
 
@@ -69,18 +70,13 @@ We can also try to submit the form.
 
     js> dijit.byId('ExampleForm.actions.register').onClick()
 
-    >>> attempt = 0
-    >>> import time
-    >>> while 1 and attempt < 5:
+    >>> def find_button():
     ...     try:
     ...         browser.find_element_by_id('dijit_form_Button_0')
     ...     except:
-    ...         attempt += 1
-    ...         time.sleep(0.1)
-    ...         continue
-    ...     else:
-    ...         break
-    <selenium.webdriver.remote.webelement.WebElement object at ...>
+    ...         return False
+    ...     return True
+    >>> wait_for(find_button)   
 
     js> return dojo.query('.dijitDialog').length
     1

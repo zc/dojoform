@@ -4,7 +4,7 @@ definition = {
       {
         "label": "Register",
         "name": "ExampleForm.actions.register",
-        "handler": "register"
+        "handler": "test.register"
       }
     ],
     "left_fields": {

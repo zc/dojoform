@@ -231,7 +231,8 @@ When you define forms, you can define handlers through actions.
 
 We'll need to define a function for the handler we provided to the action.
 
-    js> register = function (arg1, arg2, arg3) {
+    js> test = {}
+    js> test.register = function (arg1, arg2, arg3) {
     ...    action_test = [arg1, arg2.id, String(arg3)]; }
     js> dijit.byId('ExampleForm.actions.register').onClick()
 
@@ -259,7 +260,7 @@ can directly pass a function as our handler argument.
 
     js> action_test = null;
 
-    js> definition.definition.actions[0].handler = register;
+    js> definition.definition.actions[0].handler = test.register;
     js> definition.definition.actions[0].validate = true;
 
     js> dojo.body().removeChild(form.domNode);

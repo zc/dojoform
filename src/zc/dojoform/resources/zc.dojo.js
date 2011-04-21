@@ -1137,8 +1137,11 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
                                         action, form);
                                 }
                                 else {
-                                    window[action.handler](form.getValues(),
-                                        action, form);
+                                    var func = window;
+                                    dojo.forEach(action.handler.split('.'), function (piece) {
+                                        func = func[piece];
+                                    });
+                                    func(form.getValues(), action, form);
                                 }
                             }
                             if (definition.handler) {

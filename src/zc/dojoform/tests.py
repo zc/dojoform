@@ -25,6 +25,7 @@ import selenium.webdriver
 import signal
 import subprocess
 import threading
+import time
 import unittest
 import wsgiref.simple_server
 import zc.dojoform.testing
@@ -152,10 +153,19 @@ def matches_(observed, expected):
                         expected, observed)
 
 
+def wait_for(func, timeout=5):
+    giveup = time.time() + timeout
+    while not func():
+        if time.time() > giveup:
+            raise AssertionError("Timed out waiting")
+        time.sleep(0.01)
+
+
 def setUp(test):
     browser = selenium.webdriver.Firefox()
     test.globs.update(
         read_test_file = zc.dojoform.testing.read_test_file,
+        wait_for=wait_for,
         selenium = selenium,
         matches = matches,
         port = bobo_port,
@@ -172,6 +182,7 @@ bobo_resources_template = """
 boboserver:static('/test', %r)
 boboserver:static('/dojoform', %r)
 boboserver:static('/dojo', %r)
+boboserver:static('/ckeditor', %r)
 zc.dojoform.testing
 """
 
@@ -182,6 +193,7 @@ def start_bobo_server(port=0, daemon=True):
         os.path.join(here, 'test-examples'),
         here,
         os.path.join(home, 'parts', 'dojo'),
+        os.path.join(home, 'parts', 'ckeditor'),
         ))
     server = wsgiref.simple_server.make_server('', port, app)
     thread = threading.Thread(target=server.serve_forever)

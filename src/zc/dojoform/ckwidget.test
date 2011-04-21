@@ -75,12 +75,12 @@ We can modify this value as well
 
     js> widget.attr('value', '<blink>Wow!</blink>')
     js> return widget.attr('value')
-    u'<blink>Wow!</blink>'
+    u'<p>\n\t<blink>Wow!</blink></p>\n'
 
 Note that when we do this the value in the actual CKEditor is modified as well
 
     js> return ckeditor.getData()
-    u'<blink>Wow!</blink>'
+    u'<p>\n\t<blink>Wow!</blink></p>\n'
 
 we can reset the form and we'll be back to our old value.
 
