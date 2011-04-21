@@ -774,9 +774,13 @@ zc.dojo.build_form = function (config, pnode, order, startup)
     }
     if (startup) {
         node.startup();
+        node.resize();
         dojo.forEach(widgets, function (widget) {
             if (widget.postStartup) {
                 widget.postStartup(node);
+            }
+            if (widget.resize) {
+                widget.resize();
             }
         });
         zc.dojo.flag_startup();
@@ -1451,6 +1455,11 @@ dojo.ready(
                     return edit_dlg;
                 },
 
+                resize: function () {
+                    this.inherited(arguments);
+                    this.grid.resize();
+                },
+
                 _edit_record: function (widget_name, row_value, order) {
                     var grid = this.grid;
                     if (dojo.version < '1.6') {
@@ -1519,17 +1528,20 @@ dojo.ready(
                             });
                     }
                     if (!this.rc.readonly) {
-                        dojo.connect(grid, 'onCellMouseOver', function (e) {
-                            if (e.cell.draggable) {
-                                grid.select.cleanAll();
-                                grid.selection.select(e.rowIndex);
-                                grid.select.clearDrugDivs();
-                                grid.select.addRowMover(e.rowIndex, e.rowIndex);
-                            }
-                            else {
-                                grid.select.clearDrugDivs();
-                            }
-                        });
+                        if (dojo.version < '1.6') {
+                            dojo.connect(grid, 'onCellMouseOver', function (e) {
+                                if (e.cell.draggable) {
+                                    grid.select.cleanAll();
+                                    grid.selection.select(e.rowIndex);
+                                    grid.select.clearDrugDivs();
+                                    grid.select.addRowMover(e.rowIndex,
+                                        e.rowIndex);
+                                }
+                                else {
+                                    grid.select.clearDrugDivs();
+                                }
+                            });
+                        }
                         dojo.connect(grid, 'onCellClick', function (e) {
                             grid.selection.select(e.rowIndex);
                         });
@@ -1552,7 +1564,9 @@ dojo.ready(
                                 grid.edit_dlg.reset();
                                 dojo.publish(zc.dojo.dialogFormResetTopic,
                                              [grid.edit_dlg.editForm.id]);
-                                grid.select.cancelDND();
+                                if (dojo.version < 1.6) {
+                                    grid.selection.cancelDND();
+                                }
                                 grid.edit_dlg.show();
                             })
                         }, dojo.create('div', null, this.domNode));
