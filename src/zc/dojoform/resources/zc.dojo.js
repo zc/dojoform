@@ -801,6 +801,19 @@ dojo.ready( function () {
         });
 });
 
+zc.dojo._func_handler = function (func) {
+    if (func instanceof Object) {
+        return func;
+    }
+    else {
+        var o_func = window;
+        dojo.forEach(func.split('.'), function (piece) {
+            o_func = o_func[piece];
+        });
+        return o_func;
+    }
+}
+
 zc.dojo.build_form2 = function (config, pnode, order, startup)
 {
     var definition = config.definition || config;
@@ -1124,7 +1137,7 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
                     {
                         id: action.id || (prefix &&
                              action.name.slice(0, prefix.length) == prefix ?
-                             action.name :
+                             action.name:
                              prefix+action.name
                             ),
                         label: action.label || action.name,
@@ -1136,20 +1149,11 @@ zc.dojo.build_form2 = function (config, pnode, order, startup)
                                 }
                             }
                             if (action.handler) {
-                                if (action.handler instanceof Object) {
-                                    action.handler(form.getValues(),
-                                        action, form);
-                                }
-                                else {
-                                    var func = window;
-                                    dojo.forEach(action.handler.split('.'), function (piece) {
-                                        func = func[piece];
-                                    });
-                                    func(form.getValues(), action, form);
-                                }
+                                zc.dojo._func_handler(action.handler)(
+                                    form.getValues(), action, form);
                             }
-                            if (definition.handler) {
-                                definition.handler(
+                            if (definition.handler && !action.ignore_default) {
+                                zc.dojo._func_handler(definition.handler)(
                                     form.getValues(), action, form);
                             }
                         }

@@ -286,3 +286,55 @@ If the form is valid it will work as expected.
 
     >>> pprint.pprint(JS('return action_test'))
     [{u'ExampleForm':...]
+
+We can also specify a form handler in addition to or instead of specific
+action handlers.
+
+    js> definition.definition.actions[0].validate = false;
+    js> definition.definition.handler = function (arg1, arg2, arg3) {
+    ...    definition_test = [arg1, arg2.id, String(arg3)];
+    ...    }
+
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+    js> form = zc.dojo.build_form2(definition);
+    js> dojo.body().appendChild(form.domNode);
+    js> form.startup();
+
+    js> dijit.byId('ExampleForm.actions.register').onClick()
+
+    >>> pprint.pprint(JS('return definition_test'))
+    [{u'ExampleForm': {u'actions': {u'register': u''}},
+      u'addresses': u'{"addresses.street.0":"123 fake street","addresses.city.0":"fakeville","addresses.awesomeness.0":"9","addresses.street.1":"345 false street","addresses.city.1":"falsetown","addresses.awesomeness.1":"9001"}',
+      u'age': 23,
+      u'description': u'10ft tall\nRazor sharp scales.',
+      u'favorite_color': u'Blue',
+      u'first_name': u'Happy',
+      u'happy': [True],
+      u'last_name': u'Camper',
+      u'other': u"I've got a magic toenail",
+      u'pet': u'',
+      u'secret': u'5ecret sauce',
+      u'siblings': 1,
+      u'temperment': u'Right Neighborly',
+      u'weight': None},
+     u'ExampleForm.actions.register',
+     u'[Widget dijit.form.Form, ExampleForm]']
+
+    js> definition_test = null;
+
+If we set an 'ignore_default' flag on the action the form handler will be
+ignored.
+
+    js> definition.definition.actions[0].ignore_default = true;
+
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+    js> form = zc.dojo.build_form2(definition);
+    js> dojo.body().appendChild(form.domNode);
+    js> form.startup();
+
+    js> dijit.byId('ExampleForm.actions.register').onClick()
+
+    >>> pprint.pprint(JS('return definition_test'))
+    None
