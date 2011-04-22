@@ -4,9 +4,6 @@ dojo.provide('zc.ckeditor');
 
 dojo.require("dijit._Widget");
 
-// URL of a CKEeditor config file to use.
-var ckeditorCustomConfig = '';
-
 dojo.ready(
     function () {
         /* Dojo form widget for resource reference list */
@@ -44,7 +41,7 @@ dojo.ready(
                     if (this.order !== null) {
                         ckeditorConfig.tabIndex = this.order;
                     }
-                    if (ckeditorCustomConfig) {
+                    if (window.ckeditorCustomConfig) {
                         ckeditorConfig.customConfig = ckeditorCustomConfig;
                     }
                     this.ckeditor = CKEDITOR.replace(textarea, ckeditorConfig);
