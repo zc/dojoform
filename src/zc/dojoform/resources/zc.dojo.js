@@ -636,7 +636,7 @@ zc.dojo.build_form = function (config, pnode, order, startup)
             this.startup();
             this.getChildren().forEach(function (node) {node.startup();});
         };
-    };
+    }
     dojo.addClass(form, 'zcForm');
     var node = new dijit.layout.BorderContainer({
         design: "headline",
@@ -1617,7 +1617,7 @@ dojo.ready(
 
                     this.domNode.postStartup = this.startup;
                     this.input_value = dojo.create('input', {
-                        type: 'hidden',
+                        type: 'hidden'
                     }, this.domNode);
                     this.input_parent = dojo.create('div', null, this.domNode);
                     dojo.connect(this.grid, 'startup', dojo.hitch(this, function () {
