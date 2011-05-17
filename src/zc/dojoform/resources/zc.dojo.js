@@ -1,8 +1,6 @@
 /*global dijit, dojo, dojox, zc, escape, unescape */
 
 dojo.provide('zc.dojo');
-dojo.provide('zc.RangeWidget');
-dojo.provide('zc.RecordList');
 
 dojo.require('dijit.Dialog');
 dojo.require('dijit.form.Form');
