@@ -1,0 +1,437 @@
+<form>
+    <div>
+    <div>
+     <div>
+      <label id="favorite_color.label">
+       Favorite color
+      </label>
+      <br />
+      <div role="presentation" id="widget_ExampleForm.favorite_color">
+       <div>
+        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ" />
+       </div>
+       <div>
+        <input type="text" name="favorite_color" autocomplete="off" dojoattachpoint="textbox,focusNode" />
+       </div>
+      </div>
+     </div>
+     <div>
+      <label id="happy.label">
+       Happy
+      </label>
+      <br />
+      <div role="presentation">
+       <input type="checkbox" dojoattachevent="onclick:_onClick" dojoattachpoint="focusNode" />
+      </div>
+     </div>
+     <div>
+      <label id="pet.label">
+       Pet
+      </label>
+      <br />
+      <div role="combobox" id="widget_ExampleForm.pet">
+       <div role="presentation" dojoattachpoint="_buttonNode, _popupStateNode">
+        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="▼ " />
+       </div>
+       <div>
+        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ" />
+       </div>
+       <div>
+        <input type="text" aria-haspopup="true" role="textbox" dojoattachpoint="textbox,focusNode" autocomplete="off" name="pet" />
+       </div>
+      </div>
+     </div>
+     <div>
+      <label id="temperment.label">
+       Temperment
+       <span>
+        (required)
+       </span>
+      </label>
+      <br />
+      <div role="combobox" id="widget_ExampleForm.temperment">
+       <div role="presentation" dojoattachpoint="_buttonNode, _popupStateNode">
+        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="▼ " />
+       </div>
+       <div>
+        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ" />
+       </div>
+       <div>
+        <input type="text" aria-haspopup="true" role="textbox" dojoattachpoint="textbox,focusNode" autocomplete="off" />
+        <input type="hidden" name="temperment" value="Right Neighborly" />
+       </div>
+      </div>
+     </div>
+     <div>
+      <label id="weight.label">
+       Weight
+       <span>
+        (required)
+       </span>
+      </label>
+      <br />
+      <div role="presentation" id="widget_ExampleForm.weight">
+       <div>
+        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ" />
+       </div>
+       <div>
+        <input type="text" autocomplete="off" dojoattachpoint="textbox,focusNode" />
+        <input type="hidden" name="weight" value="" />
+       </div>
+      </div>
+     </div>
+     <div>
+      <label id="description.label">
+       Description
+       <span>
+        (required)
+       </span>
+      </label>
+      <br />
+      <textarea autocomplete="off" dojoattachpoint="focusNode,containerNode,textbox" name="description"10ft tall
+    Razor sharp scales.">
+      </textarea>
+     </div>
+     <div>
+      <input type="hidden" name="secret" autocomplete="off" dojoattachpoint="textbox,focusNode" />
+     </div>
+     <div>
+      <label id="siblings.label">
+       Siblings
+       <span>
+        (required)
+       </span>
+      </label>
+      <br />
+      <div role="presentation" id="widget_ExampleForm.siblings">
+       <div>
+        <input type="text" role="presentation" readonly="readonly" tabindex="-1" />
+        <div dojoattachpoint="upArrowNode">
+         <div>
+          <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="▲" />
+         </div>
+        </div>
+        <div dojoattachpoint="downArrowNode">
+         <div>
+          <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="▼" />
+         </div>
+        </div>
+       </div>
+       <div>
+        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ" />
+       </div>
+       <div>
+        <input type="text" autocomplete="off" role="spinbutton" dojoattachevent="onkeypress:_onKeyPress" dojoattachpoint="textbox,focusNode" />
+        <input type="hidden" name="siblings" value="1" />
+       </div>
+      </div>
+     </div>
+     <div>
+      <label id="addresses.label">
+       Addresses
+       <span>
+        (required)
+       </span>
+      </label>
+      <br />
+      <div id="zc_RecordList_0" widgetid="zc_RecordList_0">
+       <div align="left" dojoattachevent="onmouseout:_mouseOut" role="grid" hidefocus="hidefocus" tabindex="0" aria-multiselectable="true">
+        <div role="presentation" dojoattachpoint="viewsHeaderNode">
+         <div role="presentation" dojoattachpoint="headerNode">
+          <div role="presentation">
+           <div role="row" dojoattachpoint="headerContentNode">
+           </div>
+          </div>
+         </div>
+         <div role="presentation" dojoattachpoint="headerNode">
+          <div role="presentation">
+           <div role="row" dojoattachpoint="headerContentNode">
+            <table cellspacing="0" cellpadding="0" border="0" role="presentation">
+             <tbody>
+              <tr>
+               <th dndtype="gridColumn_dojox_grid_EnhancedGrid_0">
+                <div>
+                 Street
+                 <a>
+                  1
+                 </a>
+                 <a>
+                 </a>
+                </div>
+               </th>
+               <th dndtype="gridColumn_dojox_grid_EnhancedGrid_0">
+                <div>
+                 City
+                 <a>
+                  1
+                 </a>
+                 <a>
+                 </a>
+                </div>
+               </th>
+               <th dndtype="gridColumn_dojox_grid_EnhancedGrid_0">
+                <div>
+                 Awesomeness
+                 <a>
+                  1
+                 </a>
+                 <a>
+                 </a>
+                </div>
+               </th>
+               <th dndtype="gridColumn_dojox_grid_EnhancedGrid_0">
+                <div>
+                 <a>
+                  1
+                 </a>
+                 <a>
+                 </a>
+                </div>
+               </th>
+              </tr>
+             </tbody>
+            </table>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div role="presentation" dojoattachpoint="viewsNode">
+         <div role="presentation">
+          <input type="checkbox" role="presentation" dojoattachpoint="hiddenFocusNode" />
+          <input type="checkbox" role="presentation" />
+          <div role="presentation" dojoattachpoint="scrollboxNode">
+           <div role="presentation" hidefocus="hidefocus" dojoattachpoint="contentNode">
+            <div role="presentation">
+             <div>
+              <table cellspacing="0" cellpadding="0" border="0" role="presentation">
+               <tbody>
+                <tr>
+                 <td>
+                   
+                 </td>
+                </tr>
+               </tbody>
+              </table>
+             </div>
+             <div>
+              <table cellspacing="0" cellpadding="0" border="0" role="presentation">
+               <tbody>
+                <tr>
+                 <td>
+                   
+                 </td>
+                </tr>
+               </tbody>
+              </table>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+         <div role="presentation">
+          <input type="checkbox" role="presentation" dojoattachpoint="hiddenFocusNode" />
+          <input type="checkbox" role="presentation" />
+          <div role="presentation" dojoattachpoint="scrollboxNode">
+           <div role="presentation" hidefocus="hidefocus" dojoattachpoint="contentNode">
+            <div role="presentation">
+             <div>
+              <table cellspacing="0" cellpadding="0" border="0" role="presentation">
+               <tbody>
+                <tr>
+                 <td>
+                  123 fake street
+                 </td>
+                 <td>
+                  fakeville
+                 </td>
+                 <td>
+                  9
+                 </td>
+                 <td>
+                  <div>
+                   ||
+                  </div>
+                 </td>
+                </tr>
+               </tbody>
+              </table>
+             </div>
+             <div>
+              <table cellspacing="0" cellpadding="0" border="0" role="presentation">
+               <tbody>
+                <tr>
+                 <td>
+                  345 false street
+                 </td>
+                 <td>
+                  falsetown
+                 </td>
+                 <td>
+                  9001
+                 </td>
+                 <td>
+                  <div>
+                   ||
+                  </div>
+                 </td>
+                </tr>
+               </tbody>
+              </table>
+             </div>
+            </div>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div dojoattachpoint="messagesNode">
+        </div>
+        <span tabindex="0" dojoattachpoint="lastFocusNode">
+        </span>
+       </div>
+       <span>
+        <span dojoattachevent="ondijitclick:_onButtonClick">
+         <span aria-labelledby="addresses.dojo.new.btn_label" role="button" dojoattachpoint="titleNode,focusNode">
+          <span dojoattachpoint="iconNode">
+          </span>
+          <span>
+           ●
+          </span>
+          <span dojoattachpoint="containerNode" id="addresses.dojo.new.btn_label">
+           New
+          </span>
+         </span>
+        </span>
+        <input type="button" dojoattachpoint="valueNode" />
+       </span>
+       <span>
+        <span dojoattachevent="ondijitclick:_onButtonClick">
+         <span aria-labelledby="addresses.dojo.edit.btn_label" role="button" dojoattachpoint="titleNode,focusNode">
+          <span dojoattachpoint="iconNode">
+          </span>
+          <span>
+           ●
+          </span>
+          <span dojoattachpoint="containerNode" id="addresses.dojo.edit.btn_label">
+           Edit
+          </span>
+         </span>
+        </span>
+        <input type="button" dojoattachpoint="valueNode" />
+       </span>
+       <span>
+        <span dojoattachevent="ondijitclick:_onButtonClick">
+         <span aria-labelledby="addresses.dojo.delete.btn_label" role="button" dojoattachpoint="titleNode,focusNode">
+          <span dojoattachpoint="iconNode">
+          </span>
+          <span>
+           ●
+          </span>
+          <span dojoattachpoint="containerNode" id="addresses.dojo.delete.btn_label">
+           Delete
+          </span>
+         </span>
+        </span>
+        <input type="button" dojoattachpoint="valueNode" />
+       </span>
+       <input type="hidden" value='{"addresses.street.0":"123 fake street","addresses.city.0":"fakeville","addresses.awesomeness.0":"9","addresses.street.1":"345 false street","addresses.city.1":"falsetown","addresses.awesomeness.1":"9001"}' />
+       <div>
+        <input type="hidden" name="addresses.street.0" value="123 fake street" />
+        <input type="hidden" name="addresses.city.0" value="fakeville" />
+        <input type="hidden" name="addresses.awesomeness.0" value="9" />
+        <input type="hidden" name="addresses.street.1" value="345 false street" />
+        <input type="hidden" name="addresses.city.1" value="falsetown" />
+        <input type="hidden" name="addresses.awesomeness.1" value="9001" />
+       </div>
+      </div>
+     </div>
+    </div>
+    <div>
+     <span>
+      <span dojoattachevent="ondijitclick:_onButtonClick">
+       <span aria-labelledby="ExampleForm.actions.register_label" role="button" dojoattachpoint="titleNode,focusNode">
+        <span dojoattachpoint="iconNode">
+        </span>
+        <span>
+         ●
+        </span>
+        <span dojoattachpoint="containerNode" id="ExampleForm.actions.register_label">
+         Register
+        </span>
+       </span>
+      </span>
+      <input type="button" dojoattachpoint="valueNode" />
+     </span>
+    </div>
+    <div role="presentation">
+    </div>
+    <div>
+     <div>
+      <label id="first_name.label">
+       First name
+       <span>
+        (required)
+       </span>
+      </label>
+      <br />
+      <div role="presentation" id="widget_ExampleForm.first_name">
+       <div>
+        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ" />
+       </div>
+       <div>
+        <input type="text" name="first_name" autocomplete="off" dojoattachpoint="textbox,focusNode" />
+       </div>
+      </div>
+     </div>
+     <div>
+      <label id="last_name.label">
+       Last name
+       <span>
+        (required)
+       </span>
+      </label>
+      <br />
+      <div role="presentation" id="widget_ExampleForm.last_name">
+       <div>
+        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ" />
+       </div>
+       <div>
+        <input type="text" name="last_name" autocomplete="off" dojoattachpoint="textbox,focusNode" />
+       </div>
+      </div>
+     </div>
+     <div>
+      <label id="age.label">
+       Age
+       <span>
+        (required)
+       </span>
+      </label>
+      <br />
+      <div role="presentation" id="widget_ExampleForm.age">
+       <div>
+        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ" />
+       </div>
+       <div>
+        <input type="text" autocomplete="off" dojoattachpoint="textbox,focusNode" />
+        <input type="hidden" name="age" value="23" />
+       </div>
+      </div>
+     </div>
+     <div>
+      <label id="other.label">
+       Other
+       <span>
+        (required)
+       </span>
+      </label>
+      <br />
+      <textarea autocomplete="off" dojoattachpoint="focusNode,containerNode,textbox" name="other">
+      </textarea>
+     </div>
+    </div>
+    <div role="separator" tabindex="0" dojoattachevent="onkeypress:_onKeyPress,onmousedown:_startDrag,onmouseenter:_onMouse,onmouseleave:_onMouse">
+     <div>
+     </div>
+    </div>
+    </div>
+</form>

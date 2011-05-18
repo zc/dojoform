@@ -1,0 +1,58 @@
+Notes on implementing form widgets
+==================================
+
+Subclass dijit._Widget.
+
+If you have subwidgets, subclass both dijit._Container and
+dijit._Widget.
+
+
+API:
+
+   - Must define domNode
+
+   - Must define containerNode, which will almost always be the same as
+     domNode. dijit._Widget uses this node to find subwidgets to destroy
+     when calling destroyRecursive.
+
+   - buildRendering() is where you build up your widget's dom.
+
+   - reset() Reset widget values to initial settings
+
+   - focus() Give widget focus
+
+     At least as far as forms are converned, this is only used to give
+     focus to invalid fields. :/.
+
+   - isValid() -> Test whether current input is valid
+
+   - validate() -> bool Test whether current input is valid
+
+     Documentation for form.validate says it updates validation
+     markers. Sigh.
+
+   - name attr used by form's value getters and setters to find form widgets.
+
+     Important note: Don't set name on internal subwidgets. If you do,
+     they'll end up in form values.
+
+   - onChange  Call this when you're state changes
+
+     Note that because form uses getDescendants, it will connect to
+     your onChange, as well as your children's.
+
+Note
+
+  The form implementation uses getDescendants to find it's
+  contents.  This means that it considered subwidgets part of its
+  contents, including widgets you might think of as private.
+
+  It filters widgets to those that have names only when getting or
+  setting values, not when validating or resetting.  I consider this a
+  bug, it doubt it will change, unless maybe in 2, as fixing it would
+  break old code.
+
+  Because of the above behavior, you may be able to avoid implementing
+  validation and reset methods, as well as focus, if you're widget is
+  implemented in terms of subwidgets.
+

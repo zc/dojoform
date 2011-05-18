@@ -2,14 +2,13 @@
    xmlns="http://namespaces.zope.org/zope"
    xmlns:browser="http://namespaces.zope.org/browser"
    >
-  <include package="zope.app.pagetemplate" file="meta.zcml"/>
   <include package="zc.resourcelibrary" file="meta.zcml"/>
   <include package="zc.resourcelibrary"/>
 
   <resourceLibrary name="zc.dojoform">
     <directory
        source="resources"
-       include="rangewidget.js zc.dojo.js" 
+       include="ckwidget.js zc.dojo.js zc.dojo.css" 
        />
   </resourceLibrary>
 

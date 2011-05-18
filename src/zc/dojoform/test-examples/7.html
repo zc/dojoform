@@ -1,0 +1,255 @@
+<FORM id='ExampleForm' class='zc-form'>
+  <DIV
+     class="dijitContainer"
+     style='/height: 100%; width: 100%;/'
+     xxx>
+    <DIV
+       class="dijitContentPane"
+       id='zc.dojo.zc-right-fields.ExampleForm'
+       >
+      <DIV
+          class='zc-field zope-schema-TextLine'
+          id='zc-field-ExampleForm.favorite_color'
+          >
+        <LABEL for='ExampleForm.favorite_color' class='zc-label'>
+          Favorite color
+        </LABEL>
+        <DIV class='dijit zc-widget' id='widget_ExampleForm.favorite_color' xxx>
+            <INPUT
+                id='ExampleForm.favorite_color'
+                tabIndex='0'
+                aria-required='false'
+                value='Blue'
+                />
+        </DIV>
+      </DIV>
+      <DIV
+          class='zc-field zope-schema-Bool'
+          id='zc-field-ExampleForm.happy'
+          title='Are they happy?'
+          >
+        <LABEL for='ExampleForm.happy' class='zc-label'>
+          Happy
+        </LABEL>
+        <DIV class='dijit zc-widget'>
+          <INPUT
+              type='checkbox'
+              checked='/.*/'
+              id='ExampleForm.happy'
+              tabIndex='0'
+              />
+        </DIV>
+      </DIV>
+      <DIV
+          class='zc-field zc-ajaxform-widgets-ComboBox'
+          id='zc-field-ExampleForm.pet'
+          title="This person's best friend."
+          >
+        <LABEL for='ExampleForm.pet' class='zc-label'>
+          Pet
+        </LABEL>
+        <DIV class='dijit zc-widget' id='widget_ExampleForm.pet' xxx>
+            <INPUT
+                type='text'
+                id='ExampleForm.pet'
+                tabIndex='0'
+                aria-required='false'
+                value=''
+                />
+        </DIV>
+      </DIV>
+      <DIV
+          class='zc-field zope-schema-Choice required'
+          id='zc-field-ExampleForm.temperment'
+          title='What is the person like?'
+          >
+        <LABEL for='ExampleForm.temperment' class='zc-label'>
+          Temperment
+        </LABEL>
+        <DIV class='dijit zc-widget' id='widget_ExampleForm.temperment' xxx>
+            <INPUT
+                type='text'
+                id='ExampleForm.temperment'
+                tabIndex='0'
+                value='Right Neighborly'
+                />
+        </DIV>
+      </DIV>
+      <DIV
+          class='zc-field zope-schema-Decimal required'
+          id='zc-field-ExampleForm.weight'
+          title='Weight in lbs?'
+          >
+        <LABEL for='ExampleForm.weight' class='zc-label'>
+          Weight
+        </LABEL>
+        <DIV class='dijit zc-widget' id='widget_ExampleForm.weight' xxx>
+            <INPUT
+                type='text'
+                id='ExampleForm.weight'
+                tabIndex='0'
+                value=''
+                />
+        </DIV>
+      </DIV>
+      <DIV
+          class='zc-field zope-schema-Text required'
+          id='zc-field-ExampleForm.description'
+          title='What do they look like?'
+          >
+        <LABEL for='ExampleForm.description' class='zc-label'>
+          Description
+        </LABEL>
+        <TEXTAREA
+            id='ExampleForm.description'
+            tabIndex='0'
+            value='10ft tall
+Razor sharp scales.'
+            ></TEXTAREA>
+      </DIV>
+      <DIV
+          class='zc-field zc-ajaxform-widgets-Hidden required'
+          id='zc-field-ExampleForm.secret'
+          title="Don't tell anybody"
+          >
+        <INPUT
+            type='hidden'
+            name='secret'
+            id='ExampleForm.secret'
+            tabIndex='0'
+            value='5ecret sauce'
+            />
+      </DIV>
+      <DIV
+          class='zc-field zc-ajaxform-widgets-NumberSpinner required'
+          id='zc-field-ExampleForm.siblings'
+          title='Number of siblings'
+          >
+        <LABEL for='ExampleForm.siblings' class='zc-label'>
+          Siblings
+        </LABEL>
+        <DIV class='dijit zc-widget' id='widget_ExampleForm.siblings' xxx>
+            <INPUT
+                type='text'
+                id='ExampleForm.siblings'
+                tabIndex='0'
+                value='1'
+                />
+        </DIV>
+      </DIV>
+      <DIV
+          class='zc-field zope-schema-List required'
+          id='zc-field-ExampleForm.addresses'
+          title='All my wonderful homes'
+          >
+        <LABEL for='ExampleForm.addresses' class='zc-label'>
+          Addresses
+        </LABEL>
+        <DIV >
+          <DIV role='grid' xxx>
+          </DIV>
+          <SPAN class='dijit dijitButton' xxx>
+                <SPAN id='addresses.dojo.new.btn_label'>New</SPAN>
+          </SPAN>
+          <SPAN class='dijit dijitButton' xxx>
+                <SPAN id='addresses.dojo.edit.btn_label'>Edit</SPAN>
+          </SPAN>
+          <SPAN class='dijit dijitButton' xxx>
+                <SPAN id='addresses.dojo.delete.btn_label'>Delete</SPAN>
+          </SPAN>
+          <INPUT type="hidden" value='{"addresses.street.0":"123 fake street","addresses.city.0":"fakeville","addresses.awesomeness.0":"9","addresses.street.1":"345 false street","addresses.city.1":"falsetown","addresses.awesomeness.1":"9001"}' />
+       <DIV>
+         <INPUT type="hidden" name="addresses.street.0" value="123 fake street" />
+         <INPUT type="hidden" name="addresses.city.0" value="fakeville" />
+         <INPUT type="hidden" name="addresses.awesomeness.0" value="9" />
+         <INPUT type="hidden" name="addresses.street.1" value="345 false street" />
+         <INPUT type="hidden" name="addresses.city.1" value="falsetown" />
+         <INPUT type="hidden" name="addresses.awesomeness.1" value="9001" />
+       </DIV>
+        </DIV>
+      </DIV>
+    </DIV>
+    <DIV
+       class="dijitContentPane"
+       id='zc.dojo.zc-left-fields.ExampleForm'
+       style='/width: 60%/'
+       >
+      <DIV
+          class='zc-field zope-schema-TextLine required'
+          id='zc-field-ExampleForm.first_name'
+          title='Given name.'
+          >
+        <LABEL for='ExampleForm.first_name' class='zc-label'>
+          First name
+        </LABEL>
+        <DIV class='dijit zc-widget' id='widget_ExampleForm.first_name' xxx>
+                <INPUT
+                   id='ExampleForm.first_name'
+                   tabIndex='0'
+                   aria-required='true'
+                   value='Happy'
+                   />
+        </DIV>
+      </DIV>
+      <DIV
+          class='zc-field zope-schema-TextLine required'
+          id='zc-field-ExampleForm.last_name'
+          title='Family name.'
+          >
+        <LABEL for='ExampleForm.last_name' class='zc-label'>
+          Last name
+        </LABEL>
+        <DIV class='dijit zc-widget' id='widget_ExampleForm.last_name' xxx>
+            <INPUT
+               id='ExampleForm.last_name'
+               tabIndex='0'
+               aria-required='true'
+               value='Camper'
+               />
+        </DIV>
+      </DIV>
+      <DIV
+          class='zc-field zope-schema-Int required'
+          id='zc-field-ExampleForm.age'
+          title='Age in years'
+          >
+        <LABEL for='ExampleForm.age' class='zc-label'>
+          Age
+        </LABEL>
+        <DIV class='dijit zc-widget' id='widget_ExampleForm.age' xxx>
+            <INPUT
+                id='ExampleForm.age'
+                tabIndex='0'
+                value='23'
+                />
+        </DIV>
+      </DIV>
+      <DIV
+          class='zc-field zope-schema-Text required'
+          id='zc-field-ExampleForm.other'
+          title='Any other notes'
+          >
+        <LABEL for='ExampleForm.other' class='zc-label'>
+          Other
+        </LABEL>
+        <TEXTAREA
+            id='ExampleForm.other'
+            tabIndex='0'
+            class='zc-widget'
+            value="I've got a magic toenail"
+            ></TEXTAREA>
+      </DIV>
+    </DIV>
+    <DIV
+       class="dijitContentPane"
+       id='zc.dojo.zc-actions.ExampleForm'
+       >
+      <SPAN
+         class='dijit zc-action'
+         widgetId='ExampleForm.actions.register'
+         xxx>
+              Register
+      </SPAN>
+    </DIV>
+  </DIV>
+</FORM>

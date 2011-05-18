@@ -1,0 +1,94 @@
+<FORM
+   id='ExampleForm'
+   class='zc-form'
+   >
+  <DIV class='zc-fields'>
+    <DIV class='zc-fields zc-fieldset'>
+      <DIV
+         class='zc-field zope-schema-TextLine required'
+         id='zc-field-ExampleForm.first_name'
+         title='Given name.'
+         >
+        <LABEL for='ExampleForm.first_name' class='zc-label'>
+          First name
+        </LABEL>
+        <DIV class='dijit zc-widget' xxx>
+            <INPUT
+               name='first_name'
+               type='text'
+               id='ExampleForm.first_name'
+               tabIndex='3'
+               value='Happy'
+               />
+        </DIV>
+      </DIV>
+      <DIV
+         class='zc-field zope-schema-TextLine required'
+         id='zc-field-ExampleForm.last_name'
+         title='Family name.'
+         >
+        <LABEL for='ExampleForm.last_name' class='zc-label'>
+          Last name
+        </LABEL>
+        <DIV class='dijit zc-widget' xxx>
+            <INPUT
+               name='last_name'
+               type='text'
+               id='ExampleForm.last_name'
+               tabIndex='3'
+               value='Camper'
+               />
+        </DIV>
+      </DIV>
+      <DIV
+         class='zc-field zope-schema-Bool'
+         id='zc-field-ExampleForm.happy'
+         title='Are they happy?'
+         >
+        <LABEL for='ExampleForm.happy' class='zc-label'>
+          Happy
+        </LABEL>
+        <DIV class='dijit zc-widget' xxx>
+          <INPUT
+             name='happy'
+             type='checkbox'
+             checked='/.*/'
+             id='ExampleForm.happy'
+             tabIndex='3'
+             />
+        </DIV>
+      </DIV>
+      <DIV
+         class='zc-field zope-schema-Text required'
+         id='zc-field-ExampleForm.description'
+         title='What do they look like?'
+         >
+        <LABEL for='ExampleForm.description' class='zc-label'>
+          Description
+        </LABEL>
+        <TEXTAREA
+           name='description'
+           id='ExampleForm.description'
+           tabIndex='3'
+           class='zc-widget'
+           value='10ft tall
+Razor sharp scales.'
+           ></TEXTAREA>
+      </DIV>
+      <DIV
+         class='zc-field zc-ajaxform-widgets-Hidden required'
+         id='zc-field-ExampleForm.secret'
+         title="Don't tell anybody"
+         >
+        <INPUT
+           class='dijit zc-widget'
+           type='hidden'
+           name='secret'
+           id='ExampleForm.secret'
+           tabIndex='3'
+           value='5ecret sauce'
+           />
+      </DIV>
+    </DIV>
+  </DIV>
+</FORM>

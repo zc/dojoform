@@ -1,0 +1,139 @@
+Range Widgets
+=============
+
+Range widgets let you collect a range of values, as in min or max.
+
+To define a range widget, create a new zc.RangeWidget, passing 
+
+    >>> browser.get('http://localhost:%s/test/blank.html' % port)
+
+    js> dojo.require('zc.dojo');
+
+::
+
+  definition = {
+          widgets: [
+              {
+                  name: 'int_range',
+                  widget_constructor:  'zc.ajaxform.widgets.IntRange',
+                  value: "{min: 1, max: 9}",
+                  start: 'min', end: 'max'
+              },
+              {
+                  name: 'date_range',
+                  widget_constructor: 'zc.ajaxform.widgets.DateRange',
+                  start: 'start_date',
+                  end: 'end_date',
+                  value: "{start_date: '2010-09-09', end_date: '2010-09-10'}"
+              }
+          ],
+          actions: [
+              {
+                  name: 'reset',
+                  handler: function (data, action, form) {
+                      form.reset();
+                  }
+              }
+          ]
+      };
+
+  form = zc.dojo.build_form2(definition, dojo.create('div', {}, dojo.body()));
+  form.startup();
+
+.. -> js
+
+   >>> while not browser.find_elements_by_tag_name('body'):
+   ...     continue
+
+   >>> JS(js)
+
+We can make all the fields invalid by modifying eachother and thus
+modifying their constraints.
+
+    js> dijit.byId('dijit_form_NumberTextBox_0').setValue(10)
+    js> dijit.byId('dijit_form_NumberTextBox_1').setValue(8)
+    js> return dijit.byId('dijit_form_NumberTextBox_0').isValid()
+    False
+    js> return dijit.byId('dijit_form_NumberTextBox_1').isValid()
+    False
+
+    js> dijit.byId('dijit_form_DateTextBox_0').setValue(new Date(2010, 11, 11))
+    js> dijit.byId('dijit_form_DateTextBox_1').setValue(new Date(2010, 10, 10))
+    js> return dijit.byId('dijit_form_DateTextBox_0').isValid()
+    False
+    js> return dijit.byId('dijit_form_DateTextBox_1').isValid()
+    False
+
+And make them valid again.
+
+    js> dijit.byId('dijit_form_NumberTextBox_0').setValue(9)
+    js> dijit.byId('dijit_form_NumberTextBox_1').setValue(10)
+    js> return dijit.byId('dijit_form_NumberTextBox_0').isValid()
+    True
+    js> return dijit.byId('dijit_form_NumberTextBox_1').isValid()
+    True
+
+    js> dijit.byId('dijit_form_DateTextBox_0').setValue(new Date(2010, 10, 10))
+    js> dijit.byId('dijit_form_DateTextBox_1').setValue(new Date(2010, 11, 11))
+    js> return dijit.byId('dijit_form_DateTextBox_0').isValid()
+    True
+    js> return dijit.byId('dijit_form_DateTextBox_1').isValid()
+    True
+
+We can get the value of the rangewidget, which will attainable as json and
+include values for the minimum and maximum values.
+
+    js> int_widget = dijit.byId('zc_RangeWidget_0');
+    js> date_widget = dijit.byId('zc_RangeWidget_1');
+
+    >>> import pprint
+
+    >>> pprint.pprint(JS("return dojo.fromJson(int_widget.attr('value'))"))
+    {u'max': 10, u'min': 9}
+
+    >>> pprint.pprint(JS("return dojo.fromJson(date_widget.attr('value'))"))
+    {u'end_date': u'2010-12-11',
+     u'start_date': u'2010-11-10'}
+
+We can focus the rangewidget, which will focus on the first invalid field,
+defaulting to the first field.
+
+    js> int_widget.focus()
+    js> return int_widget.min_value._focused
+    True
+
+    js> date_widget.focus()
+    js> return date_widget.min_value._focused
+    True
+
+We can tests for validity
+
+    js> return int_widget.isValid()
+    True
+
+    js> return int_widget.validate()
+    True
+
+    js> return date_widget.validate()
+    True
+
+And we can reset the form, which will reset the value of our widgets
+
+    js> dijit.byId('reset').onClick()
+
+    >>> pprint.pprint(JS("return dojo.fromJson(int_widget.attr('value'))"))
+    {u'max': 9, u'min': 1}
+
+    >>> pprint.pprint(JS("return dojo.fromJson(date_widget.attr('value'))"))
+    {u'end_date': u'2010-09-10',
+     u'start_date': u'2010-09-09'}
+
+We can connect to the onChange event as well
+
+    js> dojo.connect(int_widget, 'onChange', function (value) {
+    ...     result = value;
+    ... });
+    js> int_widget.set('value', {'min': 1, 'max':2})
+
+    >>> pprint.pprint(JS("return result"))
+    u'{"min":1,"max":2}'

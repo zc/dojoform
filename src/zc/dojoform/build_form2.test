@@ -1,0 +1,340 @@
+build_form2 provides for generation of dojo widgets and forms.
+
+Load a blank page that gets dojo loaded:
+
+    >>> browser.get('http://localhost:%s/test/blank.html' % port)
+
+Load zc.dojo:
+
+    js> dojo.require('zc.dojo')
+
+Load the first sample form definition:
+
+    >>> JS(read_test_file('1.js'))
+
+Call build_form2 to build the form:
+
+    js> form = zc.dojo.build_form2(definition);
+    js> dojo.body().appendChild(form.domNode);
+    js> form.startup();
+
+See if it matches what we expect:
+
+    >>> matches(browser.get_page_source(), read_test_file('1.html'))
+
+Try again to make sure there aren't weird side effect, and also to
+check widget cleanup:
+
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+
+    js> nwidgets = dijit.registry.length;
+    js> form = zc.dojo.build_form2(definition);
+    js> dojo.body().appendChild(form.domNode);
+    js> form.startup();
+
+    >>> matches(browser.get_page_source(), read_test_file('1.html'))
+
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+    js> return dijit.registry.length == nwidgets;
+    True
+
+groups rather than left fields and with a bool flag
+===================================================
+
+Now, we'll try a different example. It uses groups to do layout,
+rather than left_fields.
+
+    >>> JS(read_test_file('2.js'))
+    js> form = zc.dojo.build_form2(definition, undefined, 1);
+    js> dojo.body().appendChild(form.domNode);
+    js> form.startup();
+
+    >>> matches(browser.get_page_source(), read_test_file('2.html'))
+
+Because the happy field was set, none of the fields or the left div have the
+zc-widget-hidden class:
+
+    >>> for name in ['ExampleForm.first_name', 'ExampleForm.last_name',
+    ...              'ExampleForm.happy', 'ExampleForm.siblings',
+    ...              'ExampleForm.other', 'left']:
+    ...     if ('zc-widget-hidden' in
+    ...          browser.find_element_by_id(name).get_attribute('class')):
+    ...         print name
+
+Now, when we set the happy field to false:
+
+    js> dijit.byId('ExampleForm.happy').set('value', false)
+
+    >>> for name in ['zc-field-ExampleForm.first_name',
+    ...              'zc-field-ExampleForm.last_name',
+    ...              'zc-field-ExampleForm.happy',
+    ...              'zc-field-ExampleForm.siblings',
+    ...              'zc-field-ExampleForm.other',
+    ...              'left']:
+    ...     if ('zc-widget-hidden' in
+    ...          browser.find_element_by_id(name).get_attribute('class')):
+    ...         print name
+    zc-field-ExampleForm.siblings
+    zc-field-ExampleForm.other
+    left
+
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+    js> return dijit.registry.length == nwidgets;
+    True
+
+Simple example, no groups and no left_fields (no bool flag)
+===========================================================
+
+    >>> JS(read_test_file('3.js'))
+    js> form = zc.dojo.build_form2(
+    ...     definition, dojo.create('div', {}, dojo.body()), 3);
+
+
+    >>> matches(browser.get_page_source(), read_test_file('3.html'))
+
+
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+    js> return dijit.registry.length == nwidgets;
+    True
+
+Left fields with none or all selected
+=====================================
+
+
+    >>> JS(read_test_file('4.js'))
+
+    js> form = zc.dojo.build_form2(
+    ...     definition, dojo.create('div', {}, dojo.body()), 3);
+
+    >>> matches(browser.get_page_source(), read_test_file('3.html'))
+
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+
+    >>> JS(read_test_file('5.js'))
+    js> form = zc.dojo.build_form2(
+    ...     definition, dojo.create('div', {}, dojo.body()), 3);
+
+    >>> matches(browser.get_page_source(), read_test_file('3.html'))
+
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+    js> return dijit.registry.length == nwidgets;
+    True
+
+Supplying layouts
+=================
+
+By default, build_form2 generates a form and generates divs for each
+layout group, however, if you want to have more control, you can
+pre-create the form and layout and have build_form2 just build the
+widgets and insert them into the existing layout.  Let's look at an
+example. Here's html snippit in which we use dojo inline widgets to
+define a form and layout::
+
+   <form id="ExampleForm" dojoType="dijit.form.Form"
+         style="width: 100%; height: 100%">
+     <div dojoType="dijit.layout.BorderContainer"
+          design="heading" gutters="false" livesplitters="true"
+          style="height: 100%; width: 100%;">
+       <div dojoType="dijit.layout.ContentPane"
+            id="zc.dojo.zc-right-fields.ExampleForm"
+            region="center" splitter="true">
+       </div>
+       <div dojoType="dijit.layout.ContentPane"
+            id="zc.dojo.zc-actions.ExampleForm"
+            region="bottom">
+       </div>
+       <div dojoType="dijit.layout.ContentPane"
+            id="zc.dojo.zc-left-fields.ExampleForm"
+            region="left" splitter="true" style="width: 60%">
+       </div>
+     </div>
+   </form>
+
+.. -> src
+
+    >>> JS('html_snippet = %r' % src)
+
+Now, let's add this to the document:
+
+    js> dojo.body().innerHTML = html_snippet;
+    js> dojo.require('dojo.parser');
+    js> dojo.parser.parse(dojo.body());
+
+And call build_form2:
+
+    >>> JS(read_test_file('1.js'))
+
+    js> form = zc.dojo.build_form2(definition);
+
+    >>> matches(browser.get_page_source(), read_test_file('6.html'))
+
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+    js> return dijit.registry.length == nwidgets;
+    True
+
+Legacy layout
+=============
+
+build_form provided a 2-column layout that we've used in some apps.
+build_form2 mimics this layour if you:
+
+- supply left_fields that include some but not all fields,
+
+- don't pre-create the layout, and
+
+- pass in a parent node.
+
+
+    js> form = zc.dojo.build_form2(
+    ...    definition, dojo.create('div', {}, dojo.body()));
+
+    >>> matches(browser.get_page_source(), read_test_file('7.html'))
+
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+    js> return dijit.registry.length == nwidgets;
+    True
+
+Nested groups
+=============
+
+    >>> JS(read_test_file('nested-groups.js'))
+    js> form = zc.dojo.build_form2(
+    ...    definition, dojo.create('div', {}, dojo.body()));
+
+    >>> matches(browser.get_page_source(), read_test_file('nested-groups.html'))
+
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+    js> return dijit.registry.length == nwidgets;
+    True
+
+Actions handlers
+================
+
+Typically, buttons have actions that users click on to submit or
+cancel forms.
+
+When you define forms, you can define handlers through actions.
+
+    >>> JS(read_test_file('1.js'))
+    js> form = zc.dojo.build_form2(definition);
+    js> dojo.body().appendChild(form.domNode);
+    js> form.startup();
+
+We'll need to define a function for the handler we provided to the action.
+
+    js> test = {}
+    js> test.register = function (arg1, arg2, arg3) {
+    ...    action_test = [arg1, arg2.id, String(arg3)]; }
+    js> dijit.byId('ExampleForm.actions.register').onClick()
+
+    >>> import pprint
+    >>> pprint.pprint(JS('return action_test'))
+    [{u'ExampleForm': {u'actions': {u'register': u''}},
+      u'addresses': u'{"addresses.street.0":"123 fake street","addresses.city.0":"fakeville","addresses.awesomeness.0":"9","addresses.street.1":"345 false street","addresses.city.1":"falsetown","addresses.awesomeness.1":"9001"}',
+      u'age': 23,
+      u'description': u'10ft tall\nRazor sharp scales.',
+      u'favorite_color': u'Blue',
+      u'first_name': u'Happy',
+      u'happy': [True],
+      u'last_name': u'Camper',
+      u'other': u"I've got a magic toenail",
+      u'pet': u'',
+      u'secret': u'5ecret sauce',
+      u'siblings': 1,
+      u'temperment': u'Right Neighborly',
+      u'weight': None},
+     u'ExampleForm.actions.register',
+     u'[Widget dijit.form.Form, ExampleForm]']
+
+We should also confirm that validation is enforced when specified and that we
+can directly pass a function as our handler argument.
+
+    js> action_test = null;
+
+    js> definition.definition.actions[0].handler = test.register;
+    js> definition.definition.actions[0].validate = true;
+
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+    js> form = zc.dojo.build_form2(definition);
+    js> dojo.body().appendChild(form.domNode);
+    js> form.startup();
+
+We should not be valid because the weight field is empty, so the function will
+not be called.
+
+    js> dijit.byId('ExampleForm.actions.register').onClick()
+
+    >>> import pprint
+    >>> pprint.pprint(JS('return action_test'))
+    None
+
+If the form is valid it will work as expected.
+
+    js> dijit.byId('ExampleForm.weight').setValue(175);
+
+    js> dijit.byId('ExampleForm.actions.register').onClick()
+
+    >>> pprint.pprint(JS('return action_test'))
+    [{u'ExampleForm':...]
+
+We can also specify a form handler in addition to or instead of specific
+action handlers.
+
+    js> definition.definition.actions[0].validate = false;
+    js> definition.definition.handler = function (arg1, arg2, arg3) {
+    ...    definition_test = [arg1, arg2.id, String(arg3)];
+    ...    }
+
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+    js> form = zc.dojo.build_form2(definition);
+    js> dojo.body().appendChild(form.domNode);
+    js> form.startup();
+
+    js> dijit.byId('ExampleForm.actions.register').onClick()
+
+    >>> pprint.pprint(JS('return definition_test'))
+    [{u'ExampleForm': {u'actions': {u'register': u''}},
+      u'addresses': u'{"addresses.street.0":"123 fake street","addresses.city.0":"fakeville","addresses.awesomeness.0":"9","addresses.street.1":"345 false street","addresses.city.1":"falsetown","addresses.awesomeness.1":"9001"}',
+      u'age': 23,
+      u'description': u'10ft tall\nRazor sharp scales.',
+      u'favorite_color': u'Blue',
+      u'first_name': u'Happy',
+      u'happy': [True],
+      u'last_name': u'Camper',
+      u'other': u"I've got a magic toenail",
+      u'pet': u'',
+      u'secret': u'5ecret sauce',
+      u'siblings': 1,
+      u'temperment': u'Right Neighborly',
+      u'weight': None},
+     u'ExampleForm.actions.register',
+     u'[Widget dijit.form.Form, ExampleForm]']
+
+    js> definition_test = null;
+
+If we set an 'ignore_default' flag on the action the form handler will be
+ignored.
+
+    js> definition.definition.actions[0].ignore_default = true;
+
+    js> dojo.body().removeChild(form.domNode);
+    js> form.destroyRecursive();
+    js> form = zc.dojo.build_form2(definition);
+    js> dojo.body().appendChild(form.domNode);
+    js> form.startup();
+
+    js> dijit.byId('ExampleForm.actions.register').onClick()
+
+    >>> pprint.pprint(JS('return definition_test'))
+    None

@@ -1,0 +1,138 @@
+CKEditor Widgets
+================
+
+The CKEditor widget can be used for a rich text field with html capabilities.
+
+for our first test we'll try to create a CKEditor widget which has no special
+values whatsoever and confirm that it comes with the default configuration.
+
+    >>> browser.get('http://localhost:%s/test/blank.html' % port)
+
+    js> dojo.require('zc.dojo');
+
+::
+
+  definition = {
+          widgets: [
+              {
+               name: 'story',
+               widget_constructor:  'zc.dojoform.ckeditor.CKEditor',
+               required: true,
+               value: "<p>I am a story</p>",
+              },
+          ],
+          actions: [
+              {
+                  name: 'reset',
+                  handler: function (data, action, form) {
+                      form.reset();
+                  }
+              },
+              {
+                  name: 'submit',
+                  handler: function (data, action, form) {
+                      form_data = data;
+                  }
+              }
+          ]
+      };
+
+  form = zc.dojo.build_form2(definition, dojo.create('div', {}, dojo.body()));
+  form.startup();
+
+.. -> js
+
+    >>> while not browser.find_elements_by_tag_name('body'):
+    ...     continue
+
+    >>> JS(js)
+
+The CKeditor widget comes with all of the toolbar buttons by default.
+
+    js> ckeditor = CKEDITOR.instances['story']
+
+::
+
+    plugins = [];
+    for (i in ckeditor.plugins) {
+        plugins.push(i);
+    }
+    return plugins;
+
+.. -> js
+
+    >>> len(JS(js))
+    72 
+
+We can get the current value of the widget, which will be what we gave it
+in our configuration.
+
+    js> widget = dijit.byId('story')
+    js> return widget.attr('value')
+    u'<p>\n\tI am a story</p>\n'
+
+We can modify this value as well
+
+    js> widget.attr('value', '<blink>Wow!</blink>')
+    js> return widget.attr('value')
+    u'<p>\n\t<blink>Wow!</blink></p>\n'
+
+Note that when we do this the value in the actual CKEditor is modified as well
+
+    js> return ckeditor.getData()
+    u'<p>\n\t<blink>Wow!</blink></p>\n'
+
+we can reset the form and we'll be back to our old value.
+
+    js> dijit.byId('reset').onClick()
+    js> return widget.attr('value')
+    u'<p>\n\tI am a story</p>\n'
+
+    js> return ckeditor.getData()
+    u'<p>\n\tI am a story</p>\n'
+
+We can check if the widget is valid.
+
+    js> return widget.isValid()
+    True
+
+    js> return widget.validate()
+    True
+
+This will return invalid if the field is required and we have no data.
+
+    js> widget.attr('value', '')
+
+    js> return widget.isValid()
+    False
+
+    js> dijit.byId('reset').onClick()
+
+When we focus the widget we will get focus for the editor element.
+
+    js> widget.focus()
+
+    js> return ckeditor.focusManager.hasFocus
+    True
+
+We can connect to the onChange event for the widget and we'll fire that
+event whenever the value of the widget is set.
+
+    js> dojo.connect(widget, 'onChange', function (value) {
+    ...     result = value;
+    ... });
+    js> widget.attr('value', "<div>Amazing</div>")
+
+    >>> import pprint
+    >>> pprint.pprint(JS("return result"))
+    u'<div>Amazing</div>'
+
+When we call an action handler the data in the editor is sent along with other
+fields.
+
+    js> dijit.byId('submit').onClick()
+
+    >>> pprint.pprint(JS('return form_data'))
+    {u'reset': u'',
+     u'story': u'<div>\n\tAmazing</div>\n',
+     u'submit': u''}
