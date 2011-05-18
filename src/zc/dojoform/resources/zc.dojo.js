@@ -286,6 +286,9 @@ zc.dojo.call_server = function (args) {
             zc.dojo.alert({
                 title: args.task + ' failed',
                 content: result});
+            if (args.failure) {
+                args.failure(error);
+            }
         }
         else if (args.success) {
             args.success(data);
@@ -1109,6 +1112,9 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset, startup)
     if (!config.definition.left_fields) {
         config.definition.left_fields = [];
     }
+    if (config.definition.button_type === undefined) {
+        config.definition.button_type = dijit.form.Button;
+    }
     if (!tabIndexOffset) {
         tabIndexOffset = 0;
     }
@@ -1253,11 +1259,12 @@ zc.dojo.build_form = function (config, pnode, tabIndexOffset, startup)
 
     if (bottom_pane) {
         dojo.forEach(config.definition.actions, function (action) {
-            var button = new dijit.form.Button({
+            var button = new config.definition.button_type({
                     label: action.label,
                     id: action.name,
                     onClick: action.onClick || fireSubmitEvent,
                     type: 'button',
+                    timeout: 10000,
                     tabIndex: index_map[action.name] + tabIndexOffset
                 });
             bottom_pane.domNode.appendChild(button.domNode);
