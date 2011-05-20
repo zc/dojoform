@@ -162,6 +162,8 @@ def wait_for(func, timeout=5):
 
 
 def setUp(test):
+    if bobo_port is None:
+        start_bobo_server()
     browser = selenium.webdriver.Firefox()
     test.globs.update(
         read_test_file = zc.dojoform.testing.read_test_file,
@@ -201,36 +203,19 @@ def start_bobo_server(port=0, daemon=True):
     thread.start()
     bobo_port = server.server_port
 
-class SeleniumLayer:
-
-    @classmethod
-    def setUp(self):
-        if bobo_port is None:
-            start_bobo_server()
-        self.java = subprocess.Popen(
-            ['java', '-jar',
-             home+'/parts/selenium.jar/selenium-server-standalone-2.0b2.jar'])
-
-    @classmethod
-    def tearDown(self):
-        os.kill(self.java.pid, signal.SIGTERM)
-
 def test_suite():
-    optionflags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
-
-    selenium_suite = manuel.testing.TestSuite(
-            manuel.doctest.Manuel(parser=zc.customdoctests.js.parser) +
-            manuel.doctest.Manuel(parser=zc.customdoctests.js.eq_parser) +
-            manuel.doctest.Manuel(optionflags=optionflags) +
-            manuel.capture.Manuel(),
-            'build_form.test',
-            'build_form2.test',
-            'rangewidget.test',
-            'ckwidget.test',
-            'recordlistwidget.test',
-            setUp=setUp, tearDown=tearDown)
-    selenium_suite.layer = SeleniumLayer
-    return selenium_suite
+    return manuel.testing.TestSuite(
+        manuel.doctest.Manuel(parser=zc.customdoctests.js.parser) +
+        manuel.doctest.Manuel(parser=zc.customdoctests.js.eq_parser) +
+        manuel.doctest.Manuel(
+            optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS) +
+        manuel.capture.Manuel(),
+        'build_form.test',
+        'build_form2.test',
+        'rangewidget.test',
+        'ckwidget.test',
+        'recordlistwidget.test',
+        setUp=setUp, tearDown=tearDown)
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')
