@@ -10,6 +10,61 @@ dojo.require('dijit.layout.ContentPane');
 dojo.require('dijit._Widget');
 dojo.require('zc.ckeditor');
 
+dojo.ready(function () {
+
+    zc.DateTimeTextBox = function (config, node) {
+
+        var domNode = dojo.create('div', {
+            'style': 'padding:5px;'
+        }, node);
+        var value_node = dojo.create('input', {
+            'type': 'hidden',
+            'name': config.name,
+            'value': config.value
+        }, domNode);
+
+        var dateNode = dojo.create('div', {}, domNode);
+        dojo.create('span', {
+            'innerHTML': 'Date: '
+        }, dateNode);
+        var date_box = new dijit.form.DateTextBox({
+            value: config.value,
+            onChange: function () {change_value()}
+        }, dojo.create('div', {}, dateNode));
+
+        var timeNode = dojo.create('div', {}, domNode);
+        dojo.create('span', {
+            'innerHTML': 'Time: '
+        }, timeNode);
+        var time_box = new dojox.form.TimeSpinner({
+            value: config.value,
+            onChange: function () {change_value()}
+        }, dojo.create('div', {}, timeNode));
+
+        var change_value = function () {
+            var date_v = date_box.value;
+            var time_v = time_box.value;
+            var new_time = new Date(date_v.getFullYear(),
+                                    date_v.getMonth(),
+                                    date_v.getDate(),
+                                    time_v.getHours(),
+                                    time_v.getMinutes(),
+                                    time_v.getSeconds())
+            value_node.value = new_time.toString();
+        }
+
+        change_value();
+
+        return {
+            'getValue': function () {
+                return value_node.value;
+            },
+            'domNode': domNode
+        }
+    }
+
+});
+
 zc.dojo.widgets = {};
 
 zc.dojo.beforeContentFormSubmittedTopic =
@@ -190,6 +245,9 @@ zc.dojo.call_server = function (args) {
             zc.dojo.alert({
                 title: args.task + ' failed',
                 content: result});
+            if (args.failure) {
+                args.failure(error);
+            }
         }
         else if (args.success) {
             args.success(data);
@@ -511,7 +569,15 @@ zc.dojo.widgets['zope.schema.Time'] = function (config, node, order) {
         }
         wconfig.value = dojo.date.stamp.fromISOString(ts);
     }
-    var widget = new dijit.form.TimeTextBox(wconfig, dojo.create('div'));
+    var widget = new dojox.form.TimeSpinner(wconfig, dojo.create('div'));
+    return widget.domNode;
+};
+
+zc.dojo.widgets['zope.schema.Datetime'] = function (
+    config, node, order, readOnly) {
+    var wconfig = zc.dojo.parse_config(config, order);
+    wconfig.value = wconfig.value ? new Date(wconfig.value) : new Date();
+    var widget = new zc.DateTimeTextBox(wconfig, dojo.create('div'));
     return widget.domNode;
 };
 
@@ -535,6 +601,25 @@ zc.dojo._choiceConfig = function (config, node, order) {
     wconfig.store = select_store;
     wconfig.searchAttr = "label";
     return wconfig;
+};
+
+zc.dojo.widgets['zope.schema.Set'] = function (config, node, order) {
+    wconfig = zc.dojo.parse_config(config, order);
+    var sel = dojo.create('select', {}, node);
+    config.value = config.value || []; 
+    var sel_vals = config.value.join(' ');
+    dojo.forEach(config.values, function (item) {
+        var op = dojo.create('option', {
+            value: item[0],
+            innerHTML: item[1]
+        }, sel);
+        if (String(sel_vals.match(item[0])) === item[0]) {
+            op.setAttribute('selected', true);
+        }
+    });
+    delete wconfig['value'];
+    var select = new dijit.form.MultiSelect(wconfig, sel);
+    return node
 };
 
 zc.dojo.widgets['zope.schema.Choice'] = function (config, node, order) {
@@ -622,6 +707,9 @@ zc.dojo.build_form = function (config, pnode, order, startup)
     order = order || 0;
     if (!config.definition.left_fields) {
         config.definition.left_fields = [];
+    }
+    if (config.definition.button_type === undefined) {
+        config.definition.button_type = dijit.form.Button;
     }
     var form = new dijit.form.Form({
         id: config.definition.prefix,
@@ -760,13 +848,14 @@ zc.dojo.build_form = function (config, pnode, order, startup)
 
     if (bottom_pane) {
         dojo.forEach(config.definition.actions, function (action) {
-            var button = new dijit.form.Button({
-                    'label': action.label,
-                    'id': action.name,
+            var button = new config.definition.button_type({
+                    label: action.label,
+                    id: action.name,
                     'class': action['class'],
-                    'onClick': fireSubmitEvent,
-                    'type': 'button',
-                    'tabIndex': order
+                    onClick: action.onClick || fireSubmitEvent,
+                    type: 'button',
+                    timeout: 10000,
+                    tabIndex: order
                 });
             bottom_pane.domNode.appendChild(button.domNode);
         });
