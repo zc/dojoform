@@ -12,7 +12,7 @@ Note when we use the term "object" below, we're refering to a
 JavaScript or JSON object (depending on whether the form definition is
 in JavaScript or JSON form).
 
-A definition is an object with the folliowing top-level properties.
+A definition is an object with the following top-level properties.
 We'll provide more detail on each field in following sections.
 
 actions (optional)

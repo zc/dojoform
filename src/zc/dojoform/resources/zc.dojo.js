@@ -1,14 +1,40 @@
 /*global dijit, dojo, dojox, zc, escape, unescape */
 
+// provide a hook for developers to selectively require widgets
+if (window.zc_dojo_norequires === undefined) {
+    dojo.require('dojo.date.stamp');
+    dojo.require('dojo.data.ItemFileReadStore');
+    dojo.require('dojo.data.ItemFileWriteStore');
+    dojo.require('dijit.Dialog');
+    dojo.require('dijit.Editor');
+    dojo.require('dijit.form.Button');
+    dojo.require('dijit.form.CheckBox');
+    dojo.require('dijit.form.ComboBox');
+    dojo.require('dijit.form.DateTextBox');
+    dojo.require('dijit.form.Form');
+    dojo.require('dijit.form.FilteringSelect');
+    dojo.require('dijit.form.NumberSpinner');
+    dojo.require('dijit.form.NumberTextBox');
+    dojo.require('dijit.form.MultiSelect');
+    dojo.require('dijit.form.SimpleTextarea');
+    dojo.require('dijit.form.TextBox');
+    dojo.require('dijit.form.TimeTextBox');
+    dojo.require('dijit.form.ValidationTextBox');
+    dojo.require('dijit.layout.BorderContainer');
+    dojo.require('dijit.layout.ContentPane');
+    dojo.require('dijit._Widget');
+    dojo.require("dojox.grid.cells.dijit");
+    dojo.require("dojox.grid.EnhancedGrid");
+    dojo.require("dojox.grid.enhanced.plugins.DnD");
+    dojo.require(
+        "dojox.grid.enhanced.plugins.IndirectSelection");
+    dojo.require("dojox.grid.enhanced.plugins.Menu");
+    dojo.require("dojox.grid.enhanced.plugins.NestedSorting");
+    dojo.require('zc.ckeditor');
+}
+
 dojo.provide('zc.dojo');
 
-dojo.require('dijit.Dialog');
-dojo.require('dijit.form.Form');
-dojo.require('dijit.form.Button');
-dojo.require('dijit.layout.BorderContainer');
-dojo.require('dijit.layout.ContentPane');
-dojo.require('dijit._Widget');
-dojo.require('zc.ckeditor');
 
 dojo.ready(function () {
 
@@ -282,7 +308,6 @@ zc.dojo.call_server = function (args) {
 zc.dojo.submit_form = zc.dojo.call_server;
 
 zc.dojo.widgets['zope.schema.TextLine'] = function (config, node, order) {
-    dojo.require('dijit.form.ValidationTextBox');
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
     if (config.max_size !== undefined)
@@ -309,7 +334,6 @@ zc.dojo._update = function(a, b) {
 };
 
 zc.dojo.widgets['zope.schema.Password'] = function (config, node, order) {
-    dojo.require('dijit.form.ValidationTextBox');
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
     wconfig.type = "password";
@@ -330,7 +354,6 @@ zc.dojo.widgets['zope.schema.Password'] = function (config, node, order) {
 
 zc.dojo.widgets['zope.schema.Text'] = function (
     config, node, order, _, nostyle) {
-    dojo.require('dijit.form.SimpleTextarea');
     var wconfig = zc.dojo.parse_config(config, order);
     if (! nostyle) wconfig.style = 'width:auto';
     return new dijit.form.SimpleTextarea(wconfig, node).domNode;
@@ -338,7 +361,6 @@ zc.dojo.widgets['zope.schema.Text'] = function (
 
 zc.dojo.widgets['zc.ajaxform.widgets.RichText'] =
     function (config, node, order) {
-    dojo.require('dijit.Editor');
 
     var wconfig = zc.dojo.parse_config(config, order);
     var total_editor = dojo.create('div', {}, node);
@@ -370,7 +392,6 @@ zc.dojo.widgets['zc.ajaxform.widgets.RichText'] =
 };
 
 zc.dojo.widgets['zc.ajaxform.widgets.Hidden'] = function (config, node, order) {
-    dojo.require('dijit.form.TextBox');
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
     wconfig.type = 'hidden';
@@ -400,8 +421,6 @@ zc.dojo.DateConversion = function (v) {
 
 zc.dojo.widgets['zc.ajaxform.widgets.DateRange'] =
     function (config, node, order) {
-        dojo.require('dijit.form.DateTextBox');
-        dojo.require('dojo.date.stamp');
         var wconfig;
         wconfig = zc.dojo.parse_range_config(config, order);
         wconfig.start_label = 'Start';
@@ -417,7 +436,6 @@ zc.dojo.widgets['zc.ajaxform.widgets.DateRange'] =
 
 zc.dojo.widgets['zc.ajaxform.widgets.IntRange'] =
     function (config, node, order) {
-    dojo.require('dijit.form.NumberTextBox');
     var wconfig;
     wconfig = zc.dojo.parse_range_config(config, order);
     wconfig.start_label = 'Min';
@@ -451,7 +469,6 @@ zc.dojo.parse_range_config = function (config, order) {
 };
 
 zc.dojo.widgets['zope.schema.Int'] = function (config, node, order) {
-    dojo.require('dijit.form.NumberTextBox');
     var wconfig;
     wconfig = zc.dojo.parse_number_config(config, order);
     wconfig.constraints.places = 0;
@@ -460,21 +477,18 @@ zc.dojo.widgets['zope.schema.Int'] = function (config, node, order) {
 
 zc.dojo.widgets['zc.ajaxform.widgets.NumberSpinner'] = function (
     config, node, order) {
-    dojo.require('dijit.form.NumberSpinner');
     var wconfig;
     wconfig = zc.dojo.parse_number_config(config, order);
     return new dijit.form.NumberSpinner(wconfig, node).domNode;
 };
 
 zc.dojo.widgets['zope.schema.Decimal'] = function (config, node, order) {
-    dojo.require('dijit.form.NumberTextBox');
     var wconfig;
     wconfig = zc.dojo.parse_number_config(config, order);
     return new dijit.form.NumberTextBox(wconfig, node).domNode;
 };
 
 zc.dojo.widgets['zope.schema.Bool'] = function (config, node, order) {
-    dojo.require('dijit.form.CheckBox');
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
     wconfig.checked = config.value;
@@ -490,7 +504,6 @@ zc.dojo.widgets['zope.schema.Bool'] = function (config, node, order) {
 
 zc.dojo.widgets['zc.ajaxform.widgets.BasicDisplay'] =
     function (config, node, order) {
-    dojo.require('dijit.form.TextBox');
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
     wconfig.readOnly = true;
@@ -523,7 +536,6 @@ zc.dojo.widgets['zc.ajaxform.widgets.RangeDisplay'] = function (
 
 zc.dojo.widgets['zc.ajaxform.widgets.BoolDisplay'] = function (
     config, node, order) {
-    dojo.require('dijit.form.CheckBox');
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
     wconfig.checked = config.value;
@@ -550,7 +562,6 @@ zc.dojo.widgets['zc.ajaxform.widgets.RichTextDisplay'] = function (
 };
 
 zc.dojo.widgets['zope.schema.Date'] = function (config, node, order) {
-    dojo.require('dijit.form.DateTextBox');
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
     wconfig.value = dojo.date.stamp.fromISOString(wconfig.value);
@@ -559,7 +570,6 @@ zc.dojo.widgets['zope.schema.Date'] = function (config, node, order) {
 };
 
 zc.dojo.widgets['zope.schema.Time'] = function (config, node, order) {
-    dojo.require('dijit.form.TimeTextBox');
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
     if (wconfig.value) {
@@ -623,23 +633,18 @@ zc.dojo.widgets['zope.schema.Set'] = function (config, node, order) {
 };
 
 zc.dojo.widgets['zope.schema.Choice'] = function (config, node, order) {
-    dojo.require('dojo.data.ItemFileReadStore');
-    dojo.require('dijit.form.FilteringSelect');
     var wconfig = zc.dojo._choiceConfig(config, node, order);
     return new dijit.form.FilteringSelect(wconfig, node).domNode;
 };
 
 zc.dojo.widgets['zc.ajaxform.widgets.ComboBox'] = function (
     config, node, order) {
-    dojo.require('dojo.data.ItemFileReadStore');
-    dojo.require('dijit.form.ComboBox');
     var wconfig = zc.dojo._choiceConfig(config, node, order);
     return new dijit.form.ComboBox(wconfig, node).domNode;
 };
 
 zc.dojo.widgets['zope.schema.Object'] = function (
     config, pnode, order, widgets) {
-    dojo.require('dijit.form.CheckBox');
     var node = new dijit.layout.BorderContainer({
         design: "headline", gutters: true
     });
@@ -1308,14 +1313,6 @@ dojo.ready(
             "zc.RecordList", [dijit._Widget], {
 
                 constructor: function (jsonData, node) {
-                    dojo.require('dojo.data.ItemFileWriteStore');
-                    dojo.require("dojox.grid.cells.dijit");
-                    dojo.require("dojox.grid.EnhancedGrid");
-                    dojo.require("dojox.grid.enhanced.plugins.DnD");
-                    dojo.require(
-                        "dojox.grid.enhanced.plugins.IndirectSelection");
-                    dojo.require("dojox.grid.enhanced.plugins.Menu");
-                    dojo.require("dojox.grid.enhanced.plugins.NestedSorting");
                     this.config = jsonData.config;
                     this.rc = this.config.record_schema;
                     this.rc.name = this.config.name;

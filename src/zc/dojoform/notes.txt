@@ -1,0 +1,20 @@
+Dojoform Notes
+==============
+
+dojo.requires
+-------------
+
+By default dojoform will pull in all the dojo, dijit, and dojox modules that
+it may need to build whatever widgets it supports out of the box.
+
+Ideally we'd like to add support for lazily requiring these modules, but
+for now we're punting.
+
+If you know what dojoform is going to need required through dojo.requires
+and you want to avoid loading a lot more than that, you can define a global
+before requiring zc.dojo that will prevent these loads:
+
+    zc_dojo_norequires
+
+If this global has any value other than undefined, dojoform will not require
+anything.
