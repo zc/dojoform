@@ -1317,6 +1317,7 @@ dojo.ready(
                     this.rc = this.config.record_schema;
                     this.rc.name = this.config.name;
                     this.original = this.config.value;
+                    this.dnd__preselect = true;
                     this.dijit_type = jsonData.dijit_type;
                     this.name = this.config.name;
                     this.id = this.config.id;
@@ -1614,10 +1615,36 @@ dojo.ready(
                         autoHeight: true,
                         plugins: {
                             nestedSorting: true,
-                            dnd: true
+                            dnd: {'dndConfig':
+                               {'col': {
+                                    'out': false,
+                                    'within': false,
+                                    'in': false
+                                   },
+                                'cell': {
+                                    'out': false,
+                                    'within': false,
+                                    'in': false
+                                   }
+                               }
+                            }
                         }
                     }, dojo.create('div', {}, this.domNode));
                     this.grid = grid;
+                    var dnd_plugin = grid.pluginMgr.getPlugin('dnd');
+                    dnd_plugin.selector.setupConfig({
+                        'row': 'single',
+                        'cell': 'disabled',
+                        'column': 'disabled'
+                    });
+                    dojo.connect(grid, 'onCellMouseOver', dojo.hitch(this,
+                        function (e) {
+                            if (this.dnd_preselect) {
+                                var dnd_plugin = grid.pluginMgr.getPlugin('dnd');
+                                dnd_plugin._dndReady = true;
+                                dnd_plugin.selector.select('row', e.rowIndex);
+                            }
+                    }));
                     if (dojo.version < '1.6') {
                         grid.select.exceptColumnsTo = record_fields.length - 2;
                         grid.select.getExceptionalColOffsetWidth = dojo.hitch(
@@ -1651,9 +1678,14 @@ dojo.ready(
                                 }
                             });
                         }
-                        dojo.connect(grid, 'onCellClick', function (e) {
+                        dojo.connect(grid, 'onCellClick', dojo.hitch(this, 
+                            function (e) {
                             grid.selection.select(e.rowIndex);
-                        });
+                            var dnd_plugin = grid.pluginMgr.getPlugin('dnd');
+                            dnd_plugin._dndReady = true;
+                            dnd_plugin.selector.select('row', e.rowIndex);
+                            this.dnd_preselect = false;
+                        }));
                         dojo.connect(grid, 'onCellDblClick', function (e) {
                             grid.selection.select(e.rowIndex);
                             this._edit_record(
@@ -1731,6 +1763,7 @@ dojo.ready(
                             function (item) {
                                 this._set_inputs();
                                 this.onChange(this.attr('value'));
+                                this.dnd_preselect = true;
                             })
                         );
                     }
