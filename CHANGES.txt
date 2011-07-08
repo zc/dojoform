@@ -3,7 +3,7 @@ Changes
 =======
 
 
-0.25.0 (2011-07-08)
+0.26.0 (2011-07-08)
 ===================
 
 - Better support for D&D recordlists
