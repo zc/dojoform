@@ -1317,6 +1317,7 @@ dojo.ready(
                     this.rc = this.config.record_schema;
                     this.rc.name = this.config.name;
                     this.original = this.config.value;
+                    this.dnd__preselect = true;
                     this.dijit_type = jsonData.dijit_type;
                     this.name = this.config.name;
                     this.id = this.config.id;
@@ -1614,10 +1615,36 @@ dojo.ready(
                         autoHeight: true,
                         plugins: {
                             nestedSorting: true,
-                            dnd: true
+                            dnd: {'dndConfig':
+                               {'col': {
+                                    'out': false,
+                                    'within': false,
+                                    'in': false
+                                   },
+                                'cell': {
+                                    'out': false,
+                                    'within': false,
+                                    'in': false
+                                   }
+                               }
+                            }
                         }
                     }, dojo.create('div', {}, this.domNode));
                     this.grid = grid;
+                    var dnd_plugin = grid.pluginMgr.getPlugin('dnd');
+                    dnd_plugin.selector.setupConfig({
+                        'row': 'single',
+                        'cell': 'disabled',
+                        'column': 'disabled'
+                    });
+                    dojo.connect(grid, 'onCellMouseOver', dojo.hitch(this,
+                        function (e) {
+                            if (this.dnd_preselect) {
+                                var dnd_plugin = grid.pluginMgr.getPlugin('dnd');
+                                dnd_plugin._dndReady = true;
+                                dnd_plugin.selector.select('row', e.rowIndex);
+                            }
+                    }));
                     if (dojo.version < '1.6') {
                         grid.select.exceptColumnsTo = record_fields.length - 2;
                         grid.select.getExceptionalColOffsetWidth = dojo.hitch(
@@ -1651,9 +1678,14 @@ dojo.ready(
                                 }
                             });
                         }
-                        dojo.connect(grid, 'onCellClick', function (e) {
+                        dojo.connect(grid, 'onCellClick', dojo.hitch(this, 
+                            function (e) {
                             grid.selection.select(e.rowIndex);
-                        });
+                            var dnd_plugin = grid.pluginMgr.getPlugin('dnd');
+                            dnd_plugin._dndReady = true;
+                            dnd_plugin.selector.select('row', e.rowIndex);
+                            this.dnd_preselect = false;
+                        }));
                         dojo.connect(grid, 'onCellDblClick', function (e) {
                             grid.selection.select(e.rowIndex);
                             this._edit_record(
@@ -1722,6 +1754,18 @@ dojo.ready(
                                 grid.store.save();
                             }
                         }, dojo.create('div', null, this.domNode));
+                        // While the event seems deceptively decorative, we are
+                        // using this to know when to recalculate our grid
+                        // value, since we do so by iterating over rows.
+                        // We do this because order is important, and the store
+                        // cares nothing of order.
+                        dojo.connect(grid, 'postresize', dojo.hitch(this,
+                            function (item) {
+                                this._set_inputs();
+                                this.onChange(this.attr('value'));
+                                this.dnd_preselect = true;
+                            })
+                        );
                     }
 
                     this.startup = function (node) {
@@ -1736,29 +1780,16 @@ dojo.ready(
                     dojo.connect(
                         this.grid, 'startup', dojo.hitch(
                             this, function () {
-                                this._set_inputs(this.get('value'));
+                                this._set_inputs();
                             }));
                 },
 
+                onChange: function (value) {
+                    this.inherited(arguments);
+                },
+
                 _getValueAttr: function () {
-                    var i = 0;
-                    var content = {};
-                    dojo.forEach(this.grid.store._arrayOfAllItems,
-                        dojo.hitch(this, function (item) {
-                            if (item === null) {
-                                return;
-                            }
-                            dojo.forEach(this.rc.widgets, dojo.hitch(this,
-                                function (def) {
-                                    var name = this.config.name + '.' +
-                                        def.name;
-                                    if (item[name] !== undefined) {
-                                        content[name + '.' + i] = item[name][0];
-                                    }
-                            }));
-                            i++;
-                    }));
-                    return dojo.toJson(content);
+                    return this.input_value.value;
                 },
 
                 _values_from: function (value) {
@@ -1781,40 +1812,41 @@ dojo.ready(
                     };
                     var store = new dojo.data.ItemFileWriteStore(
                         {data: data});
-                    dojo.connect(store, 'onNew', dojo.hitch(this,
-                        this._on_change));
-                    dojo.connect(store, 'onDelete', dojo.hitch(this,
-                        this._on_change));
-                    dojo.connect(store, 'onSet', dojo.hitch(this,
-                        this._on_change));
+                    // This won't trigger a resize, so we have to keep this
+                    // event.
+                    dojo.connect(store, 'onSet', dojo.hitch(this, function () {
+                        this._set_inputs();
+                    }));
                     return store;
                 },
 
-                _set_inputs: function (value) {
-                    this.input_value.value = value;
+                _set_inputs: function () {
                     this.input_parent.innerHTML = '';
-                    var values = dojo.fromJson(value);
-                    for (name in values) {
-                        dojo.create('input', {
-                            type: 'hidden',
-                            name: name,
-                            value: values[name]
-                        }, this.input_parent);
+                    var items = {};
+                    for (var i=0; i< this.grid.rowCount; i++) {
+                        var rec = this.grid.getItem(i);
+                        if (rec) {
+                            var attrs = this.grid.store.getAttributes(rec);
+                            dojo.forEach(attrs, dojo.hitch(this, function (attr) {
+                                if (attr != 'name') {
+                                    var name = attr+ '.'+String(i);
+                                    var value = this.grid.store.getValue(rec,
+                                        attr);
+                                    dojo.create('input', {
+                                        type: 'hidden',
+                                        name: name,
+                                        value: value
+                                    }, this.input_parent);
+                                    items[name] = value;
+                                }
+                            }));
+                        }
                     }
-                },
-
-                onChange: function (value) {
-                    this._set_inputs(value);
-                    this.inherited(arguments);
-                },
-
-                _on_change: function () {
-                    this.onChange(this.attr('value'));
+                    this.input_value.value = dojo.toJson(items);
                 },
 
                 _setValueAttr: function (value) {
                     this.grid.setStore(this._store_from_data(value));
-                    this.onChange(this.get('value'));
                 },
 
                 isValid: function () {
