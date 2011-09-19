@@ -706,6 +706,17 @@ zc.dojo.widgets['zope.schema.List'] = function (
     return new zc.RecordList({config: config}, pnode).domNode;
 };
 
+zc.dojo.build_widgets = function (config) {
+    var widget_mapping = {}
+    dojo.forEach(config.definition.widgets, function (widget_config) {
+        var widget = zc.dojo.widgets[
+            widget_config.widget_constructor](
+                widget_config, dojo.create('div'));
+        widget_mapping[widget_config.id] = widget;
+    });
+    return widget_mapping;
+}
+
 zc.dojo.build_form = function (config, pnode, order, startup)
 {
     startup = startup === undefined ? true: startup;
