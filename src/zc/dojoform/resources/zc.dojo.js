@@ -1871,7 +1871,7 @@ dojo.ready(
 
                 constructor: function (jsonData, node) {
                     this.config = jsonData.config;
-                    this.dijit_type = jsonData.dijit_type;
+                    this.dijit_type = jsonData.dijit_type || dijit.form.NumberTextBox;
                     this.convert_to = jsonData.convert_to;
                     this.convert_from = jsonData.convert_from;
                     this.constraints = this.config.constraints;
@@ -1904,8 +1904,11 @@ dojo.ready(
                             value: value[this.config.start],
                             onChange: dojo.hitch(
                                 this, function (value) {
-                                    this.max_value.constraints.min = value;
-                                    this.onChange(this.get('value'));
+                                    if (value || value === 0) {
+                                        this.max_value.constraints.min = value;
+                                        this.onChange(this.get('value'));
+                                        this.max_value.validate();
+                                    }
                                 })
                         }, dojo.create('div', {}, this.domNode));
                     dojo.create('label', {
@@ -1917,8 +1920,11 @@ dojo.ready(
                             value: value[this.config.end],
                             onChange: dojo.hitch(
                                 this, function (value) {
-                                    this.min_value.constraints.max = value;
-                                    this.onChange(this.get('value'));
+                                    if (value || value === 0) {
+                                        this.min_value.constraints.max = value;
+                                        this.onChange(this.get('value'));
+                                        this.min_value.validate();
+                                    }
                                 })
                         }, dojo.create('div', {}, this.domNode));
 

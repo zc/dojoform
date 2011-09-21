@@ -164,7 +164,8 @@ def wait_for(func, timeout=5):
 def setUp(test):
     if bobo_port is None:
         start_bobo_server()
-    browser = selenium.webdriver.Firefox()
+    # While FireFox gets thir act together the Chrome WD seems more stable
+    browser = selenium.webdriver.Chrome()
     test.globs.update(
         read_test_file = zc.dojoform.testing.read_test_file,
         wait_for=wait_for,
