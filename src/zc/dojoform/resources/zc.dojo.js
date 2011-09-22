@@ -442,7 +442,7 @@ zc.dojo.widgets['zc.ajaxform.widgets.IntRange'] =
     wconfig.end_label = 'Max';
     return new zc.RangeWidget({
         config: wconfig,
-        dijit_type: dijit.form.NumberTextBox
+        dijit_type: config.dijit_type || dijit.form.NumberSpinner
     }, node).domNode;
 };
 
@@ -1871,7 +1871,7 @@ dojo.ready(
 
                 constructor: function (jsonData, node) {
                     this.config = jsonData.config;
-                    this.dijit_type = jsonData.dijit_type || dijit.form.NumberSpinner;
+                    this.dijit_type = jsonData.dijit_type;
                     this.convert_to = jsonData.convert_to;
                     this.convert_from = jsonData.convert_from;
                     this.constraints = this.config.constraints;
