@@ -1871,7 +1871,7 @@ dojo.ready(
 
                 constructor: function (jsonData, node) {
                     this.config = jsonData.config;
-                    this.dijit_type = jsonData.dijit_type || dijit.form.NumberTextBox;
+                    this.dijit_type = jsonData.dijit_type || dijit.form.NumberSpinner;
                     this.convert_to = jsonData.convert_to;
                     this.convert_from = jsonData.convert_from;
                     this.constraints = this.config.constraints;
