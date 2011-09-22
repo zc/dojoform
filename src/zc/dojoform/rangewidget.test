@@ -50,11 +50,11 @@ To define a range widget, create a new zc.RangeWidget, passing
 We can make all the fields invalid by modifying eachother and thus
 modifying their constraints.
 
-    js> dijit.byId('dijit_form_NumberTextBox_0').setValue(10)
-    js> dijit.byId('dijit_form_NumberTextBox_1').setValue(8)
-    js> return dijit.byId('dijit_form_NumberTextBox_0').isValid()
+    js> dijit.byId('dijit_form_NumberSpinner_0').setValue(10)
+    js> dijit.byId('dijit_form_NumberSpinner_1').setValue(8)
+    js> return dijit.byId('dijit_form_NumberSpinner_0').isValid()
     False
-    js> return dijit.byId('dijit_form_NumberTextBox_1').isValid()
+    js> return dijit.byId('dijit_form_NumberSpinner_1').isValid()
     False
 
     js> dijit.byId('dijit_form_DateTextBox_0').setValue(new Date(2010, 11, 11))
@@ -66,11 +66,11 @@ modifying their constraints.
 
 And make them valid again.
 
-    js> dijit.byId('dijit_form_NumberTextBox_0').setValue(9)
-    js> dijit.byId('dijit_form_NumberTextBox_1').setValue(10)
-    js> return dijit.byId('dijit_form_NumberTextBox_0').isValid()
+    js> dijit.byId('dijit_form_NumberSpinner_0').setValue(9)
+    js> dijit.byId('dijit_form_NumberSpinner_1').setValue(10)
+    js> return dijit.byId('dijit_form_NumberSpinner_0').isValid()
     True
-    js> return dijit.byId('dijit_form_NumberTextBox_1').isValid()
+    js> return dijit.byId('dijit_form_NumberSpinner_1').isValid()
     True
 
     js> dijit.byId('dijit_form_DateTextBox_0').setValue(new Date(2010, 10, 10))
