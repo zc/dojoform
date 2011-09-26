@@ -234,12 +234,16 @@ zc.dojo.call_server = function (args) {
         if (result) {
             if (!('error' in result) && !('session_expired' in result)) {
                 zc.dojo.system_error(args.task);
+                return
             }
             else if (result.session_expired) {
+                if (args.failure) {
+                    args.failure(error);
+                }
                 zc.dojo.session_expired(error);
                 return;
             }
-            else if (result.error) {
+            else if (result.error && !args.failure) {
                 zc.dojo.alert({
                     title: args.task + ' failed',
                     content: result.error
@@ -257,6 +261,9 @@ zc.dojo.call_server = function (args) {
             data = dojo.fromJson(data);
         }
         if (data.session_expired) {
+            if (args.failure) {
+                args.failure(error);
+            }
             zc.dojo.session_expired(error);
             return;
         }
