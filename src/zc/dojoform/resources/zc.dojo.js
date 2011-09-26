@@ -243,7 +243,7 @@ zc.dojo.call_server = function (args) {
                 zc.dojo.session_expired(error);
                 return;
             }
-            else if (result.error && !args.failure) {
+            else if (result.error) {
                 zc.dojo.alert({
                     title: args.task + ' failed',
                     content: result.error
