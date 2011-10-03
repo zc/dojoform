@@ -234,8 +234,12 @@ zc.dojo.call_server = function (args) {
         if (result) {
             if (!('error' in result) && !('session_expired' in result)) {
                 zc.dojo.system_error(args.task);
+                return
             }
             else if (result.session_expired) {
+                if (args.failure) {
+                    args.failure(error);
+                }
                 zc.dojo.session_expired(error);
                 return;
             }
@@ -257,6 +261,9 @@ zc.dojo.call_server = function (args) {
             data = dojo.fromJson(data);
         }
         if (data.session_expired) {
+            if (args.failure) {
+                args.failure(error);
+            }
             zc.dojo.session_expired(error);
             return;
         }
@@ -705,6 +712,17 @@ zc.dojo.widgets['zope.schema.List'] = function (
     config, pnode, order, widgets) {
     return new zc.RecordList({config: config}, pnode).domNode;
 };
+
+zc.dojo.build_widgets = function (config) {
+    var widget_mapping = {}
+    dojo.forEach(config.definition.widgets, function (widget_config) {
+        var widget = zc.dojo.widgets[
+            widget_config.widget_constructor](
+                widget_config, dojo.create('div'));
+        widget_mapping[widget_config.id] = widget;
+    });
+    return widget_mapping;
+}
 
 zc.dojo.build_form = function (config, pnode, order, startup)
 {

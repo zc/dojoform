@@ -6,8 +6,6 @@ dojo.require("dijit._Widget");
 
 dojo.ready(
     function () {
-        /* Dojo form widget for resource reference list */
-        zc.dojo.GLOBAL_HANDLERS = [];
         dojo.declare(
             "zc.ckeditor", [dijit._Widget], {
 
@@ -49,7 +47,7 @@ dojo.ready(
                         textarea.value = this.ckeditor.getData();
                     });
                     window.addEventListener('beforeSubmit', handler, true);
-                    zc.dojo.GLOBAL_HANDLERS.push(handler);
+                    this.event_handler = handler;
                     dojo.subscribe(zc.dojo.recordFormSubmittedTopic, handler);
                     dojo.forEach(this.change_events, dojo.hitch(this,
                         function (event_name) {
@@ -98,6 +96,13 @@ dojo.ready(
 
                 reset: function () {
                     this.set('value', this.original);
+                },
+
+                destroy: function () {
+                    window.removeEventListener('beforeSubmit',
+                        this.event_handler, true);
+                    CKEDITOR.instances[this.name].destroy();
+                    this.inherited(arguments);
                 },
 
         })
