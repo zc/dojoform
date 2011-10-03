@@ -2,6 +2,12 @@
 Changes
 =======
 
+0.28.0 (2011-10-03)
+===================
+
+- CKEditor destruction
+  (https://tracker.zope.com/tracker/issue12341)
+
 
 0.27.0 (2011-09-22)
 ===================
