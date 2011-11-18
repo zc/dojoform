@@ -1927,8 +1927,9 @@ dojo.ready(
                                     if (value || value === 0) {
                                         var min_con = value;
                                         if (this.constraints.min) {
-                                            min_con = Math.max(value,
-                                                this.constraints.min);
+                                            if (this.constraints.min > min_con) {
+                                                min_con = this.constraints.min;
+                                            }
                                         }
                                         this.max_value.constraints.min = min_con;
                                         this.onChange(this.get('value'));
@@ -1948,8 +1949,9 @@ dojo.ready(
                                     if (value || value === 0) {
                                         var max_con = value;
                                         if (this.constraints.max) {
-                                            max_con = Math.min(value,
-                                                this.constraints.max);
+                                            if (this.constraints.max < max_con) {
+                                                max_con = this.constraints.max;
+                                            }
                                         }
                                         this.min_value.constraints.max = max_con;
                                         this.onChange(this.get('value'));

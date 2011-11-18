@@ -18,7 +18,8 @@ To define a range widget, create a new zc.RangeWidget, passing
                   widget_constructor:  'zc.ajaxform.widgets.IntRange',
                   value: "{min: 1, max: 9}",
                   start: 'min', end: 'max',
-                  constraints: {'min': 0, 'max': 12},
+                  field_min: 0,
+                  field_max: 12,
               },
               {
                   name: 'date_range',
@@ -26,7 +27,8 @@ To define a range widget, create a new zc.RangeWidget, passing
                   start: 'start_date',
                   end: 'end_date',
                   value: "{start_date: '2010-09-09', end_date: '2010-09-10'}",
-                  constraints: {'min': '2005-09-09', 'max': '2012-09-10'},
+                  field_min: '2005-09-09',
+                  field_max: '2012-09-10',
               }
           ],
           actions: [
@@ -46,6 +48,7 @@ To define a range widget, create a new zc.RangeWidget, passing
 
    >>> while not browser.find_elements_by_tag_name('body'):
    ...     continue
+
 
    >>> JS(js)
 
