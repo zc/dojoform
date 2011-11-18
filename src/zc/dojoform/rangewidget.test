@@ -17,14 +17,16 @@ To define a range widget, create a new zc.RangeWidget, passing
                   name: 'int_range',
                   widget_constructor:  'zc.ajaxform.widgets.IntRange',
                   value: "{min: 1, max: 9}",
-                  start: 'min', end: 'max'
+                  start: 'min', end: 'max',
+                  constraints: {'min': 0, 'max': 12},
               },
               {
                   name: 'date_range',
                   widget_constructor: 'zc.ajaxform.widgets.DateRange',
                   start: 'start_date',
                   end: 'end_date',
-                  value: "{start_date: '2010-09-09', end_date: '2010-09-10'}"
+                  value: "{start_date: '2010-09-09', end_date: '2010-09-10'}",
+                  constraints: {'min': '2005-09-09', 'max': '2012-09-10'},
               }
           ],
           actions: [
@@ -79,6 +81,27 @@ And make them valid again.
     True
     js> return dijit.byId('dijit_form_DateTextBox_1').isValid()
     True
+
+We should also test out our hard constraints given to the widgets in their
+config.
+
+    js> dijit.byId('dijit_form_NumberSpinner_0').setValue(-1)
+    js> return dijit.byId('dijit_form_NumberSpinner_0').isValid()
+    False
+    js> dijit.byId('dijit_form_NumberSpinner_0').setValue(9)
+    js> dijit.byId('dijit_form_NumberSpinner_1').setValue(13)
+    js> return dijit.byId('dijit_form_NumberSpinner_1').isValid()
+    False
+    js> dijit.byId('dijit_form_NumberSpinner_1').setValue(10)
+
+    js> dijit.byId('dijit_form_DateTextBox_0').setValue(new Date(2000, 10, 10))
+    js> return dijit.byId('dijit_form_DateTextBox_0').isValid()
+    False
+    js> dijit.byId('dijit_form_DateTextBox_0').setValue(new Date(2010, 10, 10))
+    js> dijit.byId('dijit_form_DateTextBox_1').setValue(new Date(2020, 11, 11))
+    js> return dijit.byId('dijit_form_DateTextBox_1').isValid()
+    False
+    js> dijit.byId('dijit_form_DateTextBox_1').setValue(new Date(2010, 11, 11))
 
 We can get the value of the rangewidget, which will attainable as json and
 include values for the minimum and maximum values.
