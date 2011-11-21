@@ -1902,12 +1902,14 @@ dojo.ready(
 
                 buildRendering: function () {
                     var min_constraint = {};
+                    var max_constraint = {};
                     if (this.constraints.min !== undefined) {
                         min_constraint.min = this.constraints.min;
+                        max_constraint.min = this.constraints.min;
                     }
 
-                    var max_constraint = {};
                     if (this.constraints.max !== undefined) {
+                        min_constraint.max = this.constraints.max;
                         max_constraint.max = this.constraints.max;
                     }
                     var value = this._values_from(this.config.value);
@@ -1923,7 +1925,13 @@ dojo.ready(
                             onChange: dojo.hitch(
                                 this, function (value) {
                                     if (value || value === 0) {
-                                        this.max_value.constraints.min = value;
+                                        var min_con = value;
+                                        if (this.constraints.min) {
+                                            if (this.constraints.min > min_con) {
+                                                min_con = this.constraints.min;
+                                            }
+                                        }
+                                        this.max_value.constraints.min = min_con;
                                         this.onChange(this.get('value'));
                                         this.max_value.validate();
                                     }
@@ -1939,7 +1947,13 @@ dojo.ready(
                             onChange: dojo.hitch(
                                 this, function (value) {
                                     if (value || value === 0) {
-                                        this.min_value.constraints.max = value;
+                                        var max_con = value;
+                                        if (this.constraints.max) {
+                                            if (this.constraints.max < max_con) {
+                                                max_con = this.constraints.max;
+                                            }
+                                        }
+                                        this.min_value.constraints.max = max_con;
                                         this.onChange(this.get('value'));
                                         this.min_value.validate();
                                     }

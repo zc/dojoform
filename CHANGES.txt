@@ -2,6 +2,14 @@
 Changes
 =======
 
+
+0.29.0 (2011-11-21)
+===================
+
+- Fix for range enforcement
+  (https://tracker.zope.com/tracker/issue12599)
+
+
 0.28.0 (2011-10-03)
 ===================
 
