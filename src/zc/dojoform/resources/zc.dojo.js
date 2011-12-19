@@ -558,7 +558,10 @@ zc.dojo.widgets['zc.ajaxform.widgets.BoolDisplay'] = function (
 
 zc.dojo.widgets['zc.ajaxform.widgets.RichTextDisplay'] = function (
     config, node, order) {
-    var iframe = dojo.create('iframe', {'frameborder': 1}, node);
+    var iframe = dojo.create('iframe', {
+        'frameborder': 1,
+        'class': 'zcdojoformRichTextDisplay'
+    }, node);
     iframe.postStartup = function (node) {
         var doc = this.contentDocument;
         doc.open();
