@@ -575,7 +575,7 @@ zc.dojo.widgets['zope.schema.Date'] = function (config, node, order) {
     var wconfig;
     wconfig = zc.dojo.parse_config(config, order);
     wconfig.value = dojo.date.stamp.fromISOString(wconfig.value);
-    var widget = new dijit.form.DateTextBox(wconfig, dojo.create('div'));
+    var widget = new dijit.form.DateTextBox(wconfig, dojo.create('div', {}, node));
     return widget.domNode;
 };
 
@@ -589,7 +589,7 @@ zc.dojo.widgets['zope.schema.Time'] = function (config, node, order) {
         }
         wconfig.value = dojo.date.stamp.fromISOString(ts);
     }
-    var widget = new dojox.form.TimeSpinner(wconfig, dojo.create('div'));
+    var widget = new dojox.form.TimeSpinner(wconfig, dojo.create('div', {}, node));
     return widget.domNode;
 };
 
@@ -597,7 +597,7 @@ zc.dojo.widgets['zope.schema.Datetime'] = function (
     config, node, order, readOnly) {
     var wconfig = zc.dojo.parse_config(config, order);
     wconfig.value = wconfig.value ? new Date(wconfig.value) : new Date();
-    var widget = new zc.DateTimeTextBox(wconfig, dojo.create('div'));
+    var widget = new zc.DateTimeTextBox(wconfig, dojo.create('div', {}, node));
     return widget.domNode;
 };
 
@@ -626,7 +626,7 @@ zc.dojo._choiceConfig = function (config, node, order) {
 zc.dojo.widgets['zope.schema.Set'] = function (config, node, order) {
     wconfig = zc.dojo.parse_config(config, order);
     var sel = dojo.create('select', {}, node);
-    config.value = config.value || []; 
+    config.value = config.value || [];
     var sel_vals = config.value.join(' ');
     dojo.forEach(config.values, function (item) {
         var op = dojo.create('option', {
@@ -1699,7 +1699,7 @@ dojo.ready(
                                 }
                             });
                         }
-                        dojo.connect(grid, 'onCellClick', dojo.hitch(this, 
+                        dojo.connect(grid, 'onCellClick', dojo.hitch(this,
                             function (e) {
                             grid.selection.select(e.rowIndex);
                             var dnd_plugin = grid.pluginMgr.getPlugin('dnd');
