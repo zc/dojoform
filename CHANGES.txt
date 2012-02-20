@@ -2,6 +2,14 @@
 Changes
 =======
 
+
+0.31.0 (2012-02-20)
+===================
+
+- Fix for date widget
+  (https://tracker.zope.com/tracker/issue11679)
+
+
 0.30.0 (2011-12-19)
 ===================
 
