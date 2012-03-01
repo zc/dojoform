@@ -1496,6 +1496,17 @@ dojo.ready(
                     dojo.addClass(buttons_div, 'dijitDialogPaneActionBar');
 
                     widget = new dijit.form.Button({
+                        label: 'Cancel',
+                        id: widget_name + '.dojo.cancel.btn',
+                        tabIndex: order,
+                        onClick: function (evt) {
+                            edit_dlg.hide();
+
+                        }
+                    });
+                    buttons_div.appendChild(widget.domNode);
+
+                    widget = new dijit.form.Button({
                         label: 'Save',
                         id: widget_name + '.dojo.save.btn',
                         tabIndex: order,
@@ -1555,17 +1566,6 @@ dojo.ready(
                         }
                     });
                     buttons_div.appendChild(widget.domNode);
-                    widget = new dijit.form.Button({
-                        label: 'Cancel',
-                        id: widget_name + '.dojo.cancel.btn',
-                        tabIndex: order,
-                        onClick: function (evt) {
-                            edit_dlg.hide();
-
-                        }
-                    });
-                    buttons_div.appendChild(widget.domNode);
-
 
                     var nodes = new dojo.NodeList(rec_form.domNode);
                     nodes.push(buttons_div);

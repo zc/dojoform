@@ -2,6 +2,12 @@
 Changes
 =======
 
+0.32.0 (unreleased)
+===================
+
+- Switch order of Save and Cancel buttons
+  in record list form dialog
+
 
 0.31.0 (2012-02-20)
 ===================
