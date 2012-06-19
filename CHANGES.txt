@@ -2,6 +2,12 @@
 Changes
 =======
 
+0.34.0 (2012-06-19)
+===================
+
+- Fix bug in Range widget preventing standard form
+  submission, and do labels better.
+
 0.33.0 (2012-06-19)
 ===================
 
