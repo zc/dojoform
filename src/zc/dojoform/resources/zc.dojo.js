@@ -430,8 +430,8 @@ zc.dojo.widgets['zc.ajaxform.widgets.DateRange'] =
     function (config, node, order) {
         var wconfig;
         wconfig = zc.dojo.parse_range_config(config, order);
-        wconfig.start_label = 'Start';
-        wconfig.end_label = 'End';
+        wconfig.start_label = wconfig.start || 'Start';
+        wconfig.end_label = wconfig.end || 'End';
         return new zc.RangeWidget(
             {
                 config: wconfig,
@@ -445,8 +445,8 @@ zc.dojo.widgets['zc.ajaxform.widgets.IntRange'] =
     function (config, node, order) {
     var wconfig;
     wconfig = zc.dojo.parse_range_config(config, order);
-    wconfig.start_label = 'Min';
-    wconfig.end_label = 'Max';
+    wconfig.start_label = wconfig.start || 'Min';
+    wconfig.end_label = wconfig.end || 'Max';
     return new zc.RangeWidget({
         config: wconfig,
         dijit_type: config.dijit_type || dijit.form.NumberSpinner
