@@ -430,8 +430,8 @@ zc.dojo.widgets['zc.ajaxform.widgets.DateRange'] =
     function (config, node, order) {
         var wconfig;
         wconfig = zc.dojo.parse_range_config(config, order);
-        wconfig.start_label = wconfig.start || 'Start';
-        wconfig.end_label = wconfig.end || 'End';
+        wconfig.start_label = wconfig.start_label || 'Start';
+        wconfig.end_label = wconfig.end_label || 'End';
         return new zc.RangeWidget(
             {
                 config: wconfig,
@@ -445,8 +445,8 @@ zc.dojo.widgets['zc.ajaxform.widgets.IntRange'] =
     function (config, node, order) {
     var wconfig;
     wconfig = zc.dojo.parse_range_config(config, order);
-    wconfig.start_label = wconfig.start || 'Min';
-    wconfig.end_label = wconfig.end || 'Max';
+    wconfig.start_label = wconfig.start_label || 'Min';
+    wconfig.end_label = wconfig.end_label || 'Max';
     return new zc.RangeWidget({
         config: wconfig,
         dijit_type: config.dijit_type || dijit.form.NumberSpinner
@@ -472,6 +472,8 @@ zc.dojo.parse_range_config = function (config, order) {
     wconfig = zc.dojo.parse_number_config(config, order);
     wconfig.start = config.start;
     wconfig.end = config.end;
+    wconfig.start_label = config.start_label;
+    wconfig.end_label = config.end_label;
     return wconfig;
 };
 
@@ -1924,6 +1926,7 @@ dojo.ready(
                     this.min_value = new this.dijit_type(
                         {
                             constraints: min_constraint,
+                            name: this.config.start,
                             value: value[this.config.start],
                             onChange: dojo.hitch(
                                 this, function (value) {
@@ -1946,6 +1949,7 @@ dojo.ready(
                     this.max_value = new this.dijit_type(
                         {
                             constraints: max_constraint,
+                            name: this.config.end,
                             value: value[this.config.end],
                             onChange: dojo.hitch(
                                 this, function (value) {
