@@ -2,7 +2,13 @@
 Changes
 =======
 
-0.32.0 (unreleased)
+0.33.0 (2012-06-19)
+===================
+
+- Fix bug in Range widgets preventing labels
+  from appearing
+
+0.32.0 (2012-03-18)
 ===================
 
 - Switch order of Save and Cancel buttons
