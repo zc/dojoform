@@ -52,6 +52,7 @@ setup(
             'selenium',
             'BeautifulSoup',
             'simplejson',
+            'zope.testing',
             ]
         ),
     zip_safe = False,
