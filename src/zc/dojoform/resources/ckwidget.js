@@ -1,4 +1,4 @@
-/*globals zc, dojo, CKEDITOR, window */
+/*globals zc, dijit, dojo, CKEDITOR, window */
 
 dojo.provide('zc.ckeditor');
 
@@ -32,18 +32,18 @@ dojo.ready(
                         'textarea',
                         {'name': this.name},
                         this.domNode
-                    );
+                    ), ckeditorConfig = this.config.ckConfig || {},
+                    editor, handler;
                     textarea.value = this.config.value || '';
-                    var editor;
-                    var ckeditorConfig = this.config.ckConfig || {};
                     if (this.order !== null) {
                         ckeditorConfig.tabIndex = this.order;
                     }
                     if (window.ckeditorCustomConfig) {
-                        ckeditorConfig.customConfig = ckeditorCustomConfig;
+                        ckeditorConfig.customConfig = (
+                            window.ckeditorCustomConfig);
                     }
                     this.ckeditor = CKEDITOR.replace(textarea, ckeditorConfig);
-                    var handler = dojo.hitch(this, function () {
+                    handler = dojo.hitch(this, function () {
                         textarea.value = this.ckeditor.getData();
                     });
                     window.addEventListener('beforeSubmit', handler, true);
@@ -65,7 +65,7 @@ dojo.ready(
 
                 on_change: function (e_value) {
                     var value = e_value || this.attr('value');
-                    if (value != this._previous_value) {
+                    if (value !== this._previous_value) {
                         this._previous_value = value;
                         this.onChange(value);
                     }
@@ -85,7 +85,7 @@ dojo.ready(
 
                 isValid: function () {
                     if (!this.required) {
-                        return True
+                        return true;
                     }
                     return Boolean(this.ckeditor.getData());
                 },
@@ -103,13 +103,13 @@ dojo.ready(
                         this.event_handler, true);
                     CKEDITOR.instances[this.name].destroy();
                     this.inherited(arguments);
-                },
+                }
 
-        })
+        });
         zc.dojo.widgets['zc.dojoform.ckeditor.CKEditor'] = function (config,
             node, order) {
                 return zc.ckeditor(config, node, order).domNode;
-        }
+        };
 
         dojo.subscribe(
             zc.dojo.beforeRecordFormSubmittedTopic, function(frm_id) {
@@ -142,4 +142,4 @@ dojo.ready(
                         }
                     });
             });
-})
+});
