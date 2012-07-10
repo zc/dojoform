@@ -165,7 +165,7 @@ def setUp(test):
     if bobo_port is None:
         start_bobo_server()
     # While FireFox gets their act together the Chrome WD seems more stable
-    browser = selenium.webdriver.Chrome()
+    browser = selenium.webdriver.Firefox()
     test.globs.update(
         read_test_file = zc.dojoform.testing.read_test_file,
         wait_for=wait_for,
@@ -189,6 +189,11 @@ boboserver:static('/ckeditor', %r)
 zc.dojoform.testing
 """
 
+class RequestHandler(wsgiref.simple_server.WSGIRequestHandler):
+
+    def log_request(self, *args):
+        pass
+
 bobo_port = None
 def start_bobo_server(port=0, daemon=True):
     global bobo_port
@@ -198,7 +203,8 @@ def start_bobo_server(port=0, daemon=True):
         os.path.join(home, 'parts', 'dojo'),
         os.path.join(home, 'parts', 'ckeditor'),
         ))
-    server = wsgiref.simple_server.make_server('', port, app)
+    server = wsgiref.simple_server.make_server('', port, app,
+        handler_class=RequestHandler)
     thread = threading.Thread(target=server.serve_forever)
     thread.setDaemon(daemon)
     thread.start()

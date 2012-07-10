@@ -20,7 +20,7 @@ Call build_form2 to build the form:
 
 See if it matches what we expect:
 
-    >>> matches(browser.get_page_source(), read_test_file('1.html'))
+    >>> matches(browser.page_source, read_test_file('1.html'))
 
 Try again to make sure there aren't weird side effect, and also to
 check widget cleanup:
@@ -33,7 +33,7 @@ check widget cleanup:
     js> dojo.body().appendChild(form.domNode);
     js> form.startup();
 
-    >>> matches(browser.get_page_source(), read_test_file('1.html'))
+    >>> matches(browser.page_source, read_test_file('1.html'))
 
     js> dojo.body().removeChild(form.domNode);
     js> form.destroyRecursive();
@@ -51,7 +51,7 @@ rather than left_fields.
     js> dojo.body().appendChild(form.domNode);
     js> form.startup();
 
-    >>> matches(browser.get_page_source(), read_test_file('2.html'))
+    >>> matches(browser.page_source, read_test_file('2.html'))
 
 Because the happy field was set, none of the fields or the left div have the
 zc-widget-hidden class:
@@ -93,7 +93,7 @@ Simple example, no groups and no left_fields (no bool flag)
     ...     definition, dojo.create('div', {}, dojo.body()), 3);
 
 
-    >>> matches(browser.get_page_source(), read_test_file('3.html'))
+    >>> matches(browser.page_source, read_test_file('3.html'))
 
 
     js> dojo.body().removeChild(form.domNode);
@@ -110,7 +110,7 @@ Left fields with none or all selected
     js> form = zc.dojo.build_form2(
     ...     definition, dojo.create('div', {}, dojo.body()), 3);
 
-    >>> matches(browser.get_page_source(), read_test_file('3.html'))
+    >>> matches(browser.page_source, read_test_file('3.html'))
 
     js> dojo.body().removeChild(form.domNode);
     js> form.destroyRecursive();
@@ -119,7 +119,7 @@ Left fields with none or all selected
     js> form = zc.dojo.build_form2(
     ...     definition, dojo.create('div', {}, dojo.body()), 3);
 
-    >>> matches(browser.get_page_source(), read_test_file('3.html'))
+    >>> matches(browser.page_source, read_test_file('3.html'))
 
     js> dojo.body().removeChild(form.domNode);
     js> form.destroyRecursive();
@@ -172,7 +172,7 @@ And call build_form2:
 
     js> form = zc.dojo.build_form2(definition);
 
-    >>> matches(browser.get_page_source(), read_test_file('6.html'))
+    >>> matches(browser.page_source, read_test_file('6.html'))
 
     js> dojo.body().removeChild(form.domNode);
     js> form.destroyRecursive();
@@ -195,7 +195,7 @@ build_form2 mimics this layour if you:
     js> form = zc.dojo.build_form2(
     ...    definition, dojo.create('div', {}, dojo.body()));
 
-    >>> matches(browser.get_page_source(), read_test_file('7.html'))
+    >>> matches(browser.page_source, read_test_file('7.html'))
 
     js> dojo.body().removeChild(form.domNode);
     js> form.destroyRecursive();
@@ -209,7 +209,7 @@ Nested groups
     js> form = zc.dojo.build_form2(
     ...    definition, dojo.create('div', {}, dojo.body()));
 
-    >>> matches(browser.get_page_source(), read_test_file('nested-groups.html'))
+    >>> matches(browser.page_source, read_test_file('nested-groups.html'))
 
     js> dojo.body().removeChild(form.domNode);
     js> form.destroyRecursive();

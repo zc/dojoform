@@ -31,13 +31,13 @@ def action(bobo_request):
              for value in widget['value']:
                  form_r_value = {}
                  for wname, wvalue in value.items():
-                     form_r_value[wname] = bobo_request.str_POST['.'.join(
+                     form_r_value[wname] = bobo_request.POST['.'.join(
                          ('addresses', wname, str(ix)))]
                  form_val.append(form_r_value)
                  ix += 1
              test = True
          else:
-             form_val = bobo_request.str_POST[widget['id']]
+             form_val = bobo_request.POST[widget['id']]
          val = widget.get('value', None)
          if form_val == '':
              form_val = None

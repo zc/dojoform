@@ -64,7 +64,7 @@ from the server. This will also test our ajax wrappers:
 
 We will confirm the form rendered as expected:
 
-    >>> matches(browser.get_page_source(), read_test_file('1_legacy.html'))
+    >>> matches(browser.page_source, read_test_file('1_legacy.html'))
 
 We can also try to submit the form.
 
