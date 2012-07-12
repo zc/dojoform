@@ -8,7 +8,13 @@ values whatsoever and confirm that it comes with the default configuration.
 
     >>> browser.get('http://localhost:%s/test/blank.html' % port)
 
-    js> dojo.require('zc.dojo');
+    js> require(["dojo", "dijit", "dojox/lang/functional",
+    ...          "zc/dojo", "zc/ckeditor"], function (dojo, dijit, dlf) {
+    ...     window.dojo = dojo;
+    ...     window.dijit = dijit;
+    ...     window.keys = dlf.keys;
+    ...     window.zc = dojo.getObject("zc");
+    ... });
 
 ::
 
@@ -51,30 +57,21 @@ The CKeditor widget comes with all of the toolbar buttons by default.
 
     js> ckeditor = CKEDITOR.instances['story']
 
-::
-
-    plugins = [];
-    for (i in ckeditor.plugins) {
-        plugins.push(i);
-    }
-    return plugins;
-
-.. -> js
-
-    >>> len(JS(js))
+    >>> wait_for(lambda: len(JS("return keys(ckeditor.plugins)")))
+    >>> len(JS("return keys(ckeditor.plugins)"))
     72 
 
 We can get the current value of the widget, which will be what we gave it
 in our configuration.
 
     js> widget = dijit.byId('story')
-    js> return widget.attr('value')
+    js> return widget.get('value')
     u'<p>\n\tI am a story</p>\n'
 
 We can modify this value as well
 
-    js> widget.attr('value', '<blink>Wow!</blink>')
-    js> return widget.attr('value')
+    js> widget.set('value', '<blink>Wow!</blink>')
+    js> return widget.get('value')
     u'<p>\n\t<blink>Wow!</blink></p>\n'
 
 Note that when we do this the value in the actual CKEditor is modified as well
@@ -85,7 +82,7 @@ Note that when we do this the value in the actual CKEditor is modified as well
 we can reset the form and we'll be back to our old value.
 
     js> dijit.byId('reset').onClick()
-    js> return widget.attr('value')
+    js> return widget.get('value')
     u'<p>\n\tI am a story</p>\n'
 
     js> return ckeditor.getData()
@@ -101,7 +98,7 @@ We can check if the widget is valid.
 
 This will return invalid if the field is required and we have no data.
 
-    js> widget.attr('value', '')
+    js> widget.set('value', '')
 
     js> return widget.isValid()
     False
@@ -121,7 +118,7 @@ event whenever the value of the widget is set.
     js> dojo.connect(widget, 'onChange', function (value) {
     ...     result = value;
     ... });
-    js> widget.attr('value', "<div>Amazing</div>")
+    js> widget.set('value', "<div>Amazing</div>")
 
     >>> import pprint
     >>> pprint.pprint(JS("return result"))
@@ -136,3 +133,4 @@ fields.
     {u'reset': u'',
      u'story': u'<div>\n\tAmazing</div>\n',
      u'submit': u''}
+
