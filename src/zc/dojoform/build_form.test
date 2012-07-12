@@ -31,11 +31,6 @@ from the server. This will also test our ajax wrappers:
 
         var actionify_buttons = function (config, success_handler) {
             dojo.forEach(config.definition.actions, function (action) {
-	        if (!dijit.byId(action.name)) {
-		    dojo.body().appendChild(dojo.create("div",
-		        {innerHTML: "Missing: " + action.name}));
-		    return;
-		}
                 dojo.connect(dijit.byId(action.name), 'onClick', function () {
                     if (action.name == 'ExampleForm.actions.validate') {
                         if (!dijit.byId(config.definition.prefix).validate()) {
