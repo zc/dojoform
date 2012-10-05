@@ -189,8 +189,13 @@ zc.dojo.confirm = function (args) {
     //              The text for the title bar of the dialog.
     // content: String
     //              The text for the body of the dialog.
+    // confirm_label: String (optional)
+    //              The label used for the button which calls the yes function
+    // cancel_label: String (optional)
+    //              The label used for the button which calls the no function
     // yes: Function (optional)
-    //              The callback for the 'Yes' button.
+    //              The callback for when thhe user clicks the affirmative
+    //              button.
     // no: Function (optional)
     //              The callback for the 'No' or dialog cancel buttons.
 
@@ -222,13 +227,13 @@ zc.dojo.confirm = function (args) {
 
     btn_div = dojo.create('div', {style: 'text-align: right;'});
     dojo.addClass(btn_div, 'dijitDialogPaneActionBar');
-    btn = new dijit.form.Button({label: 'No'});
+    btn = new dijit.form.Button({label: args.cancel_label || 'Cancel'});
     btn_div.appendChild(btn.domNode);
     no_cb = dojo.partial(handler, args.no);
     events.push(dojo.connect(btn, 'onClick', no_cb));
     events.push(dojo.connect(dialog, 'onCancel', no_cb));
 
-    btn = new dijit.form.Button({label: 'Yes'});
+    btn = new dijit.form.Button({label: args.confirm_label || 'Confirm'});
     btn_div.appendChild(btn.domNode);
     events.push(
         dojo.connect(btn, 'onClick', dojo.partial(handler, args.yes)));
@@ -374,7 +379,7 @@ zc.dojo.widgets['zope.schema.Password'] = function (config, node, order) {
 zc.dojo.widgets['zope.schema.Text'] = function (
     config, node, order, _, nostyle) {
     var wconfig = zc.dojo.parse_config(config, order);
-    if (!nostyle) { 
+    if (!nostyle) {
         wconfig.style = 'width:auto';
     }
     return new dijit.form.SimpleTextarea(wconfig, node).domNode;
