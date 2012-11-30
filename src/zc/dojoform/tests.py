@@ -31,6 +31,7 @@ import wsgiref.simple_server
 import zc.dojoform.testing
 import zc.customdoctests.js
 
+import zope.testing.setupstack
 from zope.testing import doctest
 
 home = None # set by buildout
@@ -174,11 +175,9 @@ def setUp(test):
         browser = browser
         )
     test.globs['JS'] = browser.execute_script
+    zope.testing.setupstack.register(test, browser.quit)
 
-
-def tearDown(test):
-    test.globs['browser'].close()
-
+tearDown = zope.testing.setupstack.tearDown
 
 bobo_resources_template = """
 boboserver:static('/test', %r)
