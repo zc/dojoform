@@ -31,6 +31,7 @@ import wsgiref.simple_server
 import zc.dojoform.testing
 import zc.customdoctests.js
 
+import zope.testing.setupstack
 from zope.testing import doctest
 
 home = None # set by buildout
@@ -164,8 +165,7 @@ def wait_for(func, timeout=5):
 def setUp(test):
     if bobo_port is None:
         start_bobo_server()
-    # While FireFox gets their act together the Chrome WD seems more stable
-    browser = selenium.webdriver.Firefox()
+    browser = selenium.webdriver.Chrome()
     test.globs.update(
         read_test_file = zc.dojoform.testing.read_test_file,
         wait_for=wait_for,
@@ -175,11 +175,9 @@ def setUp(test):
         browser = browser
         )
     test.globs['JS'] = browser.execute_script
+    zope.testing.setupstack.register(test, browser.quit)
 
-
-def tearDown(test):
-    test.globs['browser'].close()
-
+tearDown = zope.testing.setupstack.tearDown
 
 bobo_resources_template = """
 boboserver:static('/test', %r)

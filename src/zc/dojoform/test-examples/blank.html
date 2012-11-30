@@ -1,7 +1,7 @@
 <!doctype html>
 <html style="height: 100%; width: 100%">
 <head>
-
+  <title></title>
   <link
      rel="stylesheet" type="text/css"
      href="../dojo/dojo/resources/dojo.css"
@@ -30,19 +30,19 @@
      rel="stylesheet" type="text/css"
      href="/dojoform/resources/zc.dojo.css"
      >
-
+  <script type="text/javascript">
+      var dojoConfig = {
+          modulePaths: {
+              "zc.dojo": "/dojoform/resources/zc.dojo",
+              "zc.ckeditor": "/dojoform/resources/ckwidget"
+          },
+          isDebug: true   
+      };
+  </script>
   <script type="text/javascript"
           src="../ckeditor/ckeditor.js"
           ></script>
-
-  <script type="text/javascript"
-          src="../dojo/dojo/dojo.js"
-          djConfig="modulePaths: {
-                    'zc.dojo': '/dojoform/resources/zc.dojo',
-                    'zc.ckeditor': '/dojoform/resources/ckwidget'
-                    }
-                    "
-          ></script>
+  <script type="text/javascript" src="../dojo/dojo/dojo.js"></script>
 
 </head>
 <body class="tundra" style="height: 100%; width: 100%;">

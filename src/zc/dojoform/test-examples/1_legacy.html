@@ -8,10 +8,11 @@
       <br />
       <div role="presentation" id="widget_ExampleForm.favorite_color">
        <div>
-        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ" />
+        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ " />
        </div>
        <div>
-        <input type="text" name="favorite_color" autocomplete="off" dojoattachpoint="textbox,focusNode" />
+        <input type="text" name="favorite_color" autocomplete="off"
+        data-dojo-attach-point="textbox,focusNode" />
        </div>
       </div>
      </div>
@@ -21,7 +22,8 @@
       </label>
       <br />
       <div role="presentation">
-       <input type="checkbox" dojoattachevent="onclick:_onClick" dojoattachpoint="focusNode" />
+        <input type="checkbox" data-dojo-attach-event="onclick:_onClick"
+            data-dojo-attach-point="focusNode" />
       </div>
      </div>
      <div>
@@ -30,14 +32,14 @@
       </label>
       <br />
       <div role="combobox" id="widget_ExampleForm.pet">
-       <div role="presentation" dojoattachpoint="_buttonNode, _popupStateNode">
+       <div role="presentation" data-dojo-attach-point="_buttonNode, _popupStateNode">
         <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="▼ " />
        </div>
        <div>
-        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ" />
+        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ " />
        </div>
        <div>
-        <input type="text" aria-haspopup="true" role="textbox" dojoattachpoint="textbox,focusNode" autocomplete="off" name="pet" />
+        <input type="text" aria-haspopup="true" role="textbox" data-dojo-attach-point="textbox,focusNode" autocomplete="off" name="pet" />
        </div>
       </div>
      </div>
@@ -50,14 +52,14 @@
       </label>
       <br />
       <div role="combobox" id="widget_ExampleForm.temperment">
-       <div role="presentation" dojoattachpoint="_buttonNode, _popupStateNode">
+       <div role="presentation" data-dojo-attach-point="_buttonNode, _popupStateNode">
         <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="▼ " />
        </div>
        <div>
-        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ" />
+        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ " />
        </div>
        <div>
-        <input type="text" aria-haspopup="true" role="textbox" dojoattachpoint="textbox,focusNode" autocomplete="off" />
+        <input type="text" aria-haspopup="true" role="textbox" data-dojo-attach-point="textbox,focusNode" autocomplete="off" />
         <input type="hidden" name="temperment" value="Right Neighborly" />
        </div>
       </div>
@@ -72,10 +74,10 @@
       <br />
       <div role="presentation" id="widget_ExampleForm.weight">
        <div>
-        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ" />
+        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ " />
        </div>
        <div>
-        <input type="text" autocomplete="off" dojoattachpoint="textbox,focusNode" />
+        <input type="text" autocomplete="off" data-dojo-attach-point="textbox,focusNode" />
         <input type="hidden" name="weight" value="" />
        </div>
       </div>
@@ -88,12 +90,12 @@
        </span>
       </label>
       <br />
-      <textarea autocomplete="off" dojoattachpoint="focusNode,containerNode,textbox" name="description"10ft tall
+      <textarea autocomplete="off" data-dojo-attach-point="focusNode,containerNode,textbox" name="description"10ft tall
     Razor sharp scales.">
       </textarea>
      </div>
      <div>
-      <input type="hidden" name="secret" autocomplete="off" dojoattachpoint="textbox,focusNode" />
+      <input type="hidden" name="secret" autocomplete="off" data-dojo-attach-point="textbox,focusNode" />
      </div>
      <div>
       <label id="siblings.label">
@@ -106,12 +108,12 @@
       <div role="presentation" id="widget_ExampleForm.siblings">
        <div>
         <input type="text" role="presentation" readonly="readonly" tabindex="-1" />
-        <div dojoattachpoint="upArrowNode">
+        <div data-dojo-attach-point="upArrowNode">
          <div>
           <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="▲" />
          </div>
         </div>
-        <div dojoattachpoint="downArrowNode">
+        <div data-dojo-attach-point="downArrowNode">
          <div>
           <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="▼" />
          </div>
@@ -121,7 +123,7 @@
         <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ" />
        </div>
        <div>
-        <input type="text" autocomplete="off" role="spinbutton" dojoattachevent="onkeypress:_onKeyPress" dojoattachpoint="textbox,focusNode" />
+        <input type="text" autocomplete="off" role="spinbutton" data-dojo-attach-event="onkeypress:_onKeyPress" data-dojo-attach-point="textbox,focusNode" />
         <input type="hidden" name="siblings" value="1" />
        </div>
       </div>
@@ -136,16 +138,16 @@
       <br />
       <div id="zc_RecordList_0" widgetid="zc_RecordList_0">
        <div align="left" dojoattachevent="onmouseout:_mouseOut" role="grid" hidefocus="hidefocus" tabindex="0" aria-multiselectable="true">
-        <div role="presentation" dojoattachpoint="viewsHeaderNode">
-         <div role="presentation" dojoattachpoint="headerNode">
+        <div role="presentation" data-dojo-attach-point="viewsHeaderNode">
+         <div role="presentation" data-dojo-attach-point="headerNode">
           <div role="presentation">
-           <div role="row" dojoattachpoint="headerContentNode">
+           <div role="row" data-dojo-attach-point="headerContentNode">
            </div>
           </div>
          </div>
-         <div role="presentation" dojoattachpoint="headerNode">
+         <div role="presentation" data-dojo-attach-point="headerNode">
           <div role="presentation">
-           <div role="row" dojoattachpoint="headerContentNode">
+           <div role="row" data-dojo-attach-point="headerContentNode">
             <table cellspacing="0" cellpadding="0" border="0" role="presentation">
              <tbody>
               <tr>
@@ -195,12 +197,12 @@
           </div>
          </div>
         </div>
-        <div role="presentation" dojoattachpoint="viewsNode">
+        <div role="presentation" data-dojo-attach-point="viewsNode">
          <div role="presentation">
-          <input type="checkbox" role="presentation" dojoattachpoint="hiddenFocusNode" />
+          <input type="checkbox" role="presentation" data-dojo-attach-point="hiddenFocusNode" />
           <input type="checkbox" role="presentation" />
-          <div role="presentation" dojoattachpoint="scrollboxNode">
-           <div role="presentation" hidefocus="hidefocus" dojoattachpoint="contentNode">
+          <div role="presentation" data-dojo-attach-point="scrollboxNode">
+           <div role="presentation" hidefocus="hidefocus" data-dojo-attach-point="contentNode">
             <div role="presentation">
              <div>
               <table cellspacing="0" cellpadding="0" border="0" role="presentation">
@@ -227,10 +229,10 @@
           </div>
          </div>
          <div role="presentation">
-          <input type="checkbox" role="presentation" dojoattachpoint="hiddenFocusNode" />
+          <input type="checkbox" role="presentation" data-dojo-attach-point="hiddenFocusNode" />
           <input type="checkbox" role="presentation" />
-          <div role="presentation" dojoattachpoint="scrollboxNode">
-           <div role="presentation" hidefocus="hidefocus" dojoattachpoint="contentNode">
+          <div role="presentation" data-dojo-attach-point="scrollboxNode">
+           <div role="presentation" hidefocus="hidefocus" data-dojo-attach-point="contentNode">
             <div role="presentation">
              <div>
               <table cellspacing="0" cellpadding="0" border="0" role="presentation">
@@ -281,55 +283,55 @@
           </div>
          </div>
         </div>
-        <div dojoattachpoint="messagesNode">
+        <div data-dojo-attach-point="messagesNode">
         </div>
-        <span tabindex="0" dojoattachpoint="lastFocusNode">
+        <span tabindex="0" data-dojo-attach-point="lastFocusNode">
         </span>
        </div>
        <span>
         <span dojoattachevent="ondijitclick:_onButtonClick">
-         <span aria-labelledby="addresses.dojo.new.btn_label" role="button" dojoattachpoint="titleNode,focusNode">
-          <span dojoattachpoint="iconNode">
+         <span aria-labelledby="addresses.dojo.new.btn_label" role="button" data-dojo-attach-point="titleNode,focusNode">
+          <span data-dojo-attach-point="iconNode">
           </span>
           <span>
            ●
           </span>
-          <span dojoattachpoint="containerNode" id="addresses.dojo.new.btn_label">
+          <span data-dojo-attach-point="containerNode" id="addresses.dojo.new.btn_label">
            New
           </span>
          </span>
         </span>
-        <input type="button" dojoattachpoint="valueNode" />
+        <input type="button" data-dojo-attach-point="valueNode" />
        </span>
        <span>
         <span dojoattachevent="ondijitclick:_onButtonClick">
-         <span aria-labelledby="addresses.dojo.edit.btn_label" role="button" dojoattachpoint="titleNode,focusNode">
-          <span dojoattachpoint="iconNode">
+         <span aria-labelledby="addresses.dojo.edit.btn_label" role="button" data-dojo-attach-point="titleNode,focusNode">
+          <span data-dojo-attach-point="iconNode">
           </span>
           <span>
            ●
           </span>
-          <span dojoattachpoint="containerNode" id="addresses.dojo.edit.btn_label">
+          <span data-dojo-attach-point="containerNode" id="addresses.dojo.edit.btn_label">
            Edit
           </span>
          </span>
         </span>
-        <input type="button" dojoattachpoint="valueNode" />
+        <input type="button" data-dojo-attach-point="valueNode" />
        </span>
        <span>
         <span dojoattachevent="ondijitclick:_onButtonClick">
-         <span aria-labelledby="addresses.dojo.delete.btn_label" role="button" dojoattachpoint="titleNode,focusNode">
-          <span dojoattachpoint="iconNode">
+         <span aria-labelledby="addresses.dojo.delete.btn_label" role="button" data-dojo-attach-point="titleNode,focusNode">
+          <span data-dojo-attach-point="iconNode">
           </span>
           <span>
            ●
           </span>
-          <span dojoattachpoint="containerNode" id="addresses.dojo.delete.btn_label">
+          <span data-dojo-attach-point="containerNode" id="addresses.dojo.delete.btn_label">
            Delete
           </span>
          </span>
         </span>
-        <input type="button" dojoattachpoint="valueNode" />
+        <input type="button" data-dojo-attach-point="valueNode" />
        </span>
        <input type="hidden" value='{"addresses.street.0":"123 fake street","addresses.city.0":"fakeville","addresses.awesomeness.0":"9","addresses.street.1":"345 false street","addresses.city.1":"falsetown","addresses.awesomeness.1":"9001"}' />
        <div>
@@ -346,18 +348,18 @@
     <div>
      <span>
       <span dojoattachevent="ondijitclick:_onButtonClick">
-       <span aria-labelledby="ExampleForm.actions.register_label" role="button" dojoattachpoint="titleNode,focusNode">
-        <span dojoattachpoint="iconNode">
+       <span aria-labelledby="ExampleForm.actions.register_label" role="button" data-dojo-attach-point="titleNode,focusNode">
+        <span data-dojo-attach-point="iconNode">
         </span>
         <span>
          ●
         </span>
-        <span dojoattachpoint="containerNode" id="ExampleForm.actions.register_label">
+        <span data-dojo-attach-point="containerNode" id="ExampleForm.actions.register_label">
          Register
         </span>
        </span>
       </span>
-      <input type="button" dojoattachpoint="valueNode" />
+      <input type="button" data-dojo-attach-point="valueNode" />
      </span>
     </div>
     <div role="presentation">
@@ -373,10 +375,10 @@
       <br />
       <div role="presentation" id="widget_ExampleForm.first_name">
        <div>
-        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ" />
+        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ " />
        </div>
        <div>
-        <input type="text" name="first_name" autocomplete="off" dojoattachpoint="textbox,focusNode" />
+        <input type="text" name="first_name" autocomplete="off" data-dojo-attach-point="textbox,focusNode" />
        </div>
       </div>
      </div>
@@ -390,10 +392,10 @@
       <br />
       <div role="presentation" id="widget_ExampleForm.last_name">
        <div>
-        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ" />
+        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ " />
        </div>
        <div>
-        <input type="text" name="last_name" autocomplete="off" dojoattachpoint="textbox,focusNode" />
+        <input type="text" name="last_name" autocomplete="off" data-dojo-attach-point="textbox,focusNode" />
        </div>
       </div>
      </div>
@@ -407,10 +409,10 @@
       <br />
       <div role="presentation" id="widget_ExampleForm.age">
        <div>
-        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ" />
+        <input type="text" role="presentation" readonly="readonly" tabindex="-1" value="Χ " />
        </div>
        <div>
-        <input type="text" autocomplete="off" dojoattachpoint="textbox,focusNode" />
+        <input type="text" autocomplete="off" data-dojo-attach-point="textbox,focusNode" />
         <input type="hidden" name="age" value="23" />
        </div>
       </div>
@@ -423,7 +425,7 @@
        </span>
       </label>
       <br />
-      <textarea autocomplete="off" dojoattachpoint="focusNode,containerNode,textbox" name="other">
+      <textarea autocomplete="off" data-dojo-attach-point="focusNode,containerNode,textbox" name="other">
       </textarea>
      </div>
     </div>

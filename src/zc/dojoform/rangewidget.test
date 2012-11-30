@@ -7,7 +7,11 @@ To define a range widget, create a new zc.RangeWidget, passing
 
     >>> browser.get('http://localhost:%s/test/blank.html' % port)
 
-    js> dojo.require('zc.dojo');
+    js> require(["dojo", "dijit", "zc/dojo"], function (dojo, dijit) {
+    ...     window.dojo = dojo;
+    ...     window.dijit = dijit;
+    ...     window.zc = dojo.getObject("zc");
+    ... });
 
 ::
 
@@ -49,21 +53,22 @@ To define a range widget, create a new zc.RangeWidget, passing
    >>> while not browser.find_elements_by_tag_name('body'):
    ...     continue
 
-
    >>> JS(js)
 
-We can make all the fields invalid by modifying eachother and thus
+We can make all the fields invalid by modifying each other and thus
 modifying their constraints.
 
-    js> dijit.byId('dijit_form_NumberSpinner_0').setValue(10)
-    js> dijit.byId('dijit_form_NumberSpinner_1').setValue(8)
+    js> dijit.byId('dijit_form_NumberSpinner_0').set("value", 10)
+    js> dijit.byId('dijit_form_NumberSpinner_1').set("value", 8)
     js> return dijit.byId('dijit_form_NumberSpinner_0').isValid()
     False
     js> return dijit.byId('dijit_form_NumberSpinner_1').isValid()
     False
 
-    js> dijit.byId('dijit_form_DateTextBox_0').setValue(new Date(2010, 11, 11))
-    js> dijit.byId('dijit_form_DateTextBox_1').setValue(new Date(2010, 10, 10))
+    js> dijit.byId('dijit_form_DateTextBox_0').set("value",
+    ...     new Date(2010, 11, 11))
+    js> dijit.byId('dijit_form_DateTextBox_1').set("value",
+    ...     new Date(2010, 10, 10))
     js> return dijit.byId('dijit_form_DateTextBox_0').isValid()
     False
     js> return dijit.byId('dijit_form_DateTextBox_1').isValid()
@@ -71,15 +76,17 @@ modifying their constraints.
 
 And make them valid again.
 
-    js> dijit.byId('dijit_form_NumberSpinner_0').setValue(9)
-    js> dijit.byId('dijit_form_NumberSpinner_1').setValue(10)
+    js> dijit.byId('dijit_form_NumberSpinner_0').set("value", 9)
+    js> dijit.byId('dijit_form_NumberSpinner_1').set("value", 10)
     js> return dijit.byId('dijit_form_NumberSpinner_0').isValid()
     True
     js> return dijit.byId('dijit_form_NumberSpinner_1').isValid()
     True
 
-    js> dijit.byId('dijit_form_DateTextBox_0').setValue(new Date(2010, 10, 10))
-    js> dijit.byId('dijit_form_DateTextBox_1').setValue(new Date(2010, 11, 11))
+    js> dijit.byId('dijit_form_DateTextBox_0').set("value",
+    ...     new Date(2010, 10, 10))
+    js> dijit.byId('dijit_form_DateTextBox_1').set("value",
+    ...     new Date(2010, 11, 11))
     js> return dijit.byId('dijit_form_DateTextBox_0').isValid()
     True
     js> return dijit.byId('dijit_form_DateTextBox_1').isValid()
@@ -88,23 +95,27 @@ And make them valid again.
 We should also test out our hard constraints given to the widgets in their
 config.
 
-    js> dijit.byId('dijit_form_NumberSpinner_0').setValue(-1)
+    js> dijit.byId('dijit_form_NumberSpinner_0').set("value", -1)
     js> return dijit.byId('dijit_form_NumberSpinner_0').isValid()
     False
-    js> dijit.byId('dijit_form_NumberSpinner_0').setValue(9)
-    js> dijit.byId('dijit_form_NumberSpinner_1').setValue(13)
+    js> dijit.byId('dijit_form_NumberSpinner_0').set("value", 9)
+    js> dijit.byId('dijit_form_NumberSpinner_1').set("value", 13)
     js> return dijit.byId('dijit_form_NumberSpinner_1').isValid()
     False
-    js> dijit.byId('dijit_form_NumberSpinner_1').setValue(10)
+    js> dijit.byId('dijit_form_NumberSpinner_1').set("value", 10)
 
-    js> dijit.byId('dijit_form_DateTextBox_0').setValue(new Date(2000, 10, 10))
+    js> dijit.byId('dijit_form_DateTextBox_0').set("value",
+    ...     new Date(2000, 10, 10))
     js> return dijit.byId('dijit_form_DateTextBox_0').isValid()
     False
-    js> dijit.byId('dijit_form_DateTextBox_0').setValue(new Date(2010, 10, 10))
-    js> dijit.byId('dijit_form_DateTextBox_1').setValue(new Date(2020, 11, 11))
+    js> dijit.byId('dijit_form_DateTextBox_0').set("value",
+    ...     new Date(2010, 10, 10))
+    js> dijit.byId('dijit_form_DateTextBox_1').set("value",
+    ...     new Date(2020, 11, 11))
     js> return dijit.byId('dijit_form_DateTextBox_1').isValid()
     False
-    js> dijit.byId('dijit_form_DateTextBox_1').setValue(new Date(2010, 11, 11))
+    js> dijit.byId('dijit_form_DateTextBox_1').set("value",
+    ...     new Date(2010, 11, 11))
 
 We can get the value of the rangewidget, which will attainable as json and
 include values for the minimum and maximum values.
@@ -114,10 +125,10 @@ include values for the minimum and maximum values.
 
     >>> import pprint
 
-    >>> pprint.pprint(JS("return dojo.fromJson(int_widget.attr('value'))"))
+    >>> pprint.pprint(JS("return dojo.fromJson(int_widget.get('value'))"))
     {u'max': 10, u'min': 9}
 
-    >>> pprint.pprint(JS("return dojo.fromJson(date_widget.attr('value'))"))
+    >>> pprint.pprint(JS("return dojo.fromJson(date_widget.get('value'))"))
     {u'end_date': u'2010-12-11',
      u'start_date': u'2010-11-10'}
 
@@ -147,10 +158,10 @@ And we can reset the form, which will reset the value of our widgets
 
     js> dijit.byId('reset').onClick()
 
-    >>> pprint.pprint(JS("return dojo.fromJson(int_widget.attr('value'))"))
+    >>> pprint.pprint(JS("return dojo.fromJson(int_widget.get('value'))"))
     {u'max': 9, u'min': 1}
 
-    >>> pprint.pprint(JS("return dojo.fromJson(date_widget.attr('value'))"))
+    >>> pprint.pprint(JS("return dojo.fromJson(date_widget.get('value'))"))
     {u'end_date': u'2010-09-10',
      u'start_date': u'2010-09-09'}
 

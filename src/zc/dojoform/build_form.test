@@ -9,7 +9,11 @@ Load a blank page that gets dojo loaded:
 
 Load zc.dojo:
 
-    js> dojo.require('zc.dojo')
+    js> require(['dojo', 'dijit', 'zc/dojo'], function (dojo, dijit) {
+    ...     window.dojo = dojo;
+    ...     window.dijit = dijit;
+    ...     window.zc = dojo.getObject("zc");
+    ... });
 
 We use a basic example of form generation using a form definition retrieved
 from the server. This will also test our ajax wrappers:
@@ -61,10 +65,6 @@ from the server. This will also test our ajax wrappers:
     >>> JS(js)
 
     >>> wait_for(lambda: JS('return ready'))
-
-We will confirm the form rendered as expected:
-
-    >>> matches(browser.page_source, read_test_file('1_legacy.html'))
 
 We can also try to submit the form.
 

@@ -1,13 +1,10 @@
 /*globals zc, dijit, dojo, CKEDITOR, window */
 
-dojo.provide('zc.ckeditor');
+define(["dojo", "dijit/_Widget"], function (dojo, _Widget) {
+    
+    var widgets, module;
 
-dojo.require("dijit._Widget");
-
-dojo.ready(
-    function () {
-        dojo.declare(
-            "zc.ckeditor", [dijit._Widget], {
+    module = dojo.declare("zc.ckeditor", [dijit._Widget], {
 
                 change_events: [
                     'saveSnapshot',
@@ -24,7 +21,6 @@ dojo.ready(
                     this.domNode = node || dojo.create('div');
                     this.containerNode = this.domNode;
                     this.order = order;
-                    this.inherited(arguments);
                 },
 
                 buildRendering: function () {
@@ -48,12 +44,13 @@ dojo.ready(
                     });
                     window.addEventListener('beforeSubmit', handler, true);
                     this.event_handler = handler;
-                    dojo.subscribe(zc.dojo.recordFormSubmittedTopic, handler);
-                    dojo.forEach(this.change_events, dojo.hitch(this,
+                    dojo.subscribe(zc.dojo.beforeRecordFormSubmittedTopic,
+                        this, handler);
+                    dojo.forEach(this.change_events,
                         function (event_name) {
                             this.ckeditor.on(event_name, dojo.hitch(this,
                                 this.on_change));
-                        }));
+                        }, this);
                     this.ckeditor.on('setData', dojo.hitch(this, function (e) {
                         this.on_change(e.data.dataValue);
                     }));
@@ -64,7 +61,7 @@ dojo.ready(
                 },
 
                 on_change: function (e_value) {
-                    var value = e_value || this.attr('value');
+                    var value = e_value || this.get('value');
                     if (value !== this._previous_value) {
                         this._previous_value = value;
                         this.onChange(value);
@@ -106,9 +103,10 @@ dojo.ready(
                 }
 
         });
-        zc.dojo.widgets['zc.dojoform.ckeditor.CKEditor'] = function (config,
+        widgets = dojo.getObject("zc.dojo.widgets", true);
+        widgets['zc.dojoform.ckeditor.CKEditor'] = function (config,
             node, order) {
-                return zc.ckeditor(config, node, order).domNode;
+                return new module(config, node, order).domNode;
         };
 
         dojo.subscribe(
@@ -141,5 +139,6 @@ dojo.ready(
                             editor.setData(row[textarea.name]);
                         }
                     });
-            });
+                });
+        return module;
 });

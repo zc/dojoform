@@ -6,7 +6,10 @@ Load a blank page that gets dojo loaded:
 
 Load zc.dojo:
 
-    js> dojo.require('zc.dojo')
+    js> require(["dojo", "zc/dojo"], function (dojo) {
+    ...     window.dojo = dojo;
+    ...     window.zc = dojo.getObject("zc");
+    ... });
 
 Load the first sample form definition:
 
@@ -233,11 +236,11 @@ We'll need to define a function for the handler we provided to the action.
 
     js> test = {}
     js> test.register = function (arg1, arg2, arg3) {
-    ...    action_test = [arg1, arg2.id, String(arg3)]; }
-    js> dijit.byId('ExampleForm.actions.register').onClick()
+    ...    action_test = [arg1, arg2.id, arg3.toString()]; }
+    js> dijit.byId('ExampleForm.actions.register').onClick();
 
     >>> import pprint
-    >>> pprint.pprint(JS('return action_test'))
+    >>> pprint.pprint(JS('return action_test;'))
     [{u'ExampleForm': {u'actions': {u'register': u''}},
       u'addresses': u'{"addresses.street.0":"123 fake street","addresses.city.0":"fakeville","addresses.awesomeness.0":"9","addresses.street.1":"345 false street","addresses.city.1":"falsetown","addresses.awesomeness.1":"9001"}',
       u'age': 23,
@@ -272,17 +275,17 @@ can directly pass a function as our handler argument.
 We should not be valid because the weight field is empty, so the function will
 not be called.
 
-    js> dijit.byId('ExampleForm.actions.register').onClick()
+    js> dijit.byId('ExampleForm.actions.register').onClick();
 
     >>> import pprint
-    >>> pprint.pprint(JS('return action_test'))
+    >>> pprint.pprint(JS('return action_test;'))
     None
 
 If the form is valid it will work as expected.
 
-    js> dijit.byId('ExampleForm.weight').setValue(175);
+    js> dijit.byId('ExampleForm.weight').set("value", 175);
 
-    js> dijit.byId('ExampleForm.actions.register').onClick()
+    js> dijit.byId('ExampleForm.actions.register').onClick();
 
     >>> pprint.pprint(JS('return action_test'))
     [{u'ExampleForm':...]

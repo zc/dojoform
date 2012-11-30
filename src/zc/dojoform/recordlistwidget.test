@@ -7,7 +7,11 @@ using build_form2.
 
     >>> browser.get('http://localhost:%s/test/blank.html' % port)
 
-    js> dojo.require('zc.dojo');
+    js> require(["dojo", "dijit", "zc/dojo"], function (dojo, dijit) {
+    ...     window.dojo = dojo;
+    ...     window.dijit = dijit;
+    ...     window.zc = dojo.getObject("zc");
+    ... });
 
 ::
 
@@ -55,12 +59,12 @@ using build_form2.
                },
                "value": [
                    {
-                    "awesomeness": "9",
+                    "awesomeness": 9,
                     "city": "fakeville",
                     "street": "123 fake street"
                    },
                    {
-                    "awesomeness": "9001",
+                    "awesomeness": 9001,
                     "city": "falsetown",
                     "street": "345 false street"
                    }
@@ -97,7 +101,6 @@ to represent it and its available actions.
      u'addresses.dojo.edit.btn',
      u'addresses.dojo.delete.btn',
      u'reset']
-    
 
 The data presented is an accurate representation of our input value with
 respect to the record schema. Note that the street values are not returned
@@ -108,37 +111,37 @@ since they are not included in the schema.
     >>> import simplejson
     >>> def wid_val():
     ...     return pprint.pprint(simplejson.loads(JS(
-    ...         "return widget._getValueAttr()")))
+    ...         "return widget.get('value')")))
 
     >>> wid_val()
-    {u'addresses.awesomeness.0': u'9',
-     u'addresses.awesomeness.1': u'9001',
+    {u'addresses.awesomeness.0': 9,
+     u'addresses.awesomeness.1': 9001,
      u'addresses.city.0': u'fakeville',
      u'addresses.city.1': u'falsetown'}
 
 We can modify a record
 
     js> widget._edit_record(widget.config.name, widget.grid.getItem(0), widget.order);
-    js> dijit.byId('addresses.awesomeness').setValue(10)
-    js> dijit.byId('addresses.dojo.save.btn').onClick() 
+    js> dijit.byId('addresses.awesomeness').set("value", 10)
+    js> dijit.byId('addresses.dojo.save.btn').onClick()
 
     >>> wid_val()
-    {u'addresses.awesomeness.0': u'10',
-     u'addresses.awesomeness.1': u'9001',
+    {u'addresses.awesomeness.0': 10,
+     u'addresses.awesomeness.1': 9001,
      u'addresses.city.0': u'fakeville',
      u'addresses.city.1': u'falsetown'}
 
 And add one
 
     js> dijit.byId('addresses.dojo.new.btn').onClick()
-    js> dijit.byId('addresses.city').setValue('new city')
-    js> dijit.byId('addresses.awesomeness').setValue(1)
+    js> dijit.byId('addresses.city').set("value", 'new city')
+    js> dijit.byId('addresses.awesomeness').set("value", 1)
     js> dijit.byId('addresses.dojo.save.btn').onClick()
 
     >>> wid_val()
-    {u'addresses.awesomeness.0': u'10',
-     u'addresses.awesomeness.1': u'9001',
-     u'addresses.awesomeness.2': u'1',
+    {u'addresses.awesomeness.0': 10,
+     u'addresses.awesomeness.1': 9001,
+     u'addresses.awesomeness.2': 1,
      u'addresses.city.0': u'fakeville',
      u'addresses.city.1': u'falsetown',
      u'addresses.city.2': u'new city'}
@@ -149,8 +152,8 @@ And delete one
     js> dijit.byId('addresses.dojo.delete.btn').onClick()
 
     >>> wid_val()
-    {u'addresses.awesomeness.0': u'9001',
-     u'addresses.awesomeness.1': u'1',
+    {u'addresses.awesomeness.0': 9001,
+     u'addresses.awesomeness.1': 1,
      u'addresses.city.0': u'falsetown',
      u'addresses.city.1': u'new city'}
 
@@ -159,8 +162,8 @@ If we reset the form our initial data is returned
     js> dijit.byId('reset').onClick()
 
     >>> wid_val()
-    {u'addresses.awesomeness.0': u'9',
-     u'addresses.awesomeness.1': u'9001',
+    {u'addresses.awesomeness.0': 9,
+     u'addresses.awesomeness.1': 9001,
      u'addresses.city.0': u'fakeville',
      u'addresses.city.1': u'falsetown'}
 
@@ -189,8 +192,8 @@ data of the widget is modified.
     js> dojo.connect(widget, 'onChange', function (value) {
     ...     result = value;
     ... });
-    js> new_value = [{'awesomeness': '2', 'city': 'newest city'}]
-    js> widget.attr('value', new_value)
+    js> new_value = [{'awesomeness': 2, 'city': 'newest city'}]
+    js> widget.set('value', new_value)
 
     >>> pprint.pprint(JS("return result"))
-    u'{"addresses.city.0":"newest city","addresses.awesomeness.0":"2"}'
+    u'{"addresses.city.0":"newest city","addresses.awesomeness.0":2}'
