@@ -145,7 +145,7 @@ module.alert = function (args) {
     dtor = function () {
         var d = dialog.hide();
         if (d) {
-            d.addCallback(function () {
+            d[d.addCallback ? "addCallback" : "then"](function () {
                 delete dialog._fadeOutDeferred;
                 dialog.destroyRecursive();
             });
@@ -187,22 +187,28 @@ module.confirm = function (args) {
     //              The text for the title bar of the dialog.
     // content: String
     //              The text for the body of the dialog.
-    // confirm_label: String (optional)
-    //              The label used for the button which calls the yes function
-    // cancel_label: String (optional)
-    //              The label used for the button which calls the no function
     // yes: Function (optional)
     //              The callback for when the user clicks the affirmative
     //              button.
     // no: Function (optional)
     //              The callback for the 'No' or dialog cancel buttons.
+    // confirm_label: String (optional)
+    //              The label used for the button which calls the yes function
+    // cancel_label: String (optional)
+    //              The label used for the button which calls the no function
+    // confirm_id: String (optional)
+    //              The id used for the button which calls the yes function
+    // cancel_id: String (optional)
+    //              The id used for the button which calls the no function
 
     var btn, btn_div, dialog, events, handler, no_cb, nodes,
         _args, params, i;
 
     if (arguments.length > 1) {
         _args = {};
-        params = ['title', 'content', 'yes', 'no'];
+        params = [
+            'title', 'content', 'yes', 'no', 'confirm_label', 'cancel_label',
+            'confirm_id', 'cancel_id'];
         for (i=0; i<arguments.length; i++) {
             _args[params[i]] = arguments[i];
         }
@@ -211,7 +217,8 @@ module.confirm = function (args) {
         throw new Error("Invalid argument.");
     }
 
-    dialog = new Dialog({title: args.title || 'Confirm'});
+    var title = args.title || 'Confirm';
+    dialog = new Dialog({title: title});
 
     events = [];
     handler = function (cb) {
@@ -225,13 +232,15 @@ module.confirm = function (args) {
 
     btn_div = dojo.create('div', {style: 'text-align: right;'});
     dojo.addClass(btn_div, 'dijitDialogPaneActionBar');
-    btn = new Button({label: args.cancel_label || 'Cancel'});
+    btn = new Button(
+        {label: args.cancel_label || 'Cancel', id: args.cancel_id || null});
     btn_div.appendChild(btn.domNode);
     no_cb = dojo.partial(handler, args.no);
     events.push(dojo.connect(btn, 'onClick', no_cb));
     events.push(dojo.connect(dialog, 'onCancel', no_cb));
 
-    btn = new Button({label: args.confirm_label || 'Confirm'});
+    btn = new Button(
+        {label: args.confirm_label || 'Confirm', id: args.confirm_id || null});
     btn_div.appendChild(btn.domNode);
     events.push(
         dojo.connect(btn, 'onClick', dojo.partial(handler, args.yes)));
