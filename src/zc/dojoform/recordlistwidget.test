@@ -108,9 +108,9 @@ since they are not included in the schema.
 
     js> widget = dijit.byId('zc_RecordList_0')
 
-    >>> import simplejson
+    >>> import json
     >>> def wid_val():
-    ...     return pprint.pprint(simplejson.loads(JS(
+    ...     return pprint.pprint(json.loads(JS(
     ...         "return widget.get('value')")))
 
     >>> wid_val()
