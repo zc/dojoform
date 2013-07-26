@@ -21,7 +21,7 @@ API:
 
    - focus() Give widget focus
 
-     At least as far as forms are converned, this is only used to give
+     At least as far as forms are concerned, this is only used to give
      focus to invalid fields. :/.
 
    - isValid() -> Test whether current input is valid
@@ -49,10 +49,10 @@ Note
 
   It filters widgets to those that have names only when getting or
   setting values, not when validating or resetting.  I consider this a
-  bug, it doubt it will change, unless maybe in 2, as fixing it would
+  bug, I doubt it will change, unless maybe in 2, as fixing it would
   break old code.
 
   Because of the above behavior, you may be able to avoid implementing
-  validation and reset methods, as well as focus, if you're widget is
+  validation and reset methods, as well as focus, if your widget is
   implemented in terms of subwidgets.
 
