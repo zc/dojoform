@@ -51,6 +51,7 @@ setup(
             'zc.customdoctests',
             'selenium',
             'BeautifulSoup',
+            'simplejson',
             'zope.testing',
             ]
         ),
