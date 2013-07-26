@@ -1,6 +1,6 @@
 import bobo
 import os
-import simplejson
+import json
 
 here = os.path.dirname(__file__)
 
@@ -14,17 +14,17 @@ def read_test_file(name):
 @bobo.query('/get_form', content_type='application/json')
 def get_form(bobo_request):
      js = read_test_file('1.js').replace('definition = ', '')
-     json = simplejson.loads(js)
-     del json['definition']['actions'][0]['handler']
-     json['definition']['actions'][0]['url'] = '/action'
-     return json
+     data = json.loads(js)
+     del data['definition']['actions'][0]['handler']
+     data['definition']['actions'][0]['url'] = '/action'
+     return data
 
 
 @bobo.query('/action', content_type='application/json')
 def action(bobo_request):
      js = read_test_file('1.js').replace('definition = ', '')
-     json = simplejson.loads(js)
-     for widget in json['definition']['widgets']:
+     data = json.loads(js)
+     for widget in data['definition']['widgets']:
          if widget['id'] == 'addresses':
              ix = 0
              form_val = []
