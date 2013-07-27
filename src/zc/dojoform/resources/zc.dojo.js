@@ -19,6 +19,7 @@ define(["dojo/_base/array",
         "dojo/on",
         "dojo/query",
         "dojo/request/xhr",
+        "dijit/_Container",
         "dijit/_Widget",
         "dijit/Dialog",
         "dijit/Editor",
@@ -49,11 +50,12 @@ define(["dojo/_base/array",
         ], function (array, connect, declare, fx, lang, win, aspect, stamp,
                      ItemFileReadStore, ItemFileWriteStore, dom, domClass,
                      domConstruct, domForm, domGeo, domStyle, json, on, query,
-                     xhr, _Widget, Dialog, Editor, _FormValueWidget, Button,
-                     CheckBox, ComboBox, DateTextBox, Form, FilteringSelect,
-                     MultiSelect, NumberSpinner, NumberTextBox, SimpleTextarea,
-                     TextBox, TimeTextBox, ValidationTextBox, BorderContainer,
-                     ContentPane, registry, TimeSpinner, EnhancedGrid) {
+                     xhr, _Container, _Widget, Dialog, Editor, _FormValueWidget,
+                     Button, CheckBox, ComboBox, DateTextBox, Form,
+                     FilteringSelect, MultiSelect, NumberSpinner, NumberTextBox,
+                     SimpleTextarea, TextBox, TimeTextBox, ValidationTextBox,
+                     BorderContainer, ContentPane, registry, TimeSpinner,
+                     EnhancedGrid) {
     var zc = lang.getObject("zc", true),
         module = lang.getObject("zc.dojo", true),
         widgets = lang.getObject("zc.dojo.widgets", true),
@@ -1352,7 +1354,7 @@ module.parse_config = function (config, order) {
 };
 
         RecordList = declare(
-            "zc.RecordList", [_Widget], {
+            "zc.RecordList", [_Widget, _Container], {
 
                 value: "",
 
@@ -1365,8 +1367,6 @@ module.parse_config = function (config, order) {
                     this.dijit_type = jsonData.dijit_type;
                     this.name = this.config.name;
                     this.id = this.config.id;
-                    this.domNode = node || domConstruct.create('div');
-                    this.containerNode = this.domNode;
                 },
 
                 _build_layout: function (record) {
@@ -1636,6 +1636,7 @@ module.parse_config = function (config, order) {
                 },
 
                 buildRendering: function () {
+                    this.inherited(arguments);
                     var record_fields, layout, grid, widget, dnd_plugin;
 
                     record_fields = this._build_layout(this.rc);
@@ -1867,7 +1868,7 @@ module.parse_config = function (config, order) {
             });
 
         declare(
-            "zc.RangeWidget", _Widget, {
+            "zc.RangeWidget", [_Widget, _Container], {
 
                 value: "",
 
@@ -1879,11 +1880,10 @@ module.parse_config = function (config, order) {
                     this.constraints = this.config.constraints;
                     this.name = this.config.name;
                     this.id = this.config.id;
-                    this.domNode = node || domConstruct.create('div');
-                    this.containerNode = this.domNode;
                 },
 
                 buildRendering: function () {
+                    this.inherited(arguments);
                     var min_constraint = {}, max_constraint = {}, value;
                     if (this.constraints.min !== undefined) {
                         min_constraint.min = this.constraints.min;
