@@ -1,10 +1,16 @@
-/*globals zc, dijit, dojo, CKEDITOR, window */
-
-define(["dojo", "dijit/_Widget"], function (dojo, _Widget) {
+/*globals define, CKEDITOR, zc */
+define(["dojo/_base/array",
+        "dojo/_base/connect",
+        "dojo/_base/declare",
+        "dojo/_base/lang",
+        "dojo/dom-construct",
+        "dojo/query",
+        "dijit/_Widget"], function (array, connect, declare, lang, domConstruct,
+                                    query, _Widget) {
     
     var widgets, module;
 
-    module = dojo.declare("zc.ckeditor", [dijit._Widget], {
+    module = declare("zc.ckeditor", _Widget, {
 
                 change_events: [
                     'saveSnapshot',
@@ -18,13 +24,12 @@ define(["dojo", "dijit/_Widget"], function (dojo, _Widget) {
                     this._previous_value = this.config.value;
                     this.original = this.config.value;
                     this.id = this.config.id;
-                    this.domNode = node || dojo.create('div');
-                    this.containerNode = this.domNode;
                     this.order = order;
                 },
 
                 buildRendering: function () {
-                    var textarea = dojo.create(
+                    this.inherited(arguments);
+                    var textarea = domConstruct.create(
                         'textarea',
                         {'name': this.name},
                         this.domNode
@@ -39,19 +44,19 @@ define(["dojo", "dijit/_Widget"], function (dojo, _Widget) {
                             window.ckeditorCustomConfig);
                     }
                     this.ckeditor = CKEDITOR.replace(textarea, ckeditorConfig);
-                    handler = dojo.hitch(this, function () {
+                    handler = lang.hitch(this, function () {
                         textarea.value = this.ckeditor.getData();
                     });
                     window.addEventListener('beforeSubmit', handler, true);
                     this.event_handler = handler;
-                    dojo.subscribe(zc.dojo.beforeRecordFormSubmittedTopic,
+                    connect.subscribe(zc.dojo.beforeRecordFormSubmittedTopic,
                         this, handler);
-                    dojo.forEach(this.change_events,
+                    array.forEach(this.change_events,
                         function (event_name) {
-                            this.ckeditor.on(event_name, dojo.hitch(this,
+                            this.ckeditor.on(event_name, lang.hitch(this,
                                 this.on_change));
                         }, this);
-                    this.ckeditor.on('setData', dojo.hitch(this, function (e) {
+                    this.ckeditor.on('setData', lang.hitch(this, function (e) {
                         this.on_change(e.data.dataValue);
                     }));
                 },
@@ -103,42 +108,39 @@ define(["dojo", "dijit/_Widget"], function (dojo, _Widget) {
                 }
 
         });
-        widgets = dojo.getObject("zc.dojo.widgets", true);
+        widgets = lang.getObject("zc.dojo.widgets", true);
         widgets['zc.dojoform.ckeditor.CKEditor'] = function (config,
             node, order) {
                 return new module(config, node, order).domNode;
         };
 
-        dojo.subscribe(
+        connect.subscribe(
             zc.dojo.beforeRecordFormSubmittedTopic, function(frm_id) {
-                dojo.forEach(
-                    dojo.query('textarea', frm_id), function (textarea) {
-                        var editor = CKEDITOR.instances[textarea.name];
-                        if (editor) {
-                            textarea.value = editor.getData();
-                        }
-                    });
-            });
-        dojo.subscribe(
-            zc.dojo.dialogFormResetTopic, function(frm_id) {
-                dojo.forEach(
-                    dojo.query('textarea', frm_id), function (textarea) {
-                        var editor = CKEDITOR.instances[textarea.name];
-                        if (editor) {
-                            editor.setData('');
-                        }
-                    });
-            });
-        dojo.subscribe(
-            zc.dojo.dialogFormUpdateTopic, function(frm_id, row) {
-                dojo.forEach(
-                    dojo.query('textarea', frm_id), function (textarea) {
-                        textarea.value = row[textarea.name];
-                        var editor = CKEDITOR.instances[textarea.name];
-                        if (editor) {
-                            editor.setData(row[textarea.name]);
-                        }
-                    });
+                query("textarea", frm_id).forEach(function (textarea) {
+                    var editor = CKEDITOR.instances[textarea.name];
+                    if (editor) {
+                        textarea.value = editor.getData();
+                    }
                 });
+            });
+        connect.subscribe(
+            zc.dojo.dialogFormResetTopic, function(frm_id) {
+                query("textarea", frm_id).forEach(function (textarea) {
+                    var editor = CKEDITOR.instances[textarea.name];
+                    if (editor) {
+                        editor.setData('');
+                    }
+                });
+            });
+        connect.subscribe(
+            zc.dojo.dialogFormUpdateTopic, function(frm_id, row) {
+                query('textarea', frm_id).forEach(function (textarea) {
+                    textarea.value = row[textarea.name];
+                    var editor = CKEDITOR.instances[textarea.name];
+                    if (editor) {
+                        editor.setData(row[textarea.name]);
+                    }
+                });
+            });
         return module;
 });
