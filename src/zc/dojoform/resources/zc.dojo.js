@@ -190,7 +190,7 @@ module.alert = function (args) {
             innerHTML: args.content
         });
 
-    nodes = query.NodeList([el]);
+    nodes = new query.NodeList([el]);
     el = domConstruct.create('div', {style: 'text-align: right;'});
     domClass.add(el, 'dijitDialogPaneActionBar');
     el.appendChild(button.domNode);
@@ -264,7 +264,7 @@ module.confirm = function (args) {
     btn_div.appendChild(btn.domNode);
     btn.on("click", lang.partial(handler, args.yes));
 
-    nodes = query.NodeList([
+    nodes = new query.NodeList([
                 domConstruct.create('div', {
                     innerHTML: args.content,
                     style: 'margin-bottom: 10%;'})]);
@@ -701,7 +701,7 @@ module.widgets['zope.schema.Object'] = function (
 
     pnode.appendChild(node.domNode);
 
-    sub_widgets = query.NodeList();
+    sub_widgets = new query.NodeList();
 
     array.forEach(config.schema.widgets, function (widget) {
             var cp = new ContentPane({}, domConstruct.create('div')),
@@ -1587,7 +1587,7 @@ module.parse_config = function (config, order) {
                     });
                     buttons_div.appendChild(widget.domNode);
 
-                    nodes = query.NodeList([rec_form.domNode, buttons_div]);
+                    nodes = new query.NodeList([rec_form.domNode, buttons_div]);
 
                     edit_dlg.set('content', nodes);
                     edit_dlg.startup();
