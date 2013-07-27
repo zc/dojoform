@@ -23,6 +23,7 @@ define(["dojo/_base/array",
         "dijit/_Widget",
         "dijit/Dialog",
         "dijit/Editor",
+        "dijit/form/_FormMixin",
         "dijit/form/_FormValueWidget",
         "dijit/form/Button",
         "dijit/form/CheckBox",
@@ -50,12 +51,12 @@ define(["dojo/_base/array",
         ], function (array, connect, declare, fx, lang, win, aspect, stamp,
                      ItemFileReadStore, ItemFileWriteStore, dom, domClass,
                      domConstruct, domForm, domGeo, domStyle, json, on, query,
-                     xhr, _Container, _Widget, Dialog, Editor, _FormValueWidget,
-                     Button, CheckBox, ComboBox, DateTextBox, Form,
-                     FilteringSelect, MultiSelect, NumberSpinner, NumberTextBox,
-                     SimpleTextarea, TextBox, TimeTextBox, ValidationTextBox,
-                     BorderContainer, ContentPane, registry, TimeSpinner,
-                     EnhancedGrid) {
+                     xhr, _Container, _Widget, Dialog, Editor, _FormMixin,
+                     _FormValueWidget, Button, CheckBox, ComboBox, DateTextBox,
+                     Form, FilteringSelect, MultiSelect, NumberSpinner,
+                     NumberTextBox, SimpleTextarea, TextBox, TimeTextBox,
+                     ValidationTextBox, BorderContainer, ContentPane, registry,
+                     TimeSpinner, EnhancedGrid) {
     var zc = lang.getObject("zc", true),
         module = lang.getObject("zc.dojo", true),
         widgets = lang.getObject("zc.dojo.widgets", true),
@@ -1358,13 +1359,13 @@ module.parse_config = function (config, order) {
 
                 value: "",
 
-                constructor: function (jsonData, node) {
-                    this.config = jsonData.config;
+                constructor: function (params, srcNodeRef) {
+                    this.config = params.config;
                     this.rc = this.config.record_schema;
                     this.rc.name = this.config.name;
                     this.original = this.config.value;
                     this.dnd__preselect = true;
-                    this.dijit_type = jsonData.dijit_type;
+                    this.dijit_type = params.dijit_type;
                     this.name = this.config.name;
                     this.id = this.config.id;
                 },
@@ -1868,15 +1869,15 @@ module.parse_config = function (config, order) {
             });
 
         declare(
-            "zc.RangeWidget", [_Widget, _Container], {
+            "zc.RangeWidget", [_Widget, _Container, _FormMixin], {
 
                 value: "",
 
-                constructor: function (jsonData, node) {
-                    this.config = jsonData.config;
-                    this.dijit_type = jsonData.dijit_type;
-                    this.convert_to = jsonData.convert_to;
-                    this.convert_from = jsonData.convert_from;
+                constructor: function (params, srcNodeRef) {
+                    this.config = params.config;
+                    this.dijit_type = params.dijit_type;
+                    this.convert_to = params.convert_to;
+                    this.convert_from = params.convert_from;
                     this.constraints = this.config.constraints;
                     this.name = this.config.name;
                     this.id = this.config.id;
@@ -1967,12 +1968,12 @@ module.parse_config = function (config, order) {
                 },
 
                 _getValueAttr: function () {
-                    var value = {}, min = this.min_value.get("value");
-                    value[this.config.start] = this.min_value.get("value");
+                    var value = this.inherited(arguments);
+
                     if (isNaN(value[this.config.start])) {
                         value[this.config.start] = null;
                     }
-                    value[this.config.end] = this.max_value.get("value");
+
                     if (isNaN(value[this.config.end])) {
                         value[this.config.end] = null;
                     }
@@ -2010,35 +2011,7 @@ module.parse_config = function (config, order) {
                 },
 
                 _setValueAttr: function (value) {
-                    value = this._values_from(value);
-                    this.min_value.set('value', value[this.config.start]);
-                    this.max_value.set('value', value[this.config.end]);
-                },
-
-                isValid: function () {
-                    return this.min_value.isValid() &&
-                        this.max_value.isValid() &&
-                        (this.min_value.get('value') === null ||
-                         this.max_value.get('value') === null ||
-                         (this.max_value.get('value') >
-                          this.min_value.get('value'))
-                         );
-                },
-
-                validate: function () {
-                    return this.min_value.validate() &&
-                        this.max_value.validate() &&
-                        (this.min_value.get('value') === null ||
-                         this.max_value.get('value') === null ||
-                         (this.max_value.get('value') >
-                          this.min_value.get('value'))
-                         );
-                },
-
-                reset: function () {
-                    array.forEach(this.getChildren(), function (w) {
-                        w.reset();
-                    });
+                    this.inherited(arguments, [this._values_from(value)]);
                 },
 
                 focus: function () {
