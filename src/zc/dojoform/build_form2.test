@@ -93,7 +93,7 @@ Simple example, no groups and no left_fields (no bool flag)
 
     >>> JS(read_test_file('3.js'))
     js> form = zc.dojo.build_form2(
-    ...     definition, dojo.create('div', {}, dojo.body()), 3);
+    ...     definition, dojo.create('div', null, dojo.body()), 3);
 
 
     >>> matches(browser.page_source, read_test_file('3.html'))

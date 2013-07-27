@@ -1,8 +1,24 @@
-define(["dojo",
-        "dijit",
+/*global define */
+define(["dojo/_base/array",
+        "dojo/_base/connect",
+        "dojo/_base/declare",
+        "dojo/_base/fx",
+        "dojo/_base/lang",
+        "dojo/_base/window",
+        "dojo/aspect",
         "dojo/date/stamp",
         "dojo/data/ItemFileReadStore",
         "dojo/data/ItemFileWriteStore",
+        "dojo/dom",
+        "dojo/dom-class",
+        "dojo/dom-construct",
+        "dojo/dom-form",
+        "dojo/dom-geometry",
+        "dojo/dom-style",
+        "dojo/json",
+        "dojo/on",
+        "dojo/query",
+        "dojo/request/xhr",
         "dijit/_Widget",
         "dijit/Dialog",
         "dijit/Editor",
@@ -22,6 +38,7 @@ define(["dojo",
         "dijit/form/ValidationTextBox",
         "dijit/layout/BorderContainer",
         "dijit/layout/ContentPane",
+        "dijit/registry",
         "dojox/form/TimeSpinner",
         "dojox/grid/EnhancedGrid",
         "dojox/grid/cells/dijit",
@@ -29,15 +46,16 @@ define(["dojo",
         "dojox/grid/enhanced/plugins/IndirectSelection",
         "dojox/grid/enhanced/plugins/Menu",
         "dojox/grid/enhanced/plugins/NestedSorting"
-        ], function (dojo, dijit, stamp, ItemFileReadStore, ItemFileWriteStore,
+        ], function (array, connect, declare, fx, lang, win, aspect, stamp, ItemFileReadStore, ItemFileWriteStore,
+                     dom, domClass, domConstruct, domForm, domGeo, domStyle, json, on, query, xhr,
                      _Widget, Dialog, Editor, _FormValueWidget, Button, CheckBox, ComboBox,
                      DateTextBox, Form, FilteringSelect, MultiSelect,
                      NumberSpinner, NumberTextBox, SimpleTextarea, TextBox,
                      TimeTextBox, ValidationTextBox, BorderContainer,
-                     ContentPane, TimeSpinner, EnhancedGrid) {
-    var zc = dojo.getObject("zc", true),
-        module = dojo.getObject("zc.dojo", true),
-        widgets = dojo.getObject("zc.dojo.widgets", true),
+                     ContentPane, registry, TimeSpinner, EnhancedGrid) {
+    var zc = lang.getObject("zc", true),
+        module = lang.getObject("zc.dojo", true),
+        widgets = lang.getObject("zc.dojo.widgets", true),
         RecordList;
 
     zc.DateTimeTextBox = function (config, node) {
@@ -45,32 +63,32 @@ define(["dojo",
         var domNode, value_node, dateNode, date_box, timeNode,
             time_box, change_value;
 
-        domNode = dojo.create('div', {
+        domNode = domConstruct.create('div', {
             'style': 'padding:5px;'
         }, node);
-        value_node = dojo.create('input', {
+        value_node = domConstruct.create('input', {
             'type': 'hidden',
             'name': config.name,
             'value': config.value
         }, domNode);
 
-        dateNode = dojo.create('div', {}, domNode);
-        dojo.create('span', {
+        dateNode = domConstruct.create('div', null, domNode);
+        domConstruct.create('span', {
             'innerHTML': 'Date: '
         }, dateNode);
         date_box = new DateTextBox({
             value: config.value,
             onChange: function () {change_value();}
-        }, dojo.create('div', {}, dateNode));
+        }, domConstruct.create('div', null, dateNode));
 
-        timeNode = dojo.create('div', {}, domNode);
-        dojo.create('span', {
+        timeNode = domConstruct.create('div', null, domNode);
+        domConstruct.create('span', {
             'innerHTML': 'Time: '
         }, timeNode);
         time_box = new TimeSpinner({
             value: config.value,
             onChange: function () {change_value();}
-        }, dojo.create('div', {}, timeNode));
+        }, domConstruct.create('div', null, timeNode));
 
         change_value = function () {
             var date_v = date_box.value,
@@ -107,11 +125,11 @@ module.flag_startup = function () {
 
     for (key in module.flags) {
         if (module.flags.hasOwnProperty(key)) {
-            flag_wid = dijit.byId(key);
+            flag_wid = registry.byId(key);
             flagged_cps = module.flags[key];
             state = flag_wid.checked;
-            dojo.forEach(flagged_cps, function(cp) {
-                dojo.style(cp.domNode, 'display', state ? '': 'none');
+            array.forEach(flagged_cps, function(cp) {
+                domStyle.set(cp.domNode, 'display', state ? '': 'none');
             });
         }
     }
@@ -135,7 +153,7 @@ module.alert = function (args) {
             _args[params[i]] = arguments[i];
         }
         args = _args;
-    } else if (!dojo.isObject(args)) {
+    } else if (!lang.isObject(args)) {
         throw new Error("Invalid argument.");
     }
 
@@ -153,7 +171,8 @@ module.alert = function (args) {
             dialog.destroyRecursive();
         }
     };
-    dojo.connect(dialog, 'onCancel', dtor);
+    dialog.on("cancel", dtor);
+
     button = new Button({
         label: 'OK',
         onClick: function () {
@@ -163,14 +182,14 @@ module.alert = function (args) {
             dtor();
         }
     });
-    el = dojo.create('div', {
+    el = domConstruct.create('div', {
             style: 'text-align: left; margin-bottom: 15%;',
             innerHTML: args.content
         });
 
-    nodes = new dojo.NodeList([el]);
-    el = dojo.create('div', {style: 'text-align: right;'});
-    dojo.addClass(el, 'dijitDialogPaneActionBar');
+    nodes = query.NodeList([el]);
+    el = domConstruct.create('div', {style: 'text-align: right;'});
+    domClass.add(el, 'dijitDialogPaneActionBar');
     el.appendChild(button.domNode);
     nodes.push(el);
     dialog.set('content', nodes);
@@ -213,40 +232,37 @@ module.confirm = function (args) {
             _args[params[i]] = arguments[i];
         }
         args = _args;
-    } else if (!dojo.isObject(args)) {
+    } else if (!lang.isObject(args)) {
         throw new Error("Invalid argument.");
     }
 
     var title = args.title || 'Confirm';
     dialog = new Dialog({title: title});
 
-    events = [];
     handler = function (cb) {
         dialog.hide();
-        dojo.forEach(events, dojo.disconnect);
         if (cb) {
             cb();
         }
         dialog.destroyRecursive();
     };
 
-    btn_div = dojo.create('div', {style: 'text-align: right;'});
-    dojo.addClass(btn_div, 'dijitDialogPaneActionBar');
+    btn_div = domConstruct.create('div', {style: 'text-align: right;'});
+    domClass.add(btn_div, 'dijitDialogPaneActionBar');
     btn = new Button(
         {label: args.cancel_label || 'Cancel', id: args.cancel_id || null});
     btn_div.appendChild(btn.domNode);
-    no_cb = dojo.partial(handler, args.no);
-    events.push(dojo.connect(btn, 'onClick', no_cb));
-    events.push(dojo.connect(dialog, 'onCancel', no_cb));
+    no_cb = lang.partial(handler, args.no);
+    btn.on("click", no_cb);
+    dialog.on("cancel", no_cb);
 
     btn = new Button(
         {label: args.confirm_label || 'Confirm', id: args.confirm_id || null});
     btn_div.appendChild(btn.domNode);
-    events.push(
-        dojo.connect(btn, 'onClick', dojo.partial(handler, args.yes)));
+    btn.on("click", lang.partial(handler, args.yes));
 
-    nodes = new dojo.NodeList([
-                dojo.create('div', {
+    nodes = query.NodeList([
+                domConstruct.create('div', {
                     innerHTML: args.content,
                     style: 'margin-bottom: 10%;'})]);
     nodes.push(btn_div);
@@ -261,7 +277,7 @@ module.call_server = function (args) {
     callback_error = function (error) {
         var result;
         if (error.responseText) {
-            result = dojo.fromJson(error.responseText);
+            result = json.parse(error.responseText);
         }
 
         if (result) {
@@ -284,8 +300,8 @@ module.call_server = function (args) {
 
     callback_success = function (data) {
         var result, error, errors;
-        if (dojo.isString(data)) {
-            data = dojo.fromJson(data);
+        if (lang.isString(data)) {
+            data = json.parse(data);
         }
         if (data.session_expired) {
             if (args.failure) {
@@ -312,28 +328,17 @@ module.call_server = function (args) {
     };
 
     /* Subscribers might be listening to this event. Do not remove. */
-    dojo.publish(module.beforeContentFormSubmittedTopic, [args.form_id]);
+    connect.publish(module.beforeContentFormSubmittedTopic, [args.form_id]);
     if (!args.content) {
         args.content = {};
     }
-    if (!args.form_id) {
-        dojo.xhrPost({
-            url: args.url,
-            handleAs: "json",
-            content: args.content,
-            load: callback_success,
-            error: callback_error
-        });
+    if (args.form_id) {
+        args.content = domForm.toObject(args.form_id);
     }
-    else {
-        dojo.xhrPost({
-            url: args.url,
-            content: args.content,
-            form: args.form_id,
-            load: callback_success,
-            error: callback_error
-        });
-    }
+    return xhr.post(args.url, {
+        handleAs: "json",
+        data: args.content
+    }).then(callback_success, callback_error);
 };
 
 module.submit_form = module.call_server;
@@ -396,7 +401,7 @@ module.widgets['zc.ajaxform.widgets.RichText'] =
     function (config, node, order) {
 
     var wconfig = module.parse_config(config, order),
-        total_editor = dojo.create('div', {}, node),
+        total_editor = domConstruct.create('div', {}, node),
         editor_for_form, editor;
 
     editor_for_form = new TextBox({
@@ -420,7 +425,7 @@ module.widgets['zc.ajaxform.widgets.RichText'] =
     total_editor.appendChild(editor_for_form.domNode);
     total_editor.appendChild(editor.domNode);
     editor.value = editor_for_form.get("value");
-    dojo.connect(editor, 'onBlur', function () {
+    editor.on("blur", function () {
         editor_for_form.set("value", editor.get("value"));
     });
     return total_editor;
@@ -434,20 +439,20 @@ module.widgets['zc.ajaxform.widgets.Hidden'] = function (config, node, order) {
 };
 
 module.RangeConversion = function (v) {
-    if (dojo.isString(v)) {
-        v = dojo.fromJson(v);
+    if (lang.isString(v)) {
+        v = json.parse(v);
     }
     else {
-        v = dojo.toJson(v);
+        v = json.stringify(v);
     }
     return v;
 };
 
 module.DateConversion = function (v) {
-    if (dojo.isString(v)) {
-        v = dojo.date.stamp.fromISOString(v);
+    if (lang.isString(v)) {
+        v = stamp.fromISOString(v);
     } else if (v) {
-        v = dojo.date.stamp.toISOString(v).split('T')[0];
+        v = stamp.toISOString(v).split('T')[0];
     }
     return v;
 };
@@ -529,8 +534,8 @@ module.widgets['zope.schema.Bool'] = function (config, node, order) {
     wconfig.checked = config.value;
     wconfig.onChange = function (state) {
         var follower_cps = module.flags[config.id];
-        dojo.forEach(follower_cps, function (cp) {
-            dojo.style(cp.domNode, 'display', state ? '': 'none');
+        array.forEach(follower_cps, function (cp) {
+            domStyle.set(cp.domNode, 'display', state ? '': 'none');
         });
     };
     return new CheckBox(wconfig, node).domNode;
@@ -551,21 +556,21 @@ module.widgets['zc.ajaxform.widgets.RangeDisplay'] = function (
     var wconfig, domNode, startbox, endbox;
     wconfig = module.parse_config(config, order);
     wconfig.readOnly = true;
-    domNode = dojo.create('div', {}, node);
-    dojo.create('label', {
+    domNode = domConstruct.create('div', {}, node);
+    domConstruct.create('label', {
         'innerHTML': config.start_label
-    }, dojo.create('div', {}, domNode));
+    }, domConstruct.create('div', {}, domNode));
     startbox = new TextBox({
         'value': wconfig.value[config.start],
         'readOnly': true
-    }, dojo.create('div', {}, domNode));
-    dojo.create('label', {
+    }, domConstruct.create('div', {}, domNode));
+    domConstruct.create('label', {
         'innerHTML': config.end_label
-    }, dojo.create('div', {}, domNode));
+    }, domConstruct.create('div', {}, domNode));
     endbox = new TextBox({
         'value': wconfig.value[config.end],
         'readOnly': true
-    }, dojo.create('div', {}, domNode));
+    }, domConstruct.create('div', {}, domNode));
     return domNode;
 };
 
@@ -576,8 +581,8 @@ module.widgets['zc.ajaxform.widgets.BoolDisplay'] = function (
     wconfig.checked = config.value;
     wconfig.onChange = function (state) {
         var follower_cps = module.flags[config.id];
-        dojo.forEach(follower_cps, function (cp) {
-            dojo.style(cp.domNode, 'display', state ? '': 'none');
+        array.forEach(follower_cps, function (cp) {
+            ddomStyle.set(cp.domNode, 'display', state ? '': 'none');
         });
     };
     wconfig.readOnly = true;
@@ -586,7 +591,7 @@ module.widgets['zc.ajaxform.widgets.BoolDisplay'] = function (
 
 module.widgets['zc.ajaxform.widgets.RichTextDisplay'] = function (
     config, node, order) {
-    var iframe = dojo.create('iframe', {
+    var iframe = domConstruct.create('iframe', {
         'frameborder': 1,
         'class': 'zcdojoformRichTextDisplay'
     }, node);
@@ -603,7 +608,7 @@ module.widgets['zope.schema.Date'] = function (config, node, order) {
     var wconfig, widget;
     wconfig = module.parse_config(config, order);
     wconfig.value = stamp.fromISOString(wconfig.value);
-    widget = new DateTextBox(wconfig, dojo.create('div', {}, node));
+    widget = new DateTextBox(wconfig, domConstruct.create('div', {}, node));
     return widget.domNode;
 };
 
@@ -615,9 +620,9 @@ module.widgets['zope.schema.Time'] = function (config, node, order) {
         if (ts[0] !== 'T') {
             ts = 'T' + ts;
         }
-        wconfig.value = dojo.date.stamp.fromISOString(ts);
+        wconfig.value = stamp.fromISOString(ts);
     }
-    widget = new TimeSpinner(wconfig, dojo.create('div', {}, node));
+    widget = new TimeSpinner(wconfig, domConstruct.create('div', {}, node));
     return widget.domNode;
 };
 
@@ -626,7 +631,7 @@ module.widgets['zope.schema.Datetime'] = function (
     var wconfig = module.parse_config(config, order),
         widget;
     wconfig.value = wconfig.value ? new Date(wconfig.value) : new Date();
-    widget = new zc.DateTimeTextBox(wconfig, dojo.create('div', {}, node));
+    widget = new zc.DateTimeTextBox(wconfig, domConstruct.create('div', {}, node));
     return widget.domNode;
 };
 
@@ -637,13 +642,13 @@ module._choiceConfig = function (config, node, order) {
         identifier: 'value',
         label: 'label'
     };
-    store_data.items = dojo.map(
+    store_data.items = array.map(
                         config.values,
                         function (item) {
                             return {label: item[1], value: item[0]};
                         });
 
-    select_store = new dojo.data.ItemFileReadStore({data: store_data});
+    select_store = new ItemFileReadStore({data: store_data});
     if (wconfig.value === undefined) {
         wconfig.value = null;
     }
@@ -654,12 +659,12 @@ module._choiceConfig = function (config, node, order) {
 
 module.widgets['zope.schema.Set'] = function (config, node, order) {
     var wconfig = module.parse_config(config, order),
-        sel = dojo.create('select', {}, node),
+        sel = domConstruct.create('select', {}, node),
         sel_vals, select;
     config.value = config.value || [];
     sel_vals = config.value.join(' ');
-    dojo.forEach(config.values, function (item) {
-        var op = dojo.create('option', {
+    array.forEach(config.values, function (item) {
+        var op = domConstruct.create('option', {
             value: item[0],
             innerHTML: item[1]
         }, sel);
@@ -693,30 +698,30 @@ module.widgets['zope.schema.Object'] = function (
 
     pnode.appendChild(node.domNode);
 
-    sub_widgets = new dojo.NodeList();
+    sub_widgets = query.NodeList();
 
-    dojo.forEach(config.schema.widgets, function (widget) {
-            var cp = new ContentPane({}, dojo.create('div')),
+    array.forEach(config.schema.widgets, function (widget) {
+            var cp = new ContentPane({}, domConstruct.create('div')),
                 label, span, wid;
             if (widget.widget_constructor !== 'zc.ajaxform.widgets.Hidden') {
-                label = dojo.create(
+                label = domConstruct.create(
                     'label', {innerHTML: widget.label || widget.fieldLabel},
                     cp.domNode);
                 if (widget.required) {
-                    span = dojo.create(
+                    span = domConstruct.create(
                         'span', {innerHTML: ' (required)'}, label);
-                    dojo.addClass(span, 'status-marker');
+                    domClass.add(span, 'status-marker');
                 }
-                dojo.create('br', null, cp.domNode);
+                domConstruct.create('br', null, cp.domNode);
             }
-            dojo.addClass(cp.domNode, 'widget');
+            domClass.add(cp.domNode, 'widget');
             wid = module.widgets[widget.widget_constructor](
                 widget,
                 cp.domNode,
                 order,
                 widgets
             );
-            sub_widgets.push(dijit.byId(widget.name));
+            sub_widgets.push(registry.byId(widget.name));
             cp.domNode.appendChild(wid);
             node.domNode.appendChild(cp.domNode);
         }
@@ -724,18 +729,20 @@ module.widgets['zope.schema.Object'] = function (
 
     if (!config.required) {
         checkbox = new CheckBox({});
-        label = dojo.byId(config.name + '.label');
+        label = dom.byId(config.name + '.label');
         label.parentNode.insertBefore(checkbox.domNode, label);
 
-        dojo.style(node.domNode, 'opacity', '0');
-        dojo.connect(checkbox, 'onClick', function () {
+        domStyle.set(node.domNode, 'opacity', '0');
+        checkbox.on("click", function () {
             sub_widgets.forEach(function (widget) {
                 widget.disabled = !checkbox.checked;
             });
-            /* jslint doesn't complain about this ::evil laugh:: */
-            (checkbox.checked ? dojo.fadeIn : dojo.fadeOut)(
-                                                {node: node.domNode}).play();
 
+            if (checkbox.checked) {
+                fx.fadeIn({node: node.domNode}).play();
+            } else {
+                fx.fadeOut({node: node.domNode}).play();
+            }
         });
         checkbox.onClick();
     }
@@ -752,10 +759,10 @@ module.widgets['zope.schema.List'] = function (
 
 module.build_widgets = function (config) {
     var widget_mapping = {};
-    dojo.forEach(config.definition.widgets, function (widget_config) {
+    array.forEach(config.definition.widgets, function (widget_config) {
         var widget = module.widgets[
             widget_config.widget_constructor](
-                widget_config, dojo.create('div'));
+                widget_config, domConstruct.create('div'));
         widget_mapping[widget_config.id] = widget;
     });
     return widget_mapping;
@@ -784,7 +791,7 @@ module.build_form = function (config, pnode, order, startup) {
             this.getChildren().forEach(function (node) {node.startup();});
         };
     }
-    dojo.addClass(form, 'zcForm');
+    domClass.add(form, 'zcForm');
     node = new BorderContainer({
         design: "headline",
         gutters: true,
@@ -806,9 +813,9 @@ module.build_form = function (config, pnode, order, startup) {
     have_left_fields = false;
     for (key in config.definition.left_fields){
         if (config.definition.left_fields.hasOwnProperty(key)) {
-	    if (config.definition.left_fields[key]){
-	        have_left_fields = true;
-	        break;
+            if (config.definition.left_fields[key]){
+                have_left_fields = true;
+                break;
             }
         }
     }
@@ -822,7 +829,7 @@ module.build_form = function (config, pnode, order, startup) {
         node.addChild(left_pane);
     }
 
-    dojo.forEach(config.definition.widgets, function (widget) {
+    array.forEach(config.definition.widgets, function (widget) {
         var prefix, cp, bool_flag, label, span, wid, wid_domnode;
         if (config.definition.prefix) {
             prefix = config.definition.prefix + '.';
@@ -834,7 +841,7 @@ module.build_form = function (config, pnode, order, startup) {
                 widget.id = prefix + widget.id;
             }
         }
-        cp = new ContentPane({}, dojo.create('div'));
+        cp = new ContentPane({}, domConstruct.create('div'));
         bool_flag = widget.bool_flag;
         if (bool_flag) {
             if (config.definition.prefix) {
@@ -845,7 +852,7 @@ module.build_form = function (config, pnode, order, startup) {
             }
             module.flags[bool_flag].push(cp);
         }
-        dojo.addClass(cp.domNode, 'widget');
+        domClass.add(cp.domNode, 'widget');
         if (!(left_pane || right_pane)) {
             node.addChild(cp);
         }
@@ -857,18 +864,18 @@ module.build_form = function (config, pnode, order, startup) {
         }
 
         if (widget.widget_constructor !== 'zc.ajaxform.widgets.Hidden') {
-            label = dojo.create(
+            label = domConstruct.create(
                 'label', {id: widget.name + '.label',
                 innerHTML: widget.label || widget.fieldLabel},
                 cp.domNode);
             if (widget.required) {
-                span = dojo.create(
+                span = domConstruct.create(
                     'span', {innerHTML: ' (required)'}, label);
-                dojo.addClass(span, 'status-marker');
+                domClass.add(span, 'status-marker');
             }
-            dojo.create('br', null, cp.domNode);
+            domConstruct.create('br', null, cp.domNode);
         }
-        wid_domnode = dojo.create('div');
+        wid_domnode = domConstruct.create('div');
         cp.domNode.appendChild(wid_domnode);
         wid = module.widgets[widget.widget_constructor](
             widget, wid_domnode, order, widgets
@@ -883,7 +890,7 @@ module.build_form = function (config, pnode, order, startup) {
         getHeight = function (node) {
             return node.scrollHeight;
         };
-        heights = dojo.map(
+        heights = array.map(
             node.getChildren(),
             function (child) { return getHeight(child.domNode); }
         );
@@ -903,13 +910,13 @@ module.build_form = function (config, pnode, order, startup) {
     // XXX The usage of this event is unclear.  We need to document what's
     // going on here.
     fireSubmitEvent = function () {
-        var event = dojo.doc.createEvent('Event');
+        var event = win.doc.createEvent('Event');
         event.initEvent('beforeSubmit', true, true);
-        dojo.doc.dispatchEvent(event);
+        win.doc.dispatchEvent(event);
     };
 
     if (bottom_pane) {
-        dojo.forEach(config.definition.actions, function (action) {
+        array.forEach(config.definition.actions, function (action) {
             var button = new config.definition.button_type({
                     label: action.label,
                     id: action.name,
@@ -925,7 +932,7 @@ module.build_form = function (config, pnode, order, startup) {
     if (startup) {
         node.startup();
         node.resize();
-        dojo.forEach(widgets, function (widget) {
+        array.forEach(widgets, function (widget) {
             if (widget.postStartup) {
                 widget.postStartup(node);
             }
@@ -939,7 +946,7 @@ module.build_form = function (config, pnode, order, startup) {
 };
 
 module._func_handler = function (func) {
-    return dojo.isString(func) ? dojo.getObject(func, false) : func;
+    return lang.isString(func) ? lang.getObject(func, false) : func;
 };
 
 module.build_form2 = function (config, pnode, order, startup) {
@@ -957,9 +964,9 @@ module.build_form2 = function (config, pnode, order, startup) {
     legacy = !!pnode; // Are we using a build_form-style call
 
     if (prefix) {
-        form = dijit.byId(definition.prefix);
+        form = registry.byId(definition.prefix);
         if (! form) {
-            form = dojo.byId(definition.prefix);
+            form = dom.byId(definition.prefix);
             if (form) {
                 form = new Form({id: definition.prefix}, form);
             }
@@ -976,16 +983,16 @@ module.build_form2 = function (config, pnode, order, startup) {
         form = new Form(form, pnode);
     }
 
-    dojo.addClass(form.domNode, 'zc-form');
+    domClass.add(form.domNode, 'zc-form');
     if (definition['class']) {
-        dojo.addClass(form.domNode, definition['class']);
+        domClass.add(form.domNode, definition['class']);
     }
 
 
     // normalize widget namey data
-    widgets = dojo.map(
+    widgets = array.map(
         definition.widgets, function (widget) {
-            widget = dojo.clone(widget);
+            widget = lang.clone(widget);
 
             if (! widget.id) {
                 widget.id = widget.name;
@@ -1010,7 +1017,7 @@ module.build_form2 = function (config, pnode, order, startup) {
         if (definition.left_fields) {
             left_widgets = [];
             right_widgets = [];
-            dojo.forEach(
+            array.forEach(
                 widgets, function (widget) {
                     if (definition.left_fields[widget.name]) {
                         left_widgets.push(widget.name);
@@ -1036,7 +1043,7 @@ module.build_form2 = function (config, pnode, order, startup) {
                         });
 
                     if (legacy) {
-                        dojo.style(form.domNode,
+                        domStyle.set(form.domNode,
                                    {height: '100%', width: '100%'});
                         border = new BorderContainer(
                             {
@@ -1044,7 +1051,7 @@ module.build_form2 = function (config, pnode, order, startup) {
                                 gutters: true,
                                 livesplitters: true,
                                 style: "height: 100%; width: 100%;"
-                            }, dojo.create('div', {}, form.domNode));
+                            }, domConstruct.create('div', null, form.domNode));
 
                         border.addChild(
                             new ContentPane(
@@ -1094,7 +1101,7 @@ module.build_form2 = function (config, pnode, order, startup) {
                 {
                     id: 'zc.dojo.zc-fields' + suffix,
                     'class': 'zc-fields',
-                    widgets: dojo.map(
+                    widgets: array.map(
                         widgets, function (widget) {
                             return widget.name;
                         })
@@ -1105,17 +1112,12 @@ module.build_form2 = function (config, pnode, order, startup) {
 
     // create a widget index
     widgets_by_name = {};
-    dojo.forEach(widgets, function (widget) {
+    array.forEach(widgets, function (widget) {
                      widgets_by_name[widget.name] = widget;
                  });
 
-    flag_changed = function (value) {
-        if (value) {
-              dojo.removeClass(this, 'zc-widget-hidden');
-          }
-          else {
-            dojo.addClass(this, 'zc-widget-hidden');
-          }
+    flag_changed = function (node, value) {
+        domClass.toggle(node, "zc-widget-hidden", !value);
     };
 
     needed_flags = {};
@@ -1124,11 +1126,10 @@ module.build_form2 = function (config, pnode, order, startup) {
         var bool_flag, flag_widget;
         if (def.bool_flag) {
             bool_flag = prefix + def.bool_flag;
-            flag_widget = dijit.byId(bool_flag);
+            flag_widget = registry.byId(bool_flag);
             if (flag_widget) {
-                dojo.connect(flag_widget, 'onChange',
-                             div, flag_changed);
-                flag_changed.call(div, flag_widget.get('value'));
+                flag_widget.on("change", lang.partial(flag_changed, div));
+                flag_changed(div, flag_widget.get('value'));
             }
             else {
                 if (needed_flags.bool_flag !== undefined) {
@@ -1144,7 +1145,7 @@ module.build_form2 = function (config, pnode, order, startup) {
 
     // Now, iterate through the groups
     build_group = function(group, parent) {
-        var group_node, group_data = dojo.clone(group);
+        var group_node, group_data = lang.clone(group);
         delete group_data.widgets;
         if (group_data['class']) {
             group_data['class'] += ' zc-fieldset';
@@ -1153,25 +1154,25 @@ module.build_form2 = function (config, pnode, order, startup) {
         }
 
         if (group.id) {
-            group_node = dijit.byId(group.id);
+            group_node = registry.byId(group.id);
             if (group_node) {
                 group_node = group_node.containerNode;
             }
             else {
-                group_node = dojo.byId(group.id);
+                group_node = dom.byId(group.id);
             }
         }
         if (! group_node) {
-            group_node = dojo.create('div', group_data, parent);
+            group_node = domConstruct.create('div', group_data, parent);
         }
         parent = group_node;
 
         handle_bool_flag(group, parent);
 
-        dojo.forEach(
+        array.forEach(
             group.widgets, function (widget) {
                 var class_, div, flag_widget;
-                if (!dojo.isString(widget)) {
+                if (!lang.isString(widget)) {
                     build_group(widget, parent);
                     return;     // continue
                 }
@@ -1193,13 +1194,13 @@ module.build_form2 = function (config, pnode, order, startup) {
                 if (widget.hint || widget.fieldHint) {
                     div.title = widget.hint || widget.fieldHint;
                 }
-                div = dojo.create('div', div);
+                div = domConstruct.create('div', div);
 
                 handle_bool_flag(widget, div);
 
                 if (widget.widget_constructor !==
                     'zc.ajaxform.widgets.Hidden') {
-                    dojo.create(
+                    domConstruct.create(
                         'label',
                         {innerHTML: widget.label || widget.fieldLabel,
                          'for': widget.id, 'class': 'zc-label'
@@ -1207,17 +1208,16 @@ module.build_form2 = function (config, pnode, order, startup) {
                         div);
                 }
                 module.widgets[widget.widget_constructor](
-                    widget, dojo.create('div', {}, div), order, [],
+                    widget, domConstruct.create('div', {}, div), order, [],
                     true
                 );
                 parent.appendChild(div);
 
                 if (needed_flags[widget.id] !== undefined) {
-                    flag_widget = dijit.byId(widget.id);
-                    dojo.forEach(
+                    flag_widget = registry.byId(widget.id);
+                    array.forEach(
                         needed_flags[widget.id], function (div) {
-                            dojo.connect(flag_widget, 'onChange',
-                                         div, flag_changed);
+                            flag_widget.on("change", lang.partial(flag_changed, div));
                             flag_changed.call(div, flag_widget.get('value'));
                         });
                     delete needed_flags[widget.id];
@@ -1225,18 +1225,18 @@ module.build_form2 = function (config, pnode, order, startup) {
             });
     };
 
-    dojo.forEach(
+    array.forEach(
         groups, function (group) {
-            if (!fields_div && ((! group.id) || ! dojo.byId(group.id))) {
-                fields_div = dojo.create('div', {'class': 'zc-fields'},
+            if (!fields_div && ((! group.id) || ! dom.byId(group.id))) {
+                fields_div = domConstruct.create('div', {'class': 'zc-fields'},
                                          form.domNode);
             }
             build_group(group, fields_div);
 
             if (group.id) {
-                var group_widget = dijit.byId(group.id);
+                var group_widget = registry.byId(group.id);
                 if (group_widget && group_widget._started) {
-                    dojo.forEach(
+                    array.forEach(
                         group_widget.getChildren(), function(child) {
                             child.startup();
                         });
@@ -1255,23 +1255,23 @@ module.build_form2 = function (config, pnode, order, startup) {
 
     if (definition.actions) {
         action_div_id = 'zc.dojo.zc-actions' + suffix;
-        action_div = dijit.byId(action_div_id);
+        action_div = registry.byId(action_div_id);
         if (action_div) {
             action_div = action_div.containerNode;
         }
         else {
-            action_div = dojo.byId(action_div_id);
+            action_div = dom.byId(action_div_id);
         }
 
         if (!action_div) {
-            action_div = dojo.create(
+            action_div = domConstruct.create(
                 'div', {id: action_div_id, 'class': 'zc-actions'},
                 form.domNode);
         }
 
-        dojo.forEach(
+        array.forEach(
             definition.actions, function (action) {
-                action = dojo.mixin(
+                action = lang.mixin(
                     {
                         id: action.id || (prefix &&
                              action.name.slice(0, prefix.length) === prefix ?
@@ -1304,8 +1304,7 @@ module.build_form2 = function (config, pnode, order, startup) {
 
                 if (definition.onClick !== undefined) {
                     if (action.onClick !== undefined) {
-                        dojo.connect(action, 'onClick', null,
-                                     definition.onClick);
+                        action.on("click", definition.onClick);
                     } else {
                         action.onClick = definition.onClick;
                     }
@@ -1351,7 +1350,7 @@ module.parse_config = function (config, order) {
     return wconfig;
 };
 
-        RecordList = dojo.declare(
+        RecordList = declare(
             "zc.RecordList", [_Widget], {
 
                 value: "",
@@ -1365,7 +1364,7 @@ module.parse_config = function (config, order) {
                     this.dijit_type = jsonData.dijit_type;
                     this.name = this.config.name;
                     this.id = this.config.id;
-                    this.domNode = node || dojo.create('div');
+                    this.domNode = node || domConstruct.create('div');
                     this.containerNode = this.domNode;
                 },
 
@@ -1375,7 +1374,7 @@ module.parse_config = function (config, order) {
                     formatter = function (v) {
                         var data;
                         if (v) {
-                            data = dojo.fromJson(v);
+                            data = json.parse(v);
                             if (data.thumbnail_tag) {
                                 return unescape(data.thumbnail_tag);
                             }
@@ -1389,13 +1388,13 @@ module.parse_config = function (config, order) {
                         }
                         return "";
                     };
-                    dojo.forEach(record.widgets, function (widget) {
+                    array.forEach(record.widgets, function (widget) {
                         var new_name, column_label, column;
                         if (widget.widget_constructor ===
                             "zc.ajaxform.widgets.Hidden") {
                             return;
                         }
-                        widget = dojo.clone(widget);
+                        widget = lang.clone(widget);
                         new_name = record.name + '.' + widget.name;
                         widget.id = widget.name = new_name;
                         column_label = widget.label || widget.fieldLabel;
@@ -1433,9 +1432,9 @@ module.parse_config = function (config, order) {
 
                 _build_record: function (record, suffix, record_value) {
                     var k, rec = {"name": suffix};
-                    dojo.forEach(record.widgets, function (rc_wid) {
+                    array.forEach(record.widgets, function (rc_wid) {
                         var indexed_name, val = '';
-                        rc_wid = dojo.clone(rc_wid);
+                        rc_wid = lang.clone(rc_wid);
                         indexed_name = rc_wid.name;
                         rc_wid.name = record.name + '.' + indexed_name;
                         rc_wid.id = record.name + '.' + indexed_name;
@@ -1463,7 +1462,7 @@ module.parse_config = function (config, order) {
                      * (e.g., for the "Link" and "Anchor" popups).
                      * */
                     edit_dlg._onKey = function (evt) {
-                        if (!dojo.hasClass(evt.target,
+                        if (!domClass.contains(evt.target,
                             'cke_dialog_ui_input_text')) {
                                 return Dialog.prototype._onKey.call(
                                     edit_dlg, evt);
@@ -1478,40 +1477,40 @@ module.parse_config = function (config, order) {
                     widget = new TextBox({
                         name: 'record_id',
                         type: 'hidden'
-                    }, dojo.create('div', null, rec_form.domNode));
+                    }, domConstruct.create('div', null, rec_form.domNode));
                     edit_dlg.form_widgets = [widget];
-                    dojo.forEach(layout, function (fld) {
+                    array.forEach(layout, function (fld) {
                         var rc_wid, widget_div, label, span, wid;
                         if (fld.rc_wid) {
-                            rc_wid = dojo.clone(fld.rc_wid);
+                            rc_wid = lang.clone(fld.rc_wid);
                             rc_wid.tabIndex = order;
-                            widget_div = dojo.create(
+                            widget_div = domConstruct.create(
                                 'div', {'class': 'widget',
                                         'style': 'margin: 5px;'},
                                 rec_form.domNode);
-                            label = dojo.create('label', {
+                            label = domConstruct.create('label', {
                                 innerHTML:  (rc_wid.label ||
                                              rc_wid.fieldLabel) + ': '
                             }, widget_div);
                             if (rc_wid.required) {
-                                span = dojo.create(
+                                span = domConstruct.create(
                                     'span', {innerHTML: ' (required)'}, label);
-                                dojo.addClass(span, 'status-marker');
+                                domClass.add(span, 'status-marker');
                             }
-                            dojo.create('br', null, widget_div);
+                            domConstruct.create('br', null, widget_div);
                             wid = module.widgets[
                                 rc_wid.widget_constructor](
                                 rc_wid,
-                                dojo.create('div', {style: 'height: auto;'
+                                domConstruct.create('div', {style: 'height: auto;'
                                 }, widget_div),
                                 order);
                             edit_dlg.form_widgets.push(wid);
                         }
                     });
-                    buttons_div = dojo.create('div', {
+                    buttons_div = domConstruct.create('div', {
                         style: 'text-align: right;'
                     });
-                    dojo.addClass(buttons_div, 'dijitDialogPaneActionBar');
+                    domClass.add(buttons_div, 'dijitDialogPaneActionBar');
 
                     widget = new Button({
                         label: 'Cancel',
@@ -1532,15 +1531,15 @@ module.parse_config = function (config, order) {
                             if (!rec_form.validate()) {
                                 return;
                             }
-                            dojo.publish(
+                            connect.publish(
                                 module.beforeRecordFormSubmittedTopic,
                                 [rec_form.id]);
                             record_data = rec_form.get("value");
                             if (!record_data.record_id) {
                                 item = {name: '.' + grid.rowCount + 1};
-                                dojo.forEach(
+                                array.forEach(
                                     grid.structure[0].cells, function (fld) {
-                                        var val = dojo.getObject(
+                                        var val = lang.getObject(
                                             fld.field, false, record_data);
                                         if (fld.rc_wid) {
                                             if (fld.widget_constructor ===
@@ -1557,10 +1556,10 @@ module.parse_config = function (config, order) {
                                 grid.store.fetchItemByIdentity({
                                     identity: record_data.record_id,
                                     onItem: function (item) {
-                                        dojo.forEach(
+                                        array.forEach(
                                             grid.structure[0].cells,
                                             function (fld) {
-                                                var val = dojo.getObject(
+                                                var val = lang.getObject(
                                                         fld.field, false,
                                                         record_data);
                                                 if (fld.rc_wid) {
@@ -1587,12 +1586,12 @@ module.parse_config = function (config, order) {
                     });
                     buttons_div.appendChild(widget.domNode);
 
-                    nodes = new dojo.NodeList([rec_form.domNode, buttons_div]);
+                    nodes = query.NodeList([rec_form.domNode, buttons_div]);
 
                     edit_dlg.set('content', nodes);
                     edit_dlg.startup();
                     edit_dlg.editForm = rec_form;
-                    dojo.forEach(edit_dlg.form_widgets, function (w) {
+                    array.forEach(edit_dlg.form_widgets, function (w) {
                         if (w.postStartup) {
                             w.postStartup(edit_dlg);
                         }
@@ -1607,16 +1606,13 @@ module.parse_config = function (config, order) {
 
                 _edit_record: function (widget_name, row_value, order) {
                     var grid = this.grid, form_values;
-                    if (dojo.version < '1.6') { // XXX
-                        grid.select.clearDrugDivs();
-                    }
                     if (!grid.edit_dlg) {
                         grid.edit_dlg = this._build_record_form(
                             widget_name, order);
                     }
                     form_values = {
                         record_id: grid.store.getValue(row_value, 'name')};
-                    dojo.forEach(grid.structure[0].cells, function (fld) {
+                    array.forEach(grid.structure[0].cells, function (fld) {
                         if (fld.rc_wid) {
                             form_values[fld.field] =
                                 grid.store.getValue(row_value, fld.field);
@@ -1632,7 +1628,7 @@ module.parse_config = function (config, order) {
                         }
                     });
 
-                    dojo.publish(
+                    connect.publish(
                         module.dialogFormUpdateTopic,
                         [grid.edit_dlg.editForm.id, form_values]);
                     grid.edit_dlg.show();
@@ -1670,7 +1666,7 @@ module.parse_config = function (config, order) {
                                }
                             }
                         }
-                    }, dojo.create('div', {}, this.domNode));
+                    }, domConstruct.create('div', null, this.domNode));
                     this.grid = grid;
                     dnd_plugin = grid.pluginMgr.getPlugin('dnd');
                     dnd_plugin.selector.setupConfig({
@@ -1678,7 +1674,7 @@ module.parse_config = function (config, order) {
                         'cell': 'disabled',
                         'column': 'disabled'
                     });
-                    dojo.connect(grid, 'onCellMouseOver', dojo.hitch(this,
+                    grid.on("cellmouseover", lang.hitch(this,
                         function (e) {
                             if (this.dnd_preselect) {
                                 var dnd_plugin = grid.pluginMgr.getPlugin('dnd');
@@ -1686,40 +1682,8 @@ module.parse_config = function (config, order) {
                                 dnd_plugin.selector.select('row', e.rowIndex);
                             }
                     }));
-                    if (dojo.version < '1.6') {
-                        grid.select.exceptColumnsTo = record_fields.length - 2;
-                        grid.select.getExceptionalColOffsetWidth = dojo.hitch(
-                            grid.select, function () {
-                                var normalizedOffsetWidth = 0, offsetWidth = 0;
-                                dojo.forEach(
-                                    this.getHeaderNodes(),
-                                    function (node, index) {
-                                        if (index <= this.exceptColumnsTo) {
-                                            var coord = dojo.coords(node);
-                                            offsetWidth += coord.w;
-                                        }
-                                    }, this);
-                                normalizedOffsetWidth = offsetWidth;
-                                return normalizedOffsetWidth > 0 ?
-                                    normalizedOffsetWidth : 0;
-                            });
-                    }
                     if (!this.rc.readonly) {
-                        if (dojo.version < '1.6') {
-                            dojo.connect(grid, 'onCellMouseOver', function (e) {
-                                if (e.cell.draggable) {
-                                    grid.select.cleanAll();
-                                    grid.selection.select(e.rowIndex);
-                                    grid.select.clearDrugDivs();
-                                    grid.select.addRowMover(e.rowIndex,
-                                        e.rowIndex);
-                                }
-                                else {
-                                    grid.select.clearDrugDivs();
-                                }
-                            });
-                        }
-                        dojo.connect(grid, 'onCellClick', dojo.hitch(this,
+                        grid.on('cellclick', lang.hitch(this,
                             function (e) {
                             grid.selection.select(e.rowIndex);
                             var dnd_plugin = grid.pluginMgr.getPlugin('dnd');
@@ -1727,7 +1691,7 @@ module.parse_config = function (config, order) {
                             dnd_plugin.selector.select('row', e.rowIndex);
                             this.dnd_preselect = false;
                         }));
-                        dojo.connect(grid, 'onCellDblClick', function (e) {
+                        grid.on('oncelldblclick', function (e) {
                             grid.selection.select(e.rowIndex);
                             this._edit_record(
                                 this.config.name,
@@ -1740,25 +1704,22 @@ module.parse_config = function (config, order) {
                             label: 'New',
                             id: this.config.name + '.dojo.new.btn',
                             tabIndex: this.order,
-                            onClick: dojo.hitch(this, function (evt) {
+                            onClick: lang.hitch(this, function (evt) {
                                 if (!grid.edit_dlg) {
                                     grid.edit_dlg = this._build_record_form(
                                         this.config.name, this.order);
                                 }
                                 grid.edit_dlg.reset();
-                                dojo.publish(module.dialogFormResetTopic,
+                                connect.publish(module.dialogFormResetTopic,
                                              [grid.edit_dlg.editForm.id]);
-                                if (dojo.version < 1.6) {
-                                    grid.selection.cancelDND();
-                                }
                                 grid.edit_dlg.show();
                             })
-                        }, dojo.create('div', null, this.domNode));
+                        }, domConstruct.create('div', null, this.domNode));
                         widget = new Button({
                             label: 'Edit',
                             id: this.config.name + '.dojo.edit.btn',
                             tabIndex: this.order,
-                            onClick: dojo.hitch(this, function () {
+                            onClick: lang.hitch(this, function () {
                                 var row_values = grid.selection.getSelected();
                                 if (row_values.length !== 1) {
                                     module.alert(
@@ -1774,7 +1735,7 @@ module.parse_config = function (config, order) {
                                     row_values[0],
                                     this.order);
                             })
-                        }, dojo.create('div', null, this.domNode));
+                        }, domConstruct.create('div', null, this.domNode));
                         widget = new Button({
                             label: 'Delete',
                             id: this.config.name + '.dojo.delete.btn',
@@ -1788,19 +1749,19 @@ module.parse_config = function (config, order) {
                                     });
                                     return;
                                 }
-                                dojo.forEach(
+                                array.forEach(
                                     selected,
                                     grid.store.deleteItem,
                                     grid.store);
                                 grid.store.save();
                             }
-                        }, dojo.create('div', null, this.domNode));
+                        }, domConstruct.create('div', null, this.domNode));
                         // While the event seems deceptively decorative, we are
                         // using this to know when to recalculate our grid
                         // value, since we do so by iterating over rows.
                         // We do this because order is important, and the store
                         // cares nothing of order.
-                        dojo.connect(grid, 'postresize', dojo.hitch(this,
+                        aspect.before(grid, "postresize", lang.hitch(this,
                             function (item) {
                                 this._set_inputs();
                                 this.onChange(this.get('value'));
@@ -1814,12 +1775,11 @@ module.parse_config = function (config, order) {
                     };
 
                     this.domNode.postStartup = this.startup;
-                    this.input_value = dojo.create('input', {
+                    this.input_value = domConstruct.create('input', {
                         type: 'hidden'
                     }, this.domNode);
-                    this.input_parent = dojo.create('div', null, this.domNode);
-                    dojo.connect(
-                        this.grid, 'startup', dojo.hitch(
+                    this.input_parent = domConstruct.create('div', null, this.domNode);
+                    aspect.after(this.grid, "startup", lang.hitch(
                             this, function () {
                                 this._set_inputs();
                             }));
@@ -1838,7 +1798,7 @@ module.parse_config = function (config, order) {
 
                 _store_from_data: function (value) {
                     var item_list = [], num = 0, data, store;
-                    dojo.forEach(value, dojo.hitch(this,
+                    array.forEach(value, lang.hitch(this,
                         function (record) {
                             item_list.push(this._build_record(this.rc,
                                 '.' + num,
@@ -1850,11 +1810,11 @@ module.parse_config = function (config, order) {
                         identifier: "name",
                         label: "name"
                     };
-                    store = new dojo.data.ItemFileWriteStore(
+                    store = new ItemFileWriteStore(
                         {data: data});
                     // This won't trigger a resize, so we have to keep this
                     // event.
-                    dojo.connect(store, 'onSet', dojo.hitch(this, function () {
+                    aspect.after(store, "onSet", lang.hitch(this, function () {
                         this._set_inputs();
                     }));
                     return store;
@@ -1867,11 +1827,11 @@ module.parse_config = function (config, order) {
                         rec = this.grid.getItem(i);
                         if (rec) {
                             attrs = this.grid.store.getAttributes(rec);
-                            dojo.forEach(attrs, function (attr) {
+                            array.forEach(attrs, function (attr) {
                                 if (attr !== 'name') {
                                     name = attr + '.' + i;
                                     value = this.grid.store.getValue(rec, attr);
-                                    dojo.create('input', {
+                                    domConstruct.create('input', {
                                         type: 'hidden',
                                         name: name,
                                         value: value
@@ -1881,7 +1841,7 @@ module.parse_config = function (config, order) {
                             }, this);
                         }
                     }
-                    this.input_value.value = dojo.toJson(items);
+                    this.input_value.value = json.stringify(items);
                 },
 
                 _setValueAttr: function (value) {
@@ -1905,8 +1865,8 @@ module.parse_config = function (config, order) {
 
             });
 
-        dojo.declare(
-            "zc.RangeWidget", [_Widget], {
+        declare(
+            "zc.RangeWidget", _Widget, {
 
                 value: "",
 
@@ -1918,7 +1878,7 @@ module.parse_config = function (config, order) {
                     this.constraints = this.config.constraints;
                     this.name = this.config.name;
                     this.id = this.config.id;
-                    this.domNode = node || dojo.create('div');
+                    this.domNode = node || domConstruct.create('div');
                     this.containerNode = this.domNode;
                 },
 
@@ -1935,16 +1895,16 @@ module.parse_config = function (config, order) {
                     }
                     value = this._values_from(this.config.value);
 
-                    dojo.create(
+                    domConstruct.create(
                         'label', {
                             'innerHTML': this.config.start_label
-                        }, dojo.create('div', {}, this.domNode));
+                        }, domConstruct.create('div', {}, this.domNode));
                     this.min_value = new this.dijit_type(
                         {
                             constraints: min_constraint,
                             name: this.config.start,
                             value: value[this.config.start],
-                            onChange: dojo.hitch(
+                            onChange: lang.hitch(
                                 this, function (value) {
                                     if (value || value === 0) {
                                         var min_con = value;
@@ -1958,16 +1918,16 @@ module.parse_config = function (config, order) {
                                         this.max_value.validate();
                                     }
                                 })
-                        }, dojo.create('div', {}, this.domNode));
-                    dojo.create('label', {
+                        }, domConstruct.create('div', {}, this.domNode));
+                    domConstruct.create('label', {
                                     'innerHTML': this.config.end_label
-                                }, dojo.create('div', {}, this.domNode));
+                                }, domConstruct.create('div', {}, this.domNode));
                     this.max_value = new this.dijit_type(
                         {
                             constraints: max_constraint,
                             name: this.config.end,
                             value: value[this.config.end],
-                            onChange: dojo.hitch(
+                            onChange: lang.hitch(
                                 this, function (value) {
                                     if (value || value === 0) {
                                         var max_con = value;
@@ -1981,9 +1941,9 @@ module.parse_config = function (config, order) {
                                         this.min_value.validate();
                                     }
                                 })
-                        }, dojo.create('div', {}, this.domNode));
+                        }, domConstruct.create('div', {}, this.domNode));
 
-                    this.value_input = dojo.create(
+                    this.value_input = domConstruct.create(
                         'input',
                         {
                             type: 'hidden',
@@ -2025,13 +1985,13 @@ module.parse_config = function (config, order) {
                                 this.convert_to(value[this.config.end]);
                         }
                     }
-                    return dojo.toJson(value);
+                    return json.stringify(value);
                 },
 
                 _values_from: function (value) {
                     if (value) {
-                        if (!(value instanceof Object)) {
-                            value = dojo.fromJson(value);
+                        if (!lang.isObject(value)) {
+                            value = json.parse(value);
                         }
                         if (this.convert_from) {
                             value[this.config.start] =
@@ -2075,7 +2035,7 @@ module.parse_config = function (config, order) {
                 },
 
                 reset: function () {
-                    dojo.forEach(this.getChildren(), function (w) {
+                    array.forEach(this.getChildren(), function (w) {
                         w.reset();
                     });
                 },
