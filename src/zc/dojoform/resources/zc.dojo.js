@@ -1154,10 +1154,10 @@ module.build_form2 = function (config, pnode, order, startup) {
     };
 
     var setup_condition = function (cond) {
-        var widgets = dojo.map(
+        var widgets = array.map(
             cond.condition_on,
             function (id) {
-                var widget = dijit.byId(prefix+id);
+                var widget = registry.byId(prefix+id);
                 if (! widget) {
                     throw {error: "no such widget", id: id};
                 }
@@ -1167,16 +1167,16 @@ module.build_form2 = function (config, pnode, order, startup) {
         function changed() {
             if (cond.condition.apply(
                     null,
-                    dojo.map(
+                    array.map(
                         widgets,
                         function (widget) {
                             return widget.get('value');
                         })
                 )) {
-                    dojo.removeClass(cond.div, 'zc-widget-hidden');
+                    domClass.remove(cond.div, 'zc-widget-hidden');
                 }
             else {
-                dojo.addClass(cond.div, 'zc-widget-hidden');
+                domClass.add(cond.div, 'zc-widget-hidden');
 
             }
         }
@@ -1184,7 +1184,7 @@ module.build_form2 = function (config, pnode, order, startup) {
         array.forEach(
             widgets,
             function (widget) {
-                on(widget, "change", changed);
+                widget.on("change", changed);
                 changed();
             }
         );
