@@ -55,6 +55,12 @@ API:
      Most of the time this should be handled automatically for widgets
      based on the built-in dijit Widgets.
 
+   - When subscribing to topics with dojo/topic or listening to events
+     with dojo/on within a widget, use widget.own with the return value
+     of the subscription/listener so that they will get properly
+     cleaned up when the widget is destroyed.  Use widget.on and
+     widget.subscribe to avoid this requirement when possible.
+
 Note
 
   The form implementation uses getDescendants to find it's
