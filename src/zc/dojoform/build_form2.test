@@ -43,7 +43,7 @@ check widget cleanup:
     js> return dijit.registry.length == nwidgets;
     True
 
-groups rather than left fields and with a bool flag
+groups rather than left fields and with conditions
 ===================================================
 
 Now, we'll try a different example. It uses groups to do layout,
@@ -88,8 +88,8 @@ Now, when we set the happy field to false:
     js> return dijit.registry.length == nwidgets;
     True
 
-Simple example, no groups and no left_fields (no bool flag)
-===========================================================
+Simple example, no groups and no left_fields (no conditions)
+============================================================
 
     >>> JS(read_test_file('3.js'))
     js> form = zc.dojo.build_form2(

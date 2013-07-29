@@ -56,7 +56,8 @@ definition = {
                 "widget_constructor": "zope.schema.Bool"
             },
             {
-                bool_flag: 'happy',
+                condition: 'function (v) {return v; }',
+                condition_on: ['happy'],
                 "hint": "What do they look like?",
                 "label": "Description",
                 "id": "description",
@@ -76,7 +77,8 @@ definition = {
                 "widget_constructor": "zc.ajaxform.widgets.Hidden"
             },
             {
-                bool_flag: 'happy',
+                condition: 'function (v) {return v; }',
+                condition_on: ['happy'],
                 "allowBlank": false,
                 "hint": "Number of siblings",
                 "label": "Siblings",
@@ -89,7 +91,8 @@ definition = {
                 "widget_constructor": "zc.ajaxform.widgets.NumberSpinner"
             },
             {
-                bool_flag: 'happy',
+                condition: 'function (v) {return v; }',
+                condition_on: ['happy'],
                 "hint": "All my wonderful homes",
                 "label": "Addresses",
                 "id": "addresses",
@@ -144,7 +147,8 @@ definition = {
                 "widget_constructor": "zope.schema.List"
             },
             {
-                bool_flag: 'happy',
+                condition: 'function (v) {return v; }',
+                condition_on: ['happy'],
                 "hint": "Any other notes",
                 "label": "Other",
                 "id": "other",
