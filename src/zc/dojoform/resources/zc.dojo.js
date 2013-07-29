@@ -589,7 +589,7 @@ module.widgets['zc.ajaxform.widgets.BoolDisplay'] = function (
     wconfig.onChange = function (state) {
         var follower_cps = module.flags[config.id];
         array.forEach(follower_cps, function (cp) {
-            ddomStyle.set(cp.domNode, 'display', state ? '': 'none');
+            domStyle.set(cp.domNode, 'display', state ? '': 'none');
         });
     };
     wconfig.readOnly = true;
@@ -1127,7 +1127,7 @@ module.build_form2 = function (config, pnode, order, startup) {
     var save_condition = function(def, div) {
         if (def.condition || def.condition_on) {
             if (! (def.condition && def.condition_on)) {
-                console.errror("Need both condition and condition_on", def);
+                console.error("Need both condition and condition_on", def);
             }
             else {
                 var condition = def.condition;
