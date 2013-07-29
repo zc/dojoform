@@ -1,53 +1,54 @@
 /*global define */
-define(["dojo/_base/array",
-        "dojo/_base/connect",
-        "dojo/_base/declare",
-        "dojo/_base/fx",
-        "dojo/_base/lang",
-        "dojo/_base/window",
-        "dojo/aspect",
-        "dojo/date/stamp",
-        "dojo/data/ItemFileReadStore",
-        "dojo/data/ItemFileWriteStore",
-        "dojo/dom",
-        "dojo/dom-class",
-        "dojo/dom-construct",
-        "dojo/dom-form",
-        "dojo/dom-geometry",
-        "dojo/dom-style",
-        "dojo/json",
-        "dojo/on",
-        "dojo/query",
-        "dojo/request/xhr",
-        "dijit/_Container",
-        "dijit/_Widget",
-        "dijit/Dialog",
-        "dijit/Editor",
-        "dijit/form/_FormMixin",
-        "dijit/form/_FormValueWidget",
-        "dijit/form/Button",
-        "dijit/form/CheckBox",
-        "dijit/form/ComboBox",
-        "dijit/form/DateTextBox",
-        "dijit/form/Form",
-        "dijit/form/FilteringSelect",
-        "dijit/form/MultiSelect",
-        "dijit/form/NumberSpinner",
-        "dijit/form/NumberTextBox",
-        "dijit/form/SimpleTextarea",
-        "dijit/form/TextBox",
-        "dijit/form/TimeTextBox",
-        "dijit/form/ValidationTextBox",
-        "dijit/layout/BorderContainer",
-        "dijit/layout/ContentPane",
-        "dijit/registry",
-        "dojox/form/TimeSpinner",
-        "dojox/grid/EnhancedGrid",
-        "dojox/grid/cells/dijit",
-        "dojox/grid/enhanced/plugins/DnD",
-        "dojox/grid/enhanced/plugins/IndirectSelection",
-        "dojox/grid/enhanced/plugins/Menu",
-        "dojox/grid/enhanced/plugins/NestedSorting"
+define([
+           "dojo/_base/array",
+           "dojo/_base/connect",
+           "dojo/_base/declare",
+           "dojo/_base/fx",
+           "dojo/_base/lang",
+           "dojo/_base/window",
+           "dojo/aspect",
+           "dojo/date/stamp",
+           "dojo/data/ItemFileReadStore",
+           "dojo/data/ItemFileWriteStore",
+           "dojo/dom",
+           "dojo/dom-class",
+           "dojo/dom-construct",
+           "dojo/dom-form",
+           "dojo/dom-geometry",
+           "dojo/dom-style",
+           "dojo/json",
+           "dojo/on",
+           "dojo/query",
+           "dojo/request/xhr",
+           "dijit/_Container",
+           "dijit/_Widget",
+           "dijit/Dialog",
+           "dijit/Editor",
+           "dijit/form/_FormMixin",
+           "dijit/form/_FormValueWidget",
+           "dijit/form/Button",
+           "dijit/form/CheckBox",
+           "dijit/form/ComboBox",
+           "dijit/form/DateTextBox",
+           "dijit/form/Form",
+           "dijit/form/FilteringSelect",
+           "dijit/form/MultiSelect",
+           "dijit/form/NumberSpinner",
+           "dijit/form/NumberTextBox",
+           "dijit/form/SimpleTextarea",
+           "dijit/form/TextBox",
+           "dijit/form/TimeTextBox",
+           "dijit/form/ValidationTextBox",
+           "dijit/layout/BorderContainer",
+           "dijit/layout/ContentPane",
+           "dijit/registry",
+           "dojox/form/TimeSpinner",
+           "dojox/grid/EnhancedGrid",
+           "dojox/grid/cells/dijit",
+           "dojox/grid/enhanced/plugins/DnD",
+           "dojox/grid/enhanced/plugins/IndirectSelection",
+           "dojox/grid/enhanced/plugins/Menu",
+           "dojox/grid/enhanced/plugins/NestedSorting"
         ], function (array, connect, declare, fx, lang, win, aspect, stamp,
                      ItemFileReadStore, ItemFileWriteStore, dom, domClass,
                      domConstruct, domForm, domGeo, domStyle, json, on, query,
@@ -132,8 +133,10 @@ module.flag_startup = function () {
             flag_wid = registry.byId(key);
             flagged_cps = module.flags[key];
             state = flag_wid.checked;
-            array.forEach(flagged_cps, function(cp) {
-                domStyle.set(cp.domNode, 'display', state ? '': 'none');
+            array.forEach(
+                flagged_cps,
+                function(cp) {
+                    domStyle.set(cp.domNode, 'display', state ? '': 'none');
             });
         }
     }
@@ -956,8 +959,7 @@ module._func_handler = function (func) {
 module.build_form2 = function (config, pnode, order, startup) {
     var definition = config.definition || config,
         prefix, suffix, legacy, form, widgets,
-        widgets_by_name, flag_changed, needed_flags,
-        handle_bool_flag, build_group, bool_flag,
+        widgets_by_name, build_group,
         fields_div, action_div, action_div_id, groups,
         left_widgets, right_widgets, border;
     startup = startup === undefined ? true: startup;
@@ -1120,30 +1122,76 @@ module.build_form2 = function (config, pnode, order, startup) {
                      widgets_by_name[widget.name] = widget;
                  });
 
-    flag_changed = function (node, value) {
-        domClass.toggle(node, "zc-widget-hidden", !value);
-    };
+    var conditions = [];
 
-    needed_flags = {};
-
-    handle_bool_flag = function (def, div) {
-        var bool_flag, flag_widget;
-        if (def.bool_flag) {
-            bool_flag = prefix + def.bool_flag;
-            flag_widget = registry.byId(bool_flag);
-            if (flag_widget) {
-                flag_widget.on("change", lang.partial(flag_changed, div));
-                flag_changed(div, flag_widget.get('value'));
+    var save_condition = function(def, div) {
+        if (def.condition || def.condition_on) {
+            if (! (def.condition && def.condition_on)) {
+                console.errror("Need both condition and condition_on", def);
             }
             else {
-                if (needed_flags.bool_flag !== undefined) {
-                    needed_flags[bool_flag].push(div);
+                var condition = def.condition;
+                if (typeof(condition) == 'string') {
+                    condition = eval("("+condition+")");
                 }
-                else {
-                    needed_flags[bool_flag] = [div];
+                var cond = {
+                    condition: condition,
+                    condition_on: def.condition_on,
+                    div: div
+                };
+                try {
+                    setup_condition(cond);
+                } catch (e) {
+                    if (e.error == "no such widget") {
+                        conditions.push(cond);
+                    }
+                    else {
+                        console.error(e);
+                    }
                 }
             }
         }
+    };
+
+    var setup_condition = function (cond) {
+        var widgets = array.map(
+            cond.condition_on,
+            function (id) {
+                var widget = registry.byId(prefix+id);
+                if (! widget) {
+                    throw {error: "no such widget", id: id};
+                }
+                return widget;
+            });
+
+        function changed() {
+            if (cond.condition.apply(
+                    null,
+                    array.map(
+                        widgets,
+                        function (widget) {
+                            return widget.get('value');
+                        })
+                )) {
+                    domClass.remove(cond.div, 'zc-widget-hidden');
+                }
+            else {
+                domClass.add(cond.div, 'zc-widget-hidden');
+
+            }
+        }
+
+        array.forEach(
+            widgets,
+            function (widget) {
+                widget.on("change", changed);
+                changed();
+            }
+        );
+    };
+
+    var setup_conditions = function () {
+        array.forEach(conditions, setup_condition);
     };
 
 
@@ -1171,11 +1219,11 @@ module.build_form2 = function (config, pnode, order, startup) {
         }
         parent = group_node;
 
-        handle_bool_flag(group, parent);
+        save_condition(group, parent);
 
         array.forEach(
             group.widgets, function (widget) {
-                var class_, div, flag_widget;
+                var class_, div;
                 if (!lang.isString(widget)) {
                     build_group(widget, parent);
                     return;     // continue
@@ -1200,7 +1248,7 @@ module.build_form2 = function (config, pnode, order, startup) {
                 }
                 div = domConstruct.create('div', div);
 
-                handle_bool_flag(widget, div);
+                save_condition(widget, div);
 
                 if (widget.widget_constructor !==
                     'zc.ajaxform.widgets.Hidden') {
@@ -1216,16 +1264,6 @@ module.build_form2 = function (config, pnode, order, startup) {
                     true
                 );
                 parent.appendChild(div);
-
-                if (needed_flags[widget.id] !== undefined) {
-                    flag_widget = registry.byId(widget.id);
-                    array.forEach(
-                        needed_flags[widget.id], function (div) {
-                            flag_widget.on("change", lang.partial(flag_changed, div));
-                            flag_changed.call(div, flag_widget.get('value'));
-                        });
-                    delete needed_flags[widget.id];
-                }
             });
     };
 
@@ -1248,14 +1286,9 @@ module.build_form2 = function (config, pnode, order, startup) {
             }
         });
 
-
-    if (needed_flags) {
-        for (bool_flag in needed_flags) {
-            if (needed_flags.hasOwnProperty(bool_flag)) {
-                console.error('Unresolved bool flag: '+ bool_flag);
-            }
-        }
-    }
+    // All the widgets have been created, so we can wire up conditions
+    // that weren't able to set up right away.
+    setup_conditions();
 
     if (definition.actions) {
         action_div_id = 'zc.dojo.zc-actions' + suffix;
@@ -1911,11 +1944,13 @@ module.parse_config = function (config, order) {
                                     if (value || value === 0) {
                                         var min_con = value;
                                         if (this.constraints.min) {
-                                            if (this.constraints.min > min_con) {
+                                            if (this.constraints.min >
+                                                min_con) {
                                                 min_con = this.constraints.min;
                                             }
                                         }
-                                        this.max_value.constraints.min = min_con;
+                                        this.max_value.constraints.min =
+                                            min_con;
                                         this.onChange(this.get('value'));
                                         this.max_value.validate();
                                     }
@@ -1934,11 +1969,13 @@ module.parse_config = function (config, order) {
                                     if (value || value === 0) {
                                         var max_con = value;
                                         if (this.constraints.max) {
-                                            if (this.constraints.max < max_con) {
+                                            if (this.constraints.max <
+                                                max_con) {
                                                 max_con = this.constraints.max;
                                             }
                                         }
-                                        this.min_value.constraints.max = max_con;
+                                        this.min_value.constraints.max =
+                                            max_con;
                                         this.onChange(this.get('value'));
                                         this.min_value.validate();
                                     }
