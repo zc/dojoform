@@ -1,51 +1,73 @@
 Notes on implementing form widgets
 ==================================
 
-Subclass dijit._Widget.
+Use dojo/_base/declare to define a class.
 
-If you have subwidgets, subclass both dijit._Container and
-dijit._Widget.
+Subclass dijit/_Widget.
+
+If you have subwidgets, subclass dijit/_Widget, dijit/_Container,
+and dijit/form/_FormMixin.
 
 
 API:
 
-   - Must define domNode
+   - Must inherit from dijit/_Widget.
 
-   - Must define containerNode, which will almost always be the same as
-     domNode. dijit._Widget uses this node to find subwidgets to destroy
-     when calling destroyRecursive.
+   - Widgets that are composed of subwidgets must also inherit from
+     dijit/_Container and dijit/form/_FormMixin.  Additionally they
+     must include a "value" attribute to prevent dijit/form/Form
+     from inspecting the composite widget's subwidgets when
+     retrieving a form's value.
+     
+     Inheriting from _Container automatically adds a containerNode
+     attribute to the widget (which by default is set to domNode).
+     
+     The containerNode attribute is used by the destroyRecursive
+     method to find any subwidgets that need to be destroyed.
+
+     For a subwidget to have its value included in the value returned
+     by its parent widget, it must have a 'name' attribute.
 
    - buildRendering() is where you build up your widget's dom.
+     The superclass method should always be called with
+     this.inherited(arguments).  If your widget is not creating
+     and setting its domNode attribute, the superclass method
+     should be called before anything else.
 
    - reset() Reset widget values to initial settings
 
    - focus() Give widget focus
 
-     At least as far as forms are converned, this is only used to give
+     At least as far as forms are concerned, this is only used to give
      focus to invalid fields. :/.
 
-   - isValid() -> Test whether current input is valid
+   - isValid() -> Test whether current input is valid.  Most of the
+     time we can rely on the built-in method.
 
-   - validate() -> bool Test whether current input is valid
-
-     Documentation for form.validate says it updates validation
-     markers. Sigh.
+   - validate() -> bool Test whether current input is valid by
+     calling isValid, then mark the input as invalid if isValid
+     returns false.  Most of the time we can rely on the
+     built-in method.
 
    - name attr used by form's value getters and setters to find form widgets.
 
-     Important note: Don't set name on internal subwidgets. If you do,
-     they'll end up in form values.
+   - widget.onChange - Call this when your widget's state changes.
+     Most of the time this should be handled automatically for widgets
+     based on the built-in dijit Widgets.
 
-   - onChange  Call this when you're state changes
-
-     Note that because form uses getDescendants, it will connect to
-     your onChange, as well as your children's.
+   - When subscribing to topics with dojo/topic or listening to events
+     with dojo/on within a widget, use widget.own with the return value
+     of the subscription/listener so that they will get properly
+     cleaned up when the widget is destroyed.  Use widget.on and
+     widget.subscribe to avoid this requirement when possible.
 
 Note
 
   The form implementation uses getDescendants to find it's
   contents.  This means that it considered subwidgets part of its
-  contents, including widgets you might think of as private.
+  contents, including widgets you might think of as private.  To prevent
+  this behavior, as mentioned above, any composite widget should
+  include a "value" attribute.
 
   It filters widgets to those that have names only when getting or
   setting values, not when validating or resetting.  I consider this a
@@ -53,6 +75,9 @@ Note
   break old code.
 
   Because of the above behavior, you may be able to avoid implementing
-  validation and reset methods, as well as focus, if you're widget is
+  validation and reset methods, as well as focus, if your widget is
   implemented in terms of subwidgets.
 
+
+See
+https://github.com/mercmobily/writeups/blob/master/dojo/widgets_containers_on.mdfor a pretty good rundown of the dijit Widget lifecycle.
