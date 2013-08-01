@@ -99,7 +99,7 @@ define([
                              time.getHours(),
                              time.getMinutes(),
                              time.getSeconds());
-            this.value_node.value = stamp.toISOString();
+            this.value_node.value = stamp.toISOString(d);
         }
     });
 
