@@ -70,27 +70,28 @@ define([
             this.value_node = domConstruct.create("input", {
                 type: "hidden",
                 name: this.name,
-                value: this.value},
-                this.domNode);
-            var node = domConstruct.create("div", null, this.domNode);
+                value: stamp.toISOString(this.value)},
+                this.containerNode);
+            var node = domConstruct.create("div", null, this.containerNode),
+                onChange = lang.hitch(this, "onChange");
             domConstruct.create("span", {innerHTML: "Date:"}, node);
             this.date_box = new DateTextBox({
                 name: "date",
                 value: this.value,
-                onChange: lang.hitch(this, this.updateValue)
+                onChange: onChange
             }).placeAt(node);
-            node = domConstruct.create("div", null, this.domNode);
+            node = domConstruct.create("div", null, this.containerNode);
             domConstruct.create("span", {innerHTML: "Time:"}, node);
             this.time_box = new TimeSpinner({
                 name: "time",
                 value: this.value,
-                onChange: lang.hitch(this, this.updateValue)
+                onChange: onChange
             }).placeAt(node);
         },
         _getValueAttr: function () {
             return this.value_node.value;
         },
-        updateValue: function () {
+        onChange: function () {
             var date = this.date_box.get("value"),
                 time = this.time_box.get("value"),
                 d = new Date(date.getFullYear(),
@@ -623,8 +624,8 @@ module.widgets['zope.schema.Datetime'] = function (
     config, node, order, readOnly) {
     var wconfig = module.parse_config(config, order),
         widget;
-    wconfig.value = wconfig.value ? new Date(wconfig.value) : new Date();
-    widget = new zc.DateTimeTextBox(wconfig, domConstruct.create('div', {}, node));
+    wconfig.value = wconfig.value ? stamp.fromISOString(wconfig.value) : new Date();
+    widget = new zc.DateTimeTextBox(wconfig, domConstruct.create('div', null, node));
     return widget.domNode;
 };
 
