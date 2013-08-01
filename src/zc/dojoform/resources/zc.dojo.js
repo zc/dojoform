@@ -63,59 +63,45 @@ define([
         widgets = lang.getObject("zc.dojo.widgets", true),
         RecordList;
 
-    zc.DateTimeTextBox = function (config, node) {
-
-        var domNode, value_node, dateNode, date_box, timeNode,
-            time_box, change_value;
-
-        domNode = domConstruct.create('div', {
-            'style': 'padding:5px;'
-        }, node);
-        value_node = domConstruct.create('input', {
-            'type': 'hidden',
-            'name': config.name,
-            'value': config.value
-        }, domNode);
-
-        dateNode = domConstruct.create('div', null, domNode);
-        domConstruct.create('span', {
-            'innerHTML': 'Date: '
-        }, dateNode);
-        date_box = new DateTextBox({
-            value: config.value,
-            onChange: function () {change_value();}
-        }, domConstruct.create('div', null, dateNode));
-
-        timeNode = domConstruct.create('div', null, domNode);
-        domConstruct.create('span', {
-            'innerHTML': 'Time: '
-        }, timeNode);
-        time_box = new TimeSpinner({
-            value: config.value,
-            onChange: function () {change_value();}
-        }, domConstruct.create('div', null, timeNode));
-
-        change_value = function () {
-            var date_v = date_box.value,
-                time_v = time_box.value,
-                new_time = new Date(date_v.getFullYear(),
-                                    date_v.getMonth(),
-                                    date_v.getDate(),
-                                    time_v.getHours(),
-                                    time_v.getMinutes(),
-                                    time_v.getSeconds());
-            value_node.value = new_time.toString();
-        };
-
-        change_value();
-
-        return {
-            getValue: function () {
-                return value_node.value;
-            },
-            domNode: domNode
-        };
-    };
+    zc.DateTimeTextBox = declare([_Widget, _Container, _FormMixin], {
+        value: null,
+        buildRendering: function () {
+            this.inherited(arguments);
+            this.value_node = domConstruct.create("input", {
+                type: "hidden",
+                name: this.name,
+                value: this.value},
+                this.domNode);
+            var node = domConstruct.create("div", null, this.domNode);
+            domConstruct.create("span", {innerHTML: "Date:"}, node);
+            this.date_box = new DateTextBox({
+                name: "date",
+                value: this.value,
+                onChange: lang.hitch(this, this.updateValue)
+            }).placeAt(node);
+            node = domConstruct.create("div", null, this.domNode);
+            domConstruct.create("span", {innerHTML: "Time:"}, node);
+            this.time_box = new TimeSpinner({
+                name: "time",
+                value: this.value,
+                onChange: lang.hitch(this, this.updateValue)
+            }).placeAt(node);
+        },
+        _getValueAttr: function () {
+            return this.value_node.value;
+        },
+        updateValue: function () {
+            var date = this.date_box.get("value"),
+                time = this.time_box.get("value"),
+                d = new Date(date.getFullYear(),
+                             date.getMonth(),
+                             date.getDate(),
+                             time.getHours(),
+                             time.getMinutes(),
+                             time.getSeconds());
+            this.value_node.value = stamp.toISOString();
+        }
+    });
 
 module.beforeContentFormSubmittedTopic =
     "ZC_DOJO_BEFORE_CONTENT_FORM_SUBMITTED";
