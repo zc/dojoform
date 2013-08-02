@@ -218,6 +218,7 @@ def test_suite():
         'build_form.test',
         'build_form2.test',
         'rangewidget.test',
+        'datetime.test',
         'ckwidget.test',
         'recordlistwidget.test',
         setUp=setUp, tearDown=tearDown)
