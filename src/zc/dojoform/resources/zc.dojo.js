@@ -8,8 +8,7 @@ define([
            "dojo/_base/window",
            "dojo/aspect",
            "dojo/date/stamp",
-           "dojo/data/ItemFileReadStore",
-           "dojo/data/ItemFileWriteStore",
+           "dojo/data/ObjectStore",
            "dojo/dom",
            "dojo/dom-class",
            "dojo/dom-construct",
@@ -20,6 +19,7 @@ define([
            "dojo/on",
            "dojo/query",
            "dojo/request/xhr",
+           "dojo/store/Memory",
            "dijit/_Container",
            "dijit/_Widget",
            "dijit/Dialog",
@@ -50,14 +50,14 @@ define([
            "dojox/grid/enhanced/plugins/Menu",
            "dojox/grid/enhanced/plugins/NestedSorting"
         ], function (array, connect, declare, fx, lang, win, aspect, stamp,
-                     ItemFileReadStore, ItemFileWriteStore, dom, domClass,
-                     domConstruct, domForm, domGeo, domStyle, json, on, query,
-                     xhr, _Container, _Widget, Dialog, Editor, _FormMixin,
-                     _FormValueWidget, Button, CheckBox, ComboBox, DateTextBox,
-                     Form, FilteringSelect, MultiSelect, NumberSpinner,
-                     NumberTextBox, SimpleTextarea, TextBox, TimeTextBox,
-                     ValidationTextBox, BorderContainer, ContentPane, registry,
-                     TimeSpinner, EnhancedGrid) {
+                     ObjectStore, dom, domClass, domConstruct, domForm, domGeo,
+                     domStyle, json, on, query, xhr, MemoryStore, _Container,
+                     _Widget, Dialog, Editor, _FormMixin, _FormValueWidget,
+                     Button, CheckBox, ComboBox, DateTextBox, Form,
+                     FilteringSelect, MultiSelect, NumberSpinner, NumberTextBox,
+                     SimpleTextarea, TextBox, TimeTextBox, ValidationTextBox,
+                     BorderContainer, ContentPane, registry, TimeSpinner,
+                     EnhancedGrid) {
     var zc = lang.getObject("zc", true),
         module = lang.getObject("zc.dojo", true),
         widgets = lang.getObject("zc.dojo.widgets", true),
@@ -630,23 +630,17 @@ module.widgets['zope.schema.Datetime'] = function (
 };
 
 module._choiceConfig = function (config, node, order) {
-    var wconfig, store_data, select_store;
+    var wconfig, data, store;
     wconfig = module.parse_config(config, order);
-    store_data = {
-        identifier: 'value',
-        label: 'label'
-    };
-    store_data.items = array.map(
-                        config.values,
-                        function (item) {
-                            return {label: item[1], value: item[0]};
-                        });
+    data = array.map(config.values, function (value) {
+        return {id: value[0], label: value[1]};
+    });
+    store = new MemoryStore({data: data});
 
-    select_store = new ItemFileReadStore({data: store_data});
     if (wconfig.value === undefined) {
         wconfig.value = null;
     }
-    wconfig.store = select_store;
+    wconfig.store = new ObjectStore({objectStore: store});
     wconfig.searchAttr = "label";
     return wconfig;
 };
@@ -1714,13 +1708,13 @@ module.parse_config = function (config, order) {
                             dnd_plugin.selector.select('row', e.rowIndex);
                             this.dnd_preselect = false;
                         }));
-                        grid.on('oncelldblclick', function (e) {
+                        grid.on('celldblclick', lang.hitch(this, function (e) {
                             grid.selection.select(e.rowIndex);
                             this._edit_record(
                                 this.config.name,
                                 grid.selection.getSelected()[0],
                                 this.order);
-                        });
+                        }));
                     }
                     if (!this.rc.readonly) {
                         widget = new Button({
@@ -1784,7 +1778,7 @@ module.parse_config = function (config, order) {
                         // value, since we do so by iterating over rows.
                         // We do this because order is important, and the store
                         // cares nothing of order.
-                        aspect.before(grid, "postresize", lang.hitch(this,
+                        aspect.after(grid, "postresize", lang.hitch(this,
                             function (item) {
                                 this._set_inputs();
                                 this.onChange(this.get('value'));
@@ -1802,6 +1796,7 @@ module.parse_config = function (config, order) {
                         type: 'hidden'
                     }, this.domNode);
                     this.input_parent = domConstruct.create('div', null, this.domNode);
+
                     aspect.after(this.grid, "startup", lang.hitch(
                             this, function () {
                                 this._set_inputs();
@@ -1820,7 +1815,7 @@ module.parse_config = function (config, order) {
                 },
 
                 _store_from_data: function (value) {
-                    var item_list = [], num = 0, data, store;
+                    var item_list = [], num = 0, store;
                     array.forEach(value, lang.hitch(this,
                         function (record) {
                             item_list.push(this._build_record(this.rc,
@@ -1828,18 +1823,12 @@ module.parse_config = function (config, order) {
                                 record));
                             num += 1;
                     }));
-                    data = {
-                        items: item_list,
-                        identifier: "name",
-                        label: "name"
-                    };
-                    store = new ItemFileWriteStore(
-                        {data: data});
+
+                    store = new MemoryStore({data: item_list, idProperty: "name"});
+                    store = new ObjectStore({objectStore: store});
                     // This won't trigger a resize, so we have to keep this
                     // event.
-                    aspect.after(store, "onSet", lang.hitch(this, function () {
-                        this._set_inputs();
-                    }));
+                    aspect.after(store, "onSet", lang.hitch(this, this._set_inputs));
                     return store;
                 },
 
