@@ -7,22 +7,33 @@ definition = {
         "handler": "test.register"
       }
     ],
-    "left_fields": {
-      "addresses": false,
-      "age": true,
-      "description": false,
-      "favorite_color": false,
-      "first_name": true,
-      "happy": false,
-      "last_name": true,
-      "other": true,
-      "pet": false,
-      "secret": false,
-      "siblings": false,
-      "temperment": false,
-      "weight": false,
-      "story": true
-    },
+    "groups": [
+      {
+        "id": "left-fields",
+        "class": 'zc-left-fields',
+        "widgets": [
+            "first_name",
+            "last_name",
+            "age",
+            "other"
+          ]
+      },
+      {
+        "id": "right-fields",
+        "class": 'zc-right-fields',
+        "widgets": [
+            "favorite_color",
+            "happy",
+            "pet",
+            "temperment",
+            "weight",
+            "description",
+            "secret",
+            "siblings",
+            "addresses"
+          ]
+      }
+    ],
     "prefix": "ExampleForm",
     "widgets": [
       {
@@ -33,7 +44,7 @@ definition = {
         "name": "first_name",
         "required": true,
         "value": "Happy",
-        "widget_constructor": "zope.schema.TextLine"
+        "widget_constructor": "TextLine"
       },
       {
         "fieldHint": "Family name.",
@@ -43,7 +54,7 @@ definition = {
         "name": "last_name",
         "required": true,
         "value": "Camper",
-        "widget_constructor": "zope.schema.TextLine"
+        "widget_constructor": "TextLine"
       },
       {
         "fieldHint": "",
@@ -53,7 +64,7 @@ definition = {
         "name": "favorite_color",
         "required": false,
         "value": "Blue",
-        "widget_constructor": "zope.schema.TextLine"
+        "widget_constructor": "TextLine"
       },
       {
         "allowBlank": false,
@@ -65,7 +76,7 @@ definition = {
         "name": "age",
         "required": true,
         "value": "23",
-        "widget_constructor": "zope.schema.Int"
+        "widget_constructor": "Int"
       },
       {
         "fieldHint": "Are they happy?",
@@ -74,7 +85,7 @@ definition = {
         "name": "happy",
         "required": false,
         "value": true,
-        "widget_constructor": "zope.schema.Bool"
+        "widget_constructor": "Bool"
       },
       {
         "fieldHint": "This person's best friend.",
@@ -96,7 +107,7 @@ definition = {
             "Fish"
           ]
         ],
-        "widget_constructor": "zc.ajaxform.widgets.ComboBox"
+        "widget_constructor": "ComboBox"
       },
       {
         "allowBlank": false,
@@ -125,7 +136,7 @@ definition = {
             "Right Neighborly"
           ]
         ],
-        "widget_constructor": "zope.schema.Choice"
+        "widget_constructor": "Choice"
       },
       {
         "allowBlank": false,
@@ -134,7 +145,7 @@ definition = {
         "id": "weight",
         "name": "weight",
         "required": true,
-        "widget_constructor": "zope.schema.Decimal"
+        "widget_constructor": "Decimal"
       },
       {
         "fieldHint": "What do they look like?",
@@ -144,7 +155,7 @@ definition = {
         "name": "description",
         "required": true,
         "value": "10ft tall\nRazor sharp scales.",
-        "widget_constructor": "zope.schema.Text"
+        "widget_constructor": "Text"
       },
       {
         "fieldHint": "Don't tell anybody",
@@ -153,7 +164,7 @@ definition = {
         "name": "secret",
         "required": true,
         "value": "5ecret sauce",
-        "widget_constructor": "zc.ajaxform.widgets.Hidden"
+        "widget_constructor": "Hidden"
       },
       {
         "allowBlank": false,
@@ -165,7 +176,7 @@ definition = {
         "name": "siblings",
         "required": true,
         "value": "1",
-        "widget_constructor": "zc.ajaxform.widgets.NumberSpinner"
+        "widget_constructor": "NumberSpinner"
       },
       {
         "fieldHint": "All my wonderful homes",
@@ -182,7 +193,7 @@ definition = {
               "minLength": 0,
               "name": "street",
               "required": true,
-              "widget_constructor": "zope.schema.TextLine"
+              "widget_constructor": "TextLine"
             },
             {
               "fieldHint": "The city",
@@ -191,7 +202,7 @@ definition = {
               "minLength": 0,
               "name": "city",
               "required": true,
-              "widget_constructor": "zope.schema.TextLine"
+              "widget_constructor": "TextLine"
             },
             {
               "allowBlank": false,
@@ -202,7 +213,7 @@ definition = {
               "id": "awesomeness",
               "name": "awesomeness",
               "required": true,
-              "widget_constructor": "zope.schema.Int"
+              "widget_constructor": "Int"
             }
           ]
         },
@@ -219,7 +230,7 @@ definition = {
             "street": "345 false street"
           }
         ],
-        "widget_constructor": "zope.schema.List"
+        "widget_constructor": "List"
       },
       {
         "fieldHint": "Any other notes",
@@ -229,7 +240,7 @@ definition = {
         "name": "other",
         "required": true,
         "value": "I've got a magic toenail",
-        "widget_constructor": "zope.schema.Text"
+        "widget_constructor": "Text"
       }
     ]
   }

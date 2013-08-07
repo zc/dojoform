@@ -8,12 +8,11 @@ values whatsoever and confirm that it comes with the default configuration.
 
     >>> browser.get('http://localhost:%s/test/blank.html' % port)
 
-    js> require(["dojo", "dijit", "dojox/lang/functional",
-    ...          "zc/dojo", "zc/ckeditor"], function (dojo, dijit, dlf) {
-    ...     window.dojo = dojo;
-    ...     window.dijit = dijit;
-    ...     window.keys = dlf.keys;
-    ...     window.zc = dojo.getObject("zc");
+    js> require(
+    ...     ["dojox/lang/functional", "zc.dojoform", "zc.dojoform/CKEditor"],
+    ...     function (functional, dojoform) {
+    ...     window.keys = functional.keys;
+    ...     window.dojoform = dojoform;
     ... });
 
 ::
@@ -22,7 +21,7 @@ values whatsoever and confirm that it comes with the default configuration.
           widgets: [
               {
                name: 'story',
-               widget_constructor:  'zc.dojoform.ckeditor.CKEditor',
+               widget_constructor:  'CKEditor',
                required: true,
                value: "<p>I am a story</p>",
               },
@@ -43,14 +42,13 @@ values whatsoever and confirm that it comes with the default configuration.
           ]
       };
 
-  form = zc.dojo.build_form2(definition, dojo.create('div', {}, dojo.body()));
+  form = dojoform(definition, dojo.create('div', {}, dojo.body()));
   form.startup();
 
 .. -> js
 
-    >>> while not browser.find_elements_by_tag_name('body'):
-    ...     continue
-
+    >>> from zope.testing.wait import wait
+    >>> wait(lambda : browser.find_elements_by_tag_name('body'))
     >>> JS(js)
 
 The CKeditor widget comes with all of the toolbar buttons by default.
@@ -59,7 +57,7 @@ The CKeditor widget comes with all of the toolbar buttons by default.
 
     >>> wait_for(lambda: len(JS("return keys(ckeditor.plugins)")))
     >>> len(JS("return keys(ckeditor.plugins)"))
-    72 
+    72
 
 We can get the current value of the widget, which will be what we gave it
 in our configuration.

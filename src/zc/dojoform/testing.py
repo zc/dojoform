@@ -10,6 +10,30 @@ def read_test_file(name):
     f.close()
     return r
 
+get_example_template = """
+<script type="text/javascript">
+%(definition)s;
+
+require(["dojo/_base/window", "zc.dojoform", "zc.dojoform/List",
+         "dojo/domReady!"],
+        function (window, dojoform) {
+    form = dojoform(definition);
+    window.body().appendChild(form.domNode);
+    form.startup();
+});
+</script>
+</head>
+"""
+
+
+@bobo.query('/get_example')
+def get_example(bobo_request, name):
+    html = read_test_file("blank.html")
+    definition = read_test_file(name)
+    return html.replace(
+        '</head>',
+        get_example_template % dict(definition=definition),
+        )
 
 @bobo.query('/get_form', content_type='application/json')
 def get_form(bobo_request):

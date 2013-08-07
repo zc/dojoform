@@ -6,9 +6,10 @@ Load a blank page that gets dojo loaded:
 
 Load zc.dojo:
 
-    js> require(["dojo", "zc/dojo"], function (dojo) {
+    js> require(["dojo", "zc.dojoform", "zc.dojoform/List"],
+    ...         function (dojo, dojoform) {
     ...     window.dojo = dojo;
-    ...     window.zc = dojo.getObject("zc");
+    ...     window.dojoform = dojoform;
     ... });
 
 Load the first sample form definition:
@@ -17,7 +18,7 @@ Load the first sample form definition:
 
 Call build_form2 to build the form:
 
-    js> form = zc.dojo.build_form2(definition);
+    js> form = dojoform(definition);
     js> dojo.body().appendChild(form.domNode);
     js> form.startup();
 
@@ -32,7 +33,7 @@ check widget cleanup:
     js> form.destroyRecursive();
 
     js> nwidgets = dijit.registry.length;
-    js> form = zc.dojo.build_form2(definition);
+    js> form = dojoform(definition);
     js> dojo.body().appendChild(form.domNode);
     js> form.startup();
 
@@ -50,7 +51,7 @@ Now, we'll try a different example. It uses groups to do layout,
 rather than left_fields.
 
     >>> JS(read_test_file('2.js'))
-    js> form = zc.dojo.build_form2(definition, undefined, 1);
+    js> form = dojoform(definition, undefined, 1);
     js> dojo.body().appendChild(form.domNode);
     js> form.startup();
 
@@ -92,7 +93,7 @@ Simple example, no groups and no left_fields (no conditions)
 ============================================================
 
     >>> JS(read_test_file('3.js'))
-    js> form = zc.dojo.build_form2(
+    js> form = dojoform(
     ...     definition, dojo.create('div', null, dojo.body()), 3);
 
 
@@ -110,7 +111,7 @@ Left fields with none or all selected
 
     >>> JS(read_test_file('4.js'))
 
-    js> form = zc.dojo.build_form2(
+    js> form = dojoform(
     ...     definition, dojo.create('div', {}, dojo.body()), 3);
 
     >>> matches(browser.page_source, read_test_file('3.html'))
@@ -119,7 +120,7 @@ Left fields with none or all selected
     js> form.destroyRecursive();
 
     >>> JS(read_test_file('5.js'))
-    js> form = zc.dojo.build_form2(
+    js> form = dojoform(
     ...     definition, dojo.create('div', {}, dojo.body()), 3);
 
     >>> matches(browser.page_source, read_test_file('3.html'))
@@ -145,15 +146,15 @@ define a form and layout::
           design="heading" gutters="false" livesplitters="true"
           style="height: 100%; width: 100%;">
        <div dojoType="dijit.layout.ContentPane"
-            id="zc.dojo.zc-right-fields.ExampleForm"
+            id="right-fields"
             region="center" splitter="true">
        </div>
        <div dojoType="dijit.layout.ContentPane"
-            id="zc.dojo.zc-actions.ExampleForm"
+            id="zc.dojoform.actions.ExampleForm"
             region="bottom">
        </div>
        <div dojoType="dijit.layout.ContentPane"
-            id="zc.dojo.zc-left-fields.ExampleForm"
+            id="left-fields"
             region="left" splitter="true" style="width: 60%">
        </div>
      </div>
@@ -173,32 +174,9 @@ And call build_form2:
 
     >>> JS(read_test_file('1.js'))
 
-    js> form = zc.dojo.build_form2(definition);
+    js> form = dojoform(definition);
 
     >>> matches(browser.page_source, read_test_file('6.html'))
-
-    js> dojo.body().removeChild(form.domNode);
-    js> form.destroyRecursive();
-    js> return dijit.registry.length == nwidgets;
-    True
-
-Legacy layout
-=============
-
-build_form provided a 2-column layout that we've used in some apps.
-build_form2 mimics this layour if you:
-
-- supply left_fields that include some but not all fields,
-
-- don't pre-create the layout, and
-
-- pass in a parent node.
-
-
-    js> form = zc.dojo.build_form2(
-    ...    definition, dojo.create('div', {}, dojo.body()));
-
-    >>> matches(browser.page_source, read_test_file('7.html'))
 
     js> dojo.body().removeChild(form.domNode);
     js> form.destroyRecursive();
@@ -209,8 +187,7 @@ Nested groups
 =============
 
     >>> JS(read_test_file('nested-groups.js'))
-    js> form = zc.dojo.build_form2(
-    ...    definition, dojo.create('div', {}, dojo.body()));
+    js> form = dojoform(definition, dojo.create('div', {}, dojo.body()));
 
     >>> matches(browser.page_source, read_test_file('nested-groups.html'))
 
@@ -228,7 +205,7 @@ cancel forms.
 When you define forms, you can define handlers through actions.
 
     >>> JS(read_test_file('1.js'))
-    js> form = zc.dojo.build_form2(definition);
+    js> form = dojoform(definition);
     js> dojo.body().appendChild(form.domNode);
     js> form.startup();
 
@@ -268,7 +245,7 @@ can directly pass a function as our handler argument.
 
     js> dojo.body().removeChild(form.domNode);
     js> form.destroyRecursive();
-    js> form = zc.dojo.build_form2(definition);
+    js> form = dojoform(definition);
     js> dojo.body().appendChild(form.domNode);
     js> form.startup();
 
@@ -300,7 +277,7 @@ action handlers.
 
     js> dojo.body().removeChild(form.domNode);
     js> form.destroyRecursive();
-    js> form = zc.dojo.build_form2(definition);
+    js> form = dojoform(definition);
     js> dojo.body().appendChild(form.domNode);
     js> form.startup();
 
@@ -333,7 +310,7 @@ ignored.
 
     js> dojo.body().removeChild(form.domNode);
     js> form.destroyRecursive();
-    js> form = zc.dojo.build_form2(definition);
+    js> form = dojoform(definition);
     js> dojo.body().appendChild(form.domNode);
     js> form.startup();
 

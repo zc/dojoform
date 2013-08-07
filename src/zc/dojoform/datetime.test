@@ -1,13 +1,10 @@
 Datetime widget
 ===============
 
-
     >>> browser.get('http://localhost:%s/test/blank.html' % port)
-
-    js> require(["dojo", "dijit", "zc/dojo"], function (dojo, dijit) {
-    ...     window.dojo = dojo;
-    ...     window.dijit = dijit;
-    ...     window.zc = dojo.getObject("zc");
+    js> require(["zc.dojoform", "zc.dojoform/DateTimeTextBox"],
+    ...         function (dojoform) {
+    ...     window.dojoform = dojoform;
     ... });
 
 ::
@@ -17,7 +14,7 @@ Datetime widget
               {
                   name: 'datetime',
                   value: '2013-07-24T10:22:00-04:00',
-                  widget_constructor: 'zope.schema.Datetime'
+                  widget_constructor: 'Datetime'
               }
           ],
           actions: [
@@ -30,13 +27,13 @@ Datetime widget
           ]
       };
 
-  form = zc.dojo.build_form2(definition);
+  form = dojoform(definition);
   form.placeAt(dojo.body()).startup();
 
 .. -> js
 
-   >>> while not browser.find_elements_by_tag_name('body'):
-   ...     continue
+   >>> from zope.testing.wait import wait
+   >>> wait(lambda : browser.find_elements_by_tag_name('body'))
    >>> JS(js)
 
    js> return form.get("value");

@@ -32,12 +32,13 @@
      >
   <script type="text/javascript">
       var dojoConfig = {
-          modulePaths: {
-              "zc.dojo": "/dojoform/resources/zc.dojo",
-              "zc.ckeditor": "/dojoform/resources/ckwidget"
-          },
-	  deps: ["zc/dojo", "zc/ckeditor"],
-          isDebug: true   
+          packages: [
+              {
+               name: "zc.dojoform",
+               location: "/dojoform/resources/dojoform"
+              }
+          ],
+          isDebug: true
       };
   </script>
   <script type="text/javascript"

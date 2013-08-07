@@ -26,32 +26,32 @@
 .zcSmallField { display: inline; }
 
 /* Bool */
-.zope-schema-Bool
+.zc-field-Bool
 {
   position: relative;
   top: 0;
   left: 0;
   right: 0;
   }
-.zope-schema-Bool .zc-widget
+.zc-field-Bool .zc-widget
 {
   position: absolute;
   top: 0;
   left: 0;
   }
-.zope-schema-Bool .zc-label
+.zc-field-Bool .zc-label
 {
   padding-left: 2em;
   width: 90%;
 }
-.zope-schema-Bool .zc-label:after { content: ""; }
+.zc-field-Bool .zc-label:after { content: ""; }
 
-.zope-schema-Int .zc-widget { width: 9em; }
+.zc-field-Int .zc-widget { width: 9em; }
 
 
 /* Text(Area)) */
-.zope-schema-Text .zc-label { display: block }
-.zope-schema-Text .zc-widget
+.zc-field-Text .zc-label { display: block }
+.zc-field-Text .zc-widget
 {
   width: 96%;
   margin-left: 2%;
