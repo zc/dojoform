@@ -8,15 +8,12 @@ define(
     "dojo/dom-style",
     "dijit/form/Button",
     "dijit/form/Form",
-    "dijit/layout/BorderContainer",
-    "dijit/layout/ContentPane",
     "dijit/registry",
     "./widgets"
 ],
 function (
     array, lang, dom, domClass, domConstruct, domStyle,
-    Button, Form, BorderContainer, ContentPane, registry,
-    widget_constructors)
+    Button, Form, registry, widget_constructors)
 {
     return function (config, pnode, order, startup) {
         var definition = config.definition || config,
