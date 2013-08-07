@@ -15,6 +15,7 @@ from __future__ import absolute_import
 
 import BeautifulSoup
 import bobo
+import boboserver
 import doctest
 import manuel.capture
 import manuel.doctest
@@ -32,7 +33,6 @@ import zc.dojoform.testing
 import zc.customdoctests.js
 
 import zope.testing.setupstack
-from zope.testing import doctest
 
 home = None # set by buildout
 here = os.path.dirname(__file__)
@@ -195,12 +195,16 @@ class RequestHandler(wsgiref.simple_server.WSGIRequestHandler):
 bobo_port = None
 def start_bobo_server(port=0, daemon=True):
     global bobo_port
-    app = bobo.Application(bobo_resources=bobo_resources_template  % (
-        os.path.join(here, 'test-examples'),
-        here,
-        os.path.join(home, 'parts', 'dojo'),
-        os.path.join(home, 'parts', 'ckeditor'),
-        ))
+    app = boboserver.Reload(
+        bobo.Application(bobo_resources=bobo_resources_template  % (
+            os.path.join(here, 'test-examples'),
+            here,
+            os.path.join(home, 'parts', 'dojo'),
+            os.path.join(home, 'parts', 'ckeditor'),
+            )),
+        {},
+        'zc.dojoform.testing'
+        )
     server = wsgiref.simple_server.make_server('', port, app,
         handler_class=RequestHandler)
     thread = threading.Thread(target=server.serve_forever)
@@ -215,8 +219,7 @@ def test_suite():
         manuel.doctest.Manuel(
             optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS) +
         manuel.capture.Manuel(),
-        'build_form.test',
-        'build_form2.test',
+        'build.test',
         'rangewidget.test',
         'datetime.test',
         'ckwidget.test',

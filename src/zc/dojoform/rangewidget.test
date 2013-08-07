@@ -7,10 +7,11 @@ To define a range widget, create a new zc.RangeWidget, passing
 
     >>> browser.get('http://localhost:%s/test/blank.html' % port)
 
-    js> require(["dojo", "dijit", "zc/dojo"], function (dojo, dijit) {
+    js> require(["dojo", "dijit", "zc.dojoform"],
+    ...         function (dojo, dijit, dojoform) {
     ...     window.dojo = dojo;
     ...     window.dijit = dijit;
-    ...     window.zc = dojo.getObject("zc");
+    ...     window.dojoform = dojoform;
     ... });
 
 ::
@@ -19,7 +20,7 @@ To define a range widget, create a new zc.RangeWidget, passing
           widgets: [
               {
                   name: 'int_range',
-                  widget_constructor:  'zc.ajaxform.widgets.IntRange',
+                  widget_constructor:  'IntRange',
                   value: '{"min": 1, "max": 9}',
                   start: 'min', end: 'max',
                   field_min: 0,
@@ -27,7 +28,7 @@ To define a range widget, create a new zc.RangeWidget, passing
               },
               {
                   name: 'date_range',
-                  widget_constructor: 'zc.ajaxform.widgets.DateRange',
+                  widget_constructor: 'DateRange',
                   start: 'start_date',
                   end: 'end_date',
                   value: '{"start_date": "2010-09-09", "end_date": "2010-09-10"}',
@@ -45,7 +46,7 @@ To define a range widget, create a new zc.RangeWidget, passing
           ]
       };
 
-  form = zc.dojo.build_form2(definition, dojo.create('div', {}, dojo.body()));
+  form = dojoform(definition, dojo.create('div', {}, dojo.body()));
   form.startup();
 
 .. -> js
@@ -120,8 +121,8 @@ config.
 We can get the value of the rangewidget, which will attainable as json and
 include values for the minimum and maximum values.
 
-    js> int_widget = dijit.byId('zc_RangeWidget_0');
-    js> date_widget = dijit.byId('zc_RangeWidget_1');
+    js> int_widget = dijit.byId('zc_dojoform_RangeWidget_0');
+    js> date_widget = dijit.byId('zc_dojoform_RangeWidget_1');
 
     >>> import pprint
 

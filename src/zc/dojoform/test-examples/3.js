@@ -10,7 +10,7 @@ definition = {
                 "name": "first_name",
                 "required": true,
                 "value": "Happy",
-                "widget_constructor": "zope.schema.TextLine"
+                "widget_constructor": "TextLine"
             },
             {
                 "fieldHint": "Family name.",
@@ -20,7 +20,7 @@ definition = {
                 "name": "last_name",
                 "required": true,
                 "value": "Camper",
-                "widget_constructor": "zope.schema.TextLine"
+                "widget_constructor": "TextLine"
             },
             {
                 "fieldHint": "Are they happy?",
@@ -29,7 +29,7 @@ definition = {
                 "name": "happy",
                 "required": false,
                 "value": true,
-                "widget_constructor": "zope.schema.Bool"
+                "widget_constructor": "Bool"
             },
             {
                 "fieldHint": "What do they look like?",
@@ -39,7 +39,7 @@ definition = {
                 "name": "description",
                 "required": true,
                 "value": "10ft tall\nRazor sharp scales.",
-                "widget_constructor": "zope.schema.Text"
+                "widget_constructor": "Text"
             },
             {
                 "fieldHint": "Don't tell anybody",
@@ -48,7 +48,7 @@ definition = {
                 "name": "secret",
                 "required": true,
                 "value": "5ecret sauce",
-                "widget_constructor": "zc.ajaxform.widgets.Hidden"
+                "widget_constructor": "Hidden"
             }
         ]
     }

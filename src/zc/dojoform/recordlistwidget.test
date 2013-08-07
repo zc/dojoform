@@ -7,10 +7,8 @@ using build_form2.
 
     >>> browser.get('http://localhost:%s/test/blank.html' % port)
 
-    js> require(["dojo", "dijit", "zc/dojo"], function (dojo, dijit) {
-    ...     window.dojo = dojo;
-    ...     window.dijit = dijit;
-    ...     window.zc = dojo.getObject("zc");
+    js> require(["zc.dojoform", "zc.dojoform/List"], function (dojoform) {
+    ...     window.dojoform = dojoform;
     ... });
 
 ::
@@ -31,7 +29,7 @@ using build_form2.
                "id": "addresses",
                "name": "addresses",
                "required": true,
-               "widget_constructor": "zope.schema.List",
+               "widget_constructor": "List",
                "record_schema": {
                    "readonly": false,
                    "widgets": [
@@ -42,7 +40,7 @@ using build_form2.
                        "minLength": 0,
                        "name": "city",
                        "required": true,
-                       "widget_constructor": "zope.schema.TextLine"
+                       "widget_constructor": "TextLine"
                       },
                       {
                        "allowBlank": false,
@@ -53,7 +51,7 @@ using build_form2.
                        "id": "awesomeness",
                        "name": "awesomeness",
                        "required": true,
-                       "widget_constructor": "zope.schema.Int"
+                       "widget_constructor": "Int"
                       }
                    ]
                },
@@ -72,7 +70,7 @@ using build_form2.
         }]
       };
 
-  form = zc.dojo.build_form2(definition, dojo.create('div', {}, dojo.body()));
+  form = dojoform(definition, dojo.create('div', {}, dojo.body()));
   form.startup();
 
 .. -> js
@@ -93,7 +91,7 @@ to represent it and its available actions.
     >>> import pprint
     >>> pprint.pprint(JS('return widget_names'))
     [u'dijit_form_Form_0',
-     u'zc_RecordList_0',
+     u'zc_dojoform_List_0',
      u'dojox_grid_EnhancedGrid_0',
      u'dojox_grid__RowSelector_1',
      u'dojox_grid__View_1',
@@ -106,7 +104,7 @@ The data presented is an accurate representation of our input value with
 respect to the record schema. Note that the street values are not returned
 since they are not included in the schema.
 
-    js> widget = dijit.byId('zc_RecordList_0')
+    js> widget = dijit.byId('zc_dojoform_List_0')
 
     >>> import json
     >>> def wid_val():

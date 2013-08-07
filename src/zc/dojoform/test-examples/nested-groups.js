@@ -34,7 +34,7 @@ definition = {
                 "name": "first_name",
                 "required": true,
                 "value": "Happy",
-                "widget_constructor": "zope.schema.TextLine"
+                "widget_constructor": "TextLine"
             },
             {
                 "hint": "Family name.",
@@ -44,7 +44,7 @@ definition = {
                 "name": "last_name",
                 "required": true,
                 "value": "Camper",
-                "widget_constructor": "zope.schema.TextLine"
+                "widget_constructor": "TextLine"
             },
             {
                 "hint": "Are they happy?",
@@ -53,7 +53,7 @@ definition = {
                 "name": "happy",
                 "required": false,
                 "value": true,
-                "widget_constructor": "zope.schema.Bool"
+                "widget_constructor": "Bool"
             },
             {
                 condition: 'function (v) {return v; }',
@@ -65,7 +65,7 @@ definition = {
                 "name": "description",
                 "required": true,
                 "value": "10ft tall\nRazor sharp scales.",
-                "widget_constructor": "zope.schema.Text"
+                "widget_constructor": "Text"
             },
             {
                 "hint": "Don't tell anybody",
@@ -74,7 +74,7 @@ definition = {
                 "name": "secret",
                 "required": true,
                 "value": "5ecret sauce",
-                "widget_constructor": "zc.ajaxform.widgets.Hidden"
+                "widget_constructor": "Hidden"
             },
             {
                 condition: 'function (v) {return v; }',
@@ -88,7 +88,7 @@ definition = {
                 "name": "siblings",
                 "required": true,
                 "value": "1",
-                "widget_constructor": "zc.ajaxform.widgets.NumberSpinner"
+                "widget_constructor": "NumberSpinner"
             },
             {
                 condition: 'function (v) {return v; }',
@@ -107,7 +107,7 @@ definition = {
                             "minLength": 0,
                             "name": "street",
                             "required": true,
-                            "widget_constructor": "zope.schema.TextLine"
+                            "widget_constructor": "TextLine"
                         },
                         {
                             "hint": "The city",
@@ -116,7 +116,7 @@ definition = {
                             "minLength": 0,
                             "name": "city",
                             "required": true,
-                            "widget_constructor": "zope.schema.TextLine"
+                            "widget_constructor": "TextLine"
                         },
                         {
                             "allowBlank": false,
@@ -127,7 +127,7 @@ definition = {
                             "id": "awesomeness",
                             "name": "awesomeness",
                             "required": true,
-                            "widget_constructor": "zope.schema.Int"
+                            "widget_constructor": "Int"
                         }
                     ]
                 },
@@ -144,7 +144,7 @@ definition = {
                         "street": "345 false street"
                     }
                 ],
-                "widget_constructor": "zope.schema.List"
+                "widget_constructor": "List"
             },
             {
                 condition: 'function (v) {return v; }',
@@ -156,7 +156,7 @@ definition = {
                 "name": "other",
                 "required": true,
                 "value": "I've got a magic toenail",
-                "widget_constructor": "zope.schema.Text"
+                "widget_constructor": "Text"
             }
         ]
     }
