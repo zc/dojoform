@@ -38,8 +38,8 @@ widgets
    list of field and widget definitions
 
 
-Widgets definitions, the ``widget`` definition property
-=======================================================
+Widgets definitions, the ``widgets`` definition property
+========================================================
 
 The ``widgets`` definition property specifies a list of field widgets.
 Unless a ``groups`` or ``left_fields`` property is used, the form will
@@ -176,27 +176,3 @@ handler (optional)
 
 It is an error not to define a form handler or a handler for each
 action.
-
-
-Backward compatibility with build_form
-======================================
-
-At the definition level:
-
-prefix
-   alias for ``id``
-
-left_fields (optional, legacy)
-   an object specifying a set of fields to be included in a "left"
-   grouping of widgets
-
-   This property is ignored if a groups property is used, or it
-   doesn't specify any fields or specifies all fields.
-
-At the widget level:
-
-fieldLabel
-   alias for ``label``
-
-fieldHint
-   alias for ``hint``
