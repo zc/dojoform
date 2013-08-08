@@ -15,35 +15,28 @@ function (
     array, lang, dom, domClass, domConstruct, domStyle,
     Button, Form, registry, widget_constructors)
 {
-    return function (config, pnode, order, startup) {
-        var definition = config.definition || config,
-        prefix, suffix, legacy, form,
-        widgets_by_name, build_group,
-        fields_div, action_div, action_div_id, groups,
-        left_widgets, right_widgets, border;
+    return function (definition, pnode, order, startup) {
+        var id = definition.id;
         startup = startup === undefined ? true: startup;
         order = order || 0;
-        prefix = definition.prefix ? definition.prefix+'.' : '';
-        suffix = prefix ? '.' + definition.prefix : '';
+        var prefix = id ? id + '.' : '';
+        var suffix = prefix ? '.' + id : '';
 
-        legacy = !!pnode; // Are we using a build_form-style call
-
-        if (prefix) {
-            form = registry.byId(definition.prefix);
+        var form;
+        if (id) {
+            form = registry.byId(id);
             if (! form) {
-                form = dom.byId(definition.prefix);
+                form = dom.byId(id);
                 if (form) {
-                    form = new Form({id: definition.prefix}, form);
+                    form = new Form({id: id}, form);
                 }
             }
         }
-        if (form) {
-            legacy = false;
-        }
-        else {
+
+        if (! form) {
             form = {};
-            if (prefix) {
-                form.id = definition.prefix;
+            if (id) {
+                form.id = id;
             }
             form = new Form(form, pnode);
         }
@@ -55,7 +48,7 @@ function (
 
 
         // normalize widget namey data
-        widgets = array.map(
+        var widgets = array.map(
             definition.widgets, function (widget) {
                 widget = lang.clone(widget);
 
@@ -74,7 +67,7 @@ function (
                 return widget;
             });
 
-        groups = definition.groups;
+        var groups = definition.groups;
 
         // normlize groups
         if (!groups) {
@@ -91,7 +84,7 @@ function (
 
 
         // create a widget index
-        widgets_by_name = {};
+        var widgets_by_name = {};
         array.forEach(widgets, function (widget) {
                           widgets_by_name[widget.name] = widget;
                       });
@@ -170,7 +163,7 @@ function (
 
 
         // Now, iterate through the groups
-        build_group = function(group, parent) {
+        var build_group = function(group, parent) {
             var group_node, group_data = lang.clone(group);
             delete group_data.widgets;
             if (group_data['class']) {
@@ -241,9 +234,10 @@ function (
                 });
         };
 
+        var fields_div;
         array.forEach(
             groups, function (group) {
-                if (!fields_div && ((! group.id) || ! dom.byId(group.id))) {
+                if (! fields_div && ((! group.id) || ! dom.byId(group.id))) {
                     fields_div = domConstruct.create(
                         'div', {'class': 'zc-fields'},
                         form.domNode);
@@ -266,8 +260,8 @@ function (
         setup_conditions();
 
         if (definition.actions) {
-            action_div_id = 'zc.dojoform.actions' + suffix;
-            action_div = registry.byId(action_div_id);
+            var action_div_id = 'zc.dojoform.actions' + suffix;
+            var action_div = registry.byId(action_div_id);
             if (action_div) {
                 action_div = action_div.containerNode;
             }

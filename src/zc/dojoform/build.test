@@ -89,7 +89,7 @@ Now, when we set the happy field to false:
     js> return dijit.registry.length == nwidgets;
     True
 
-Simple example, no groups and no left_fields (no conditions)
+Simple example, no groups (no conditions)
 ============================================================
 
     >>> JS(read_test_file('3.js'))
@@ -99,31 +99,6 @@ Simple example, no groups and no left_fields (no conditions)
 
     >>> matches(browser.page_source, read_test_file('3.html'))
 
-
-    js> dojo.body().removeChild(form.domNode);
-    js> form.destroyRecursive();
-    js> return dijit.registry.length == nwidgets;
-    True
-
-Left fields with none or all selected
-=====================================
-
-
-    >>> JS(read_test_file('4.js'))
-
-    js> form = dojoform(
-    ...     definition, dojo.create('div', {}, dojo.body()), 3);
-
-    >>> matches(browser.page_source, read_test_file('3.html'))
-
-    js> dojo.body().removeChild(form.domNode);
-    js> form.destroyRecursive();
-
-    >>> JS(read_test_file('5.js'))
-    js> form = dojoform(
-    ...     definition, dojo.create('div', {}, dojo.body()), 3);
-
-    >>> matches(browser.page_source, read_test_file('3.html'))
 
     js> dojo.body().removeChild(form.domNode);
     js> form.destroyRecursive();
@@ -240,8 +215,8 @@ can directly pass a function as our handler argument.
 
     js> action_test = null;
 
-    js> definition.definition.actions[0].handler = test.register;
-    js> definition.definition.actions[0].validate = true;
+    js> definition.actions[0].handler = test.register;
+    js> definition.actions[0].validate = true;
 
     js> dojo.body().removeChild(form.domNode);
     js> form.destroyRecursive();
@@ -270,8 +245,8 @@ If the form is valid it will work as expected.
 We can also specify a form handler in addition to or instead of specific
 action handlers.
 
-    js> definition.definition.actions[0].validate = false;
-    js> definition.definition.handler = function (arg1, arg2, arg3) {
+    js> definition.actions[0].validate = false;
+    js> definition.handler = function (arg1, arg2, arg3) {
     ...    definition_test = [arg1, arg2.id, String(arg3)];
     ...    }
 
@@ -306,7 +281,7 @@ action handlers.
 If we set an 'ignore_default' flag on the action the form handler will be
 ignored.
 
-    js> definition.definition.actions[0].ignore_default = true;
+    js> definition.actions[0].ignore_default = true;
 
     js> dojo.body().removeChild(form.domNode);
     js> form.destroyRecursive();
