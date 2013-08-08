@@ -176,17 +176,3 @@ handler (optional)
 
 It is an error not to define a form handler or a handler for each
 action.
-
-
-Backward compatibility with build_form
-======================================
-
-At the definition level:
-
-At the widget level:
-
-fieldLabel
-   alias for ``label``
-
-fieldHint
-   alias for ``hint``

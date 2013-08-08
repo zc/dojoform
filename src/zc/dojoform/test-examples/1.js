@@ -36,8 +36,8 @@ definition = {
     "id": "ExampleForm",
     "widgets": [
         {
-            "fieldHint": "Given name.",
-            "fieldLabel": "First name",
+            "hint": "Given name.",
+            "label": "First name",
             "id": "first_name",
             "minLength": 0,
             "name": "first_name",
@@ -46,8 +46,8 @@ definition = {
             "widget_constructor": "TextLine"
         },
         {
-            "fieldHint": "Family name.",
-            "fieldLabel": "Last name",
+            "hint": "Family name.",
+            "label": "Last name",
             "id": "last_name",
             "minLength": 0,
             "name": "last_name",
@@ -56,8 +56,8 @@ definition = {
             "widget_constructor": "TextLine"
         },
         {
-            "fieldHint": "",
-            "fieldLabel": "Favorite color",
+            "hint": "",
+            "label": "Favorite color",
             "id": "favorite_color",
             "minLength": 0,
             "name": "favorite_color",
@@ -67,8 +67,8 @@ definition = {
         },
         {
             "allowBlank": false,
-            "fieldHint": "Age in years",
-            "fieldLabel": "Age",
+            "hint": "Age in years",
+            "label": "Age",
             "field_max": 200,
             "field_min": 0,
             "id": "age",
@@ -78,8 +78,8 @@ definition = {
             "widget_constructor": "Int"
         },
         {
-            "fieldHint": "Are they happy?",
-            "fieldLabel": "Happy",
+            "hint": "Are they happy?",
+            "label": "Happy",
             "id": "happy",
             "name": "happy",
             "required": false,
@@ -87,8 +87,8 @@ definition = {
             "widget_constructor": "Bool"
         },
         {
-            "fieldHint": "This person's best friend.",
-            "fieldLabel": "Pet",
+            "hint": "This person's best friend.",
+            "label": "Pet",
             "id": "pet",
             "name": "pet",
             "required": false,
@@ -110,8 +110,8 @@ definition = {
         },
         {
             "allowBlank": false,
-            "fieldHint": "What is the person like?",
-            "fieldLabel": "Temperment",
+            "hint": "What is the person like?",
+            "label": "Temperment",
             "hiddenName": "temperment.value",
             "id": "temperment",
             "name": "temperment",
@@ -139,16 +139,16 @@ definition = {
         },
         {
             "allowBlank": false,
-            "fieldHint": "Weight in lbs?",
-            "fieldLabel": "Weight",
+            "hint": "Weight in lbs?",
+            "label": "Weight",
             "id": "weight",
             "name": "weight",
             "required": true,
             "widget_constructor": "Decimal"
         },
         {
-            "fieldHint": "What do they look like?",
-            "fieldLabel": "Description",
+            "hint": "What do they look like?",
+            "label": "Description",
             "id": "description",
             "minLength": 0,
             "name": "description",
@@ -157,8 +157,8 @@ definition = {
             "widget_constructor": "Text"
         },
         {
-            "fieldHint": "Don't tell anybody",
-            "fieldLabel": "Secret Key",
+            "hint": "Don't tell anybody",
+            "label": "Secret Key",
             "id": "secret",
             "name": "secret",
             "required": true,
@@ -167,8 +167,8 @@ definition = {
         },
         {
             "allowBlank": false,
-            "fieldHint": "Number of siblings",
-            "fieldLabel": "Siblings",
+            "hint": "Number of siblings",
+            "label": "Siblings",
             "field_max": 8,
             "field_min": 0,
             "id": "siblings",
@@ -178,16 +178,16 @@ definition = {
             "widget_constructor": "NumberSpinner"
         },
         {
-            "fieldHint": "All my wonderful homes",
-            "fieldLabel": "Addresses",
+            "hint": "All my wonderful homes",
+            "label": "Addresses",
             "id": "addresses",
             "name": "addresses",
             "record_schema": {
                 "readonly": false,
                 "widgets": [
                     {
-                        "fieldHint": "The street",
-                        "fieldLabel": "Street",
+                        "hint": "The street",
+                        "label": "Street",
                         "id": "street",
                         "minLength": 0,
                         "name": "street",
@@ -195,8 +195,8 @@ definition = {
                         "widget_constructor": "TextLine"
                     },
                     {
-                        "fieldHint": "The city",
-                        "fieldLabel": "City",
+                        "hint": "The city",
+                        "label": "City",
                         "id": "city",
                         "minLength": 0,
                         "name": "city",
@@ -205,8 +205,8 @@ definition = {
                     },
                     {
                         "allowBlank": false,
-                        "fieldHint": "The awesomeness on a scale of 1 to 10",
-                        "fieldLabel": "Awesomeness",
+                        "hint": "The awesomeness on a scale of 1 to 10",
+                        "label": "Awesomeness",
                         "field_max": 10,
                         "field_min": 1,
                         "id": "awesomeness",
@@ -232,8 +232,8 @@ definition = {
             "widget_constructor": "List"
         },
         {
-            "fieldHint": "Any other notes",
-            "fieldLabel": "Other",
+            "hint": "Any other notes",
+            "label": "Other",
             "id": "other",
             "minLength": 0,
             "name": "other",

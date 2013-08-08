@@ -2,8 +2,8 @@ definition = {
     "id": "ExampleForm",
     "widgets": [
         {
-            "fieldHint": "Given name.",
-            "fieldLabel": "First name",
+            "hint": "Given name.",
+            "label": "First name",
             "id": "first_name",
             "minLength": 0,
             "name": "first_name",
@@ -12,8 +12,8 @@ definition = {
             "widget_constructor": "TextLine"
         },
         {
-            "fieldHint": "Family name.",
-            "fieldLabel": "Last name",
+            "hint": "Family name.",
+            "label": "Last name",
             "id": "last_name",
             "minLength": 0,
             "name": "last_name",
@@ -22,8 +22,8 @@ definition = {
             "widget_constructor": "TextLine"
         },
         {
-            "fieldHint": "Are they happy?",
-            "fieldLabel": "Happy",
+            "hint": "Are they happy?",
+            "label": "Happy",
             "id": "happy",
             "name": "happy",
             "required": false,
@@ -31,8 +31,8 @@ definition = {
             "widget_constructor": "Bool"
         },
         {
-            "fieldHint": "What do they look like?",
-            "fieldLabel": "Description",
+            "hint": "What do they look like?",
+            "label": "Description",
             "id": "description",
             "minLength": 0,
             "name": "description",
@@ -41,8 +41,8 @@ definition = {
             "widget_constructor": "Text"
         },
         {
-            "fieldHint": "Don't tell anybody",
-            "fieldLabel": "Secret Key",
+            "hint": "Don't tell anybody",
+            "label": "Secret Key",
             "id": "secret",
             "name": "secret",
             "required": true,

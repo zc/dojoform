@@ -61,7 +61,7 @@ function (
                 }
 
                 if (! widget.label) {
-                    widget.label = widget.fieldLabel || widget.name;
+                    widget.label = widget.name;
                 }
 
                 return widget;
@@ -211,8 +211,8 @@ function (
                     if (widget.id) {
                         div.id = 'zc-field-'+widget.id;
                     }
-                    if (widget.hint || widget.fieldHint) {
-                        div.title = widget.hint || widget.fieldHint;
+                    if (widget.hint) {
+                        div.title = widget.hint;
                     }
                     div = domConstruct.create('div', div);
 
@@ -221,7 +221,7 @@ function (
                     if (widget.widget_constructor !== 'Hidden') {
                         domConstruct.create(
                             'label',
-                            {innerHTML: widget.label || widget.fieldLabel,
+                            {innerHTML: widget.label,
                              'for': widget.id, 'class': 'zc-label'
                             },
                             div);
