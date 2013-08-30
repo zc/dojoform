@@ -1,26 +1,30 @@
 build_form2 provides for generation of dojo widgets and forms.
 
-Load a blank page that gets dojo loaded:
+Load a blank page that gets dojo loaded::
 
-    >>> browser.get('http://localhost:%s/test/blank.html' % port)
+    >>> browser.get(server+"get_example")
 
-Load zc.dojo:
+Load zc.dojo::
 
-    js> require(["dojo", "zc.dojoform", "zc.dojoform/List"],
+    js! require(["dojo", "zc.dojoform", "zc.dojoform/List"],
     ...         function (dojo, dojoform) {
     ...     window.dojo = dojo;
     ...     window.dojoform = dojoform;
     ... });
 
-Load the first sample form definition:
+    >>> wait(lambda : browser.execute_script("return window['dojoform']"))
 
-    >>> JS(read_test_file('1.js'))
+Load the first sample form definition::
 
-Call build_form2 to build the form:
+    >>> browser.execute_script(read_test_file('1.js'))
 
-    js> form = dojoform(definition);
-    js> dojo.body().appendChild(form.domNode);
-    js> form.startup();
+Call build to build the form::
+
+    >>> wait(lambda : browser.execute_script("return window['definition']"))
+
+    js! form = dojoform(definition);
+    js! dojo.body().appendChild(form.domNode);
+    js! form.startup();
 
 See if it matches what we expect:
 
@@ -29,19 +33,20 @@ See if it matches what we expect:
 Try again to make sure there aren't weird side effect, and also to
 check widget cleanup:
 
-    js> dojo.body().removeChild(form.domNode);
-    js> form.destroyRecursive();
+    js! dojo.body().removeChild(form.domNode);
+    js! form.destroyRecursive();
 
-    js> nwidgets = dijit.registry.length;
-    js> form = dojoform(definition);
-    js> dojo.body().appendChild(form.domNode);
-    js> form.startup();
+    js! nwidgets = dijit.registry.length;
+    js! form = dojoform(definition);
+    js! dojo.body().appendChild(form.domNode);
+    js! form.startup();
 
     >>> matches(browser.page_source, read_test_file('1.html'))
 
-    js> dojo.body().removeChild(form.domNode);
-    js> form.destroyRecursive();
-    js> return dijit.registry.length == nwidgets;
+    js! dojo.body().removeChild(form.domNode);
+    js! form.destroyRecursive();
+
+    js> dijit.registry.length == nwidgets;
     True
 
 groups rather than left fields and with conditions
@@ -50,10 +55,11 @@ groups rather than left fields and with conditions
 Now, we'll try a different example. It uses groups to do layout,
 rather than left_fields.
 
-    >>> JS(read_test_file('2.js'))
-    js> form = dojoform(definition, undefined, 1);
-    js> dojo.body().appendChild(form.domNode);
-    js> form.startup();
+    >>> browser.execute_script(read_test_file('2.js'))
+
+    js! form = dojoform(definition, undefined, 1);
+    js! dojo.body().appendChild(form.domNode);
+    js! form.startup();
 
     >>> matches(browser.page_source, read_test_file('2.html'))
 
@@ -69,7 +75,7 @@ zc-widget-hidden class:
 
 Now, when we set the happy field to false:
 
-    js> dijit.byId('ExampleForm.happy').set('value', false)
+    js! dijit.byId('ExampleForm.happy').set('value', false)
 
     >>> for name in ['zc-field-ExampleForm.first_name',
     ...              'zc-field-ExampleForm.last_name',
@@ -84,25 +90,27 @@ Now, when we set the happy field to false:
     zc-field-ExampleForm.other
     left
 
-    js> dojo.body().removeChild(form.domNode);
-    js> form.destroyRecursive();
-    js> return dijit.registry.length == nwidgets;
+    js! dojo.body().removeChild(form.domNode);
+    js! form.destroyRecursive();
+
+    js> dijit.registry.length == nwidgets;
     True
 
 Simple example, no groups (no conditions)
 ============================================================
 
-    >>> JS(read_test_file('3.js'))
-    js> form = dojoform(
+    >>> browser.execute_script(read_test_file('3.js'))
+    js! form = dojoform(
     ...     definition, dojo.create('div', null, dojo.body()), 3);
 
 
     >>> matches(browser.page_source, read_test_file('3.html'))
 
 
-    js> dojo.body().removeChild(form.domNode);
-    js> form.destroyRecursive();
-    js> return dijit.registry.length == nwidgets;
+    js! dojo.body().removeChild(form.domNode);
+    js! form.destroyRecursive();
+
+    js> dijit.registry.length == nwidgets;
     True
 
 Supplying layouts
@@ -137,38 +145,40 @@ define a form and layout::
 
 .. -> src
 
-    >>> JS('html_snippet = %r' % src)
+    >>> browser.execute_script('html_snippet = %r' % src)
 
 Now, let's add this to the document:
 
-    js> dojo.body().innerHTML = html_snippet;
-    js> dojo.require('dojo.parser');
-    js> dojo.parser.parse(dojo.body());
+    js! dojo.body().innerHTML = html_snippet;
+    js! dojo.require('dojo.parser');
+    js! dojo.parser.parse(dojo.body());
 
 And call build_form2:
 
-    >>> JS(read_test_file('1.js'))
+    >>> browser.execute_script(read_test_file('1.js'))
 
-    js> form = dojoform(definition);
+    js! form = dojoform(definition);
 
     >>> matches(browser.page_source, read_test_file('6.html'))
 
-    js> dojo.body().removeChild(form.domNode);
-    js> form.destroyRecursive();
-    js> return dijit.registry.length == nwidgets;
+    js! dojo.body().removeChild(form.domNode);
+    js! form.destroyRecursive();
+
+    js> dijit.registry.length == nwidgets;
     True
 
 Nested groups
 =============
 
-    >>> JS(read_test_file('nested-groups.js'))
-    js> form = dojoform(definition, dojo.create('div', {}, dojo.body()));
+    >>> browser.execute_script(read_test_file('nested-groups.js'))
+    js! form = dojoform(definition, dojo.create('div', {}, dojo.body()));
 
     >>> matches(browser.page_source, read_test_file('nested-groups.html'))
 
-    js> dojo.body().removeChild(form.domNode);
-    js> form.destroyRecursive();
-    js> return dijit.registry.length == nwidgets;
+    js! dojo.body().removeChild(form.domNode);
+    js! form.destroyRecursive();
+
+    js> dijit.registry.length == nwidgets;
     True
 
 Actions handlers
@@ -179,20 +189,20 @@ cancel forms.
 
 When you define forms, you can define handlers through actions.
 
-    >>> JS(read_test_file('1.js'))
-    js> form = dojoform(definition);
-    js> dojo.body().appendChild(form.domNode);
-    js> form.startup();
+    >>> browser.execute_script(read_test_file('1.js'))
+    js! form = dojoform(definition);
+    js! dojo.body().appendChild(form.domNode);
+    js! form.startup();
 
 We'll need to define a function for the handler we provided to the action.
 
-    js> test = {}
-    js> test.register = function (arg1, arg2, arg3) {
+    js! test = {}
+    js! test.register = function (arg1, arg2, arg3) {
     ...    action_test = [arg1, arg2.id, arg3.toString()]; }
-    js> dijit.byId('ExampleForm.actions.register').onClick();
+    js! dijit.byId('ExampleForm.actions.register').onClick();
 
     >>> import pprint
-    >>> pprint.pprint(JS('return action_test;'))
+    >>> pprint.pprint(browser.execute_script('return action_test;'))
     [{u'ExampleForm': {u'actions': {u'register': u''}},
       u'addresses': u'{"addresses.street.0":"123 fake street","addresses.city.0":"fakeville","addresses.awesomeness.0":"9","addresses.street.1":"345 false street","addresses.city.1":"falsetown","addresses.awesomeness.1":"9001"}',
       u'age': 23,
@@ -213,52 +223,52 @@ We'll need to define a function for the handler we provided to the action.
 We should also confirm that validation is enforced when specified and that we
 can directly pass a function as our handler argument.
 
-    js> action_test = null;
+    js! action_test = null;
 
-    js> definition.actions[0].handler = test.register;
-    js> definition.actions[0].validate = true;
+    js! definition.actions[0].handler = test.register;
+    js! definition.actions[0].validate = true;
 
-    js> dojo.body().removeChild(form.domNode);
-    js> form.destroyRecursive();
-    js> form = dojoform(definition);
-    js> dojo.body().appendChild(form.domNode);
-    js> form.startup();
+    js! dojo.body().removeChild(form.domNode);
+    js! form.destroyRecursive();
+    js! form = dojoform(definition);
+    js! dojo.body().appendChild(form.domNode);
+    js! form.startup();
 
 We should not be valid because the weight field is empty, so the function will
 not be called.
 
-    js> dijit.byId('ExampleForm.actions.register').onClick();
+    js! dijit.byId('ExampleForm.actions.register').onClick();
 
     >>> import pprint
-    >>> pprint.pprint(JS('return action_test;'))
+    >>> pprint.pprint(browser.execute_script('return action_test;'))
     None
 
 If the form is valid it will work as expected.
 
-    js> dijit.byId('ExampleForm.weight').set("value", 175);
+    js! dijit.byId('ExampleForm.weight').set("value", 175);
 
-    js> dijit.byId('ExampleForm.actions.register').onClick();
+    js! dijit.byId('ExampleForm.actions.register').onClick();
 
-    >>> pprint.pprint(JS('return action_test'))
+    >>> pprint.pprint(browser.execute_script('return action_test'))
     [{u'ExampleForm':...]
 
 We can also specify a form handler in addition to or instead of specific
 action handlers.
 
-    js> definition.actions[0].validate = false;
-    js> definition.handler = function (arg1, arg2, arg3) {
+    js! definition.actions[0].validate = false;
+    js! definition.handler = function (arg1, arg2, arg3) {
     ...    definition_test = [arg1, arg2.id, String(arg3)];
     ...    }
 
-    js> dojo.body().removeChild(form.domNode);
-    js> form.destroyRecursive();
-    js> form = dojoform(definition);
-    js> dojo.body().appendChild(form.domNode);
-    js> form.startup();
+    js! dojo.body().removeChild(form.domNode);
+    js! form.destroyRecursive();
+    js! form = dojoform(definition);
+    js! dojo.body().appendChild(form.domNode);
+    js! form.startup();
 
-    js> dijit.byId('ExampleForm.actions.register').onClick()
+    js! dijit.byId('ExampleForm.actions.register').onClick()
 
-    >>> pprint.pprint(JS('return definition_test'))
+    >>> pprint.pprint(browser.execute_script('return definition_test'))
     [{u'ExampleForm': {u'actions': {u'register': u''}},
       u'addresses': u'{"addresses.street.0":"123 fake street","addresses.city.0":"fakeville","addresses.awesomeness.0":"9","addresses.street.1":"345 false street","addresses.city.1":"falsetown","addresses.awesomeness.1":"9001"}',
       u'age': 23,
@@ -276,20 +286,20 @@ action handlers.
      u'ExampleForm.actions.register',
      u'[Widget dijit.form.Form, ExampleForm]']
 
-    js> definition_test = null;
+    js! definition_test = null;
 
 If we set an 'ignore_default' flag on the action the form handler will be
 ignored.
 
-    js> definition.actions[0].ignore_default = true;
+    js! definition.actions[0].ignore_default = true;
 
-    js> dojo.body().removeChild(form.domNode);
-    js> form.destroyRecursive();
-    js> form = dojoform(definition);
-    js> dojo.body().appendChild(form.domNode);
-    js> form.startup();
+    js! dojo.body().removeChild(form.domNode);
+    js! form.destroyRecursive();
+    js! form = dojoform(definition);
+    js! dojo.body().appendChild(form.domNode);
+    js! form.startup();
 
-    js> dijit.byId('ExampleForm.actions.register').onClick()
+    js! dijit.byId('ExampleForm.actions.register').onClick()
 
-    >>> pprint.pprint(JS('return definition_test'))
+    >>> pprint.pprint(browser.execute_script('return definition_test'))
     None

@@ -6,14 +6,16 @@ The CKEditor widget can be used for a rich text field with html capabilities.
 for our first test we'll try to create a CKEditor widget which has no special
 values whatsoever and confirm that it comes with the default configuration.
 
-    >>> browser.get('http://localhost:%s/test/blank.html' % port)
+    >>> browser.get(server+"get_example")
 
-    js> require(
+    js! require(
     ...     ["dojox/lang/functional", "zc.dojoform", "zc.dojoform/CKEditor"],
     ...     function (functional, dojoform) {
     ...     window.keys = functional.keys;
     ...     window.dojoform = dojoform;
     ... });
+
+    >>> wait(lambda : browser.execute_script("return window['dojoform']"))
 
 ::
 
@@ -49,85 +51,87 @@ values whatsoever and confirm that it comes with the default configuration.
 
     >>> from zope.testing.wait import wait
     >>> wait(lambda : browser.find_elements_by_tag_name('body'))
-    >>> JS(js)
+    >>> browser.execute_script(js)
+
 
 The CKeditor widget comes with all of the toolbar buttons by default.
 
-    js> ckeditor = CKEDITOR.instances['story']
+    js! ckeditor = CKEDITOR.instances['story']
 
-    >>> wait_for(lambda: len(JS("return keys(ckeditor.plugins)")))
-    >>> len(JS("return keys(ckeditor.plugins)"))
+    >>> wait(lambda: len(browser.execute_script(
+    ...     "return keys(ckeditor.plugins)")))
+    >>> len(browser.execute_script("return keys(ckeditor.plugins)"))
     72
 
 We can get the current value of the widget, which will be what we gave it
 in our configuration.
 
-    js> widget = dijit.byId('story')
-    js> return widget.get('value')
+    js! widget = dijit.byId('story')
+    js> widget.get('value')
     u'<p>\n\tI am a story</p>\n'
 
 We can modify this value as well
 
-    js> widget.set('value', '<blink>Wow!</blink>')
-    js> return widget.get('value')
+    js! widget.set('value', '<blink>Wow!</blink>')
+    js> widget.get('value')
     u'<p>\n\t<blink>Wow!</blink></p>\n'
 
 Note that when we do this the value in the actual CKEditor is modified as well
 
-    js> return ckeditor.getData()
+    js> ckeditor.getData()
     u'<p>\n\t<blink>Wow!</blink></p>\n'
 
 we can reset the form and we'll be back to our old value.
 
-    js> dijit.byId('reset').onClick()
-    js> return widget.get('value')
+    js! dijit.byId('reset').onClick()
+    js> widget.get('value')
     u'<p>\n\tI am a story</p>\n'
 
-    js> return ckeditor.getData()
+    js> ckeditor.getData()
     u'<p>\n\tI am a story</p>\n'
 
 We can check if the widget is valid.
 
-    js> return widget.isValid()
+    js> widget.isValid()
     True
 
-    js> return widget.validate()
+    js> widget.validate()
     True
 
 This will return invalid if the field is required and we have no data.
 
-    js> widget.set('value', '')
+    js! widget.set('value', '')
 
-    js> return widget.isValid()
+    js> widget.isValid()
     False
 
-    js> dijit.byId('reset').onClick()
+    js! dijit.byId('reset').onClick()
 
 When we focus the widget we will get focus for the editor element.
 
-    js> widget.focus()
+    js! widget.focus()
 
-    js> return ckeditor.focusManager.hasFocus
+    js> ckeditor.focusManager.hasFocus
     True
 
 We can connect to the onChange event for the widget and we'll fire that
 event whenever the value of the widget is set.
 
-    js> dojo.connect(widget, 'onChange', function (value) {
+    js! dojo.connect(widget, 'onChange', function (value) {
     ...     result = value;
     ... });
-    js> widget.set('value', "<div>Amazing</div>")
+    js! widget.set('value', "<div>Amazing</div>")
 
     >>> import pprint
-    >>> pprint.pprint(JS("return result"))
+    >>> pprint.pprint(browser.execute_script("return result"))
     u'<div>Amazing</div>'
 
 When we call an action handler the data in the editor is sent along with other
 fields.
 
-    js> dijit.byId('submit').onClick()
+    js! dijit.byId('submit').onClick()
 
-    >>> pprint.pprint(JS('return form_data'))
+    >>> pprint.pprint(browser.execute_script('return form_data'))
     {u'reset': u'',
      u'story': u'<div>\n\tAmazing</div>\n',
      u'submit': u''}

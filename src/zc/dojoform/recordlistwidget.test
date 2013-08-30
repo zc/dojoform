@@ -5,11 +5,13 @@ A record list is used when we expect to have a collection of items which
 all share a schema. We epxect the schema definition to be buildable
 using build_form2.
 
-    >>> browser.get('http://localhost:%s/test/blank.html' % port)
+    >>> browser.get(server+"get_example")
 
-    js> require(["zc.dojoform", "zc.dojoform/List"], function (dojoform) {
+    js! require(["zc.dojoform", "zc.dojoform/List"], function (dojoform) {
     ...     window.dojoform = dojoform;
     ... });
+
+    >>> wait(lambda : browser.execute_script("return window['dojoform']"))
 
 ::
 
@@ -78,18 +80,18 @@ using build_form2.
     >>> while not browser.find_elements_by_tag_name('body'):
     ...     continue
 
-    >>> JS(js)
+    >>> browser.execute_script(js)
 
 We can see that the generation of a record list widget creates many widgets
 to represent it and its available actions.
 
-    js> widget_names = [];
+    js! widget_names = [];
     ... for (i in dijit.registry._hash) {
     ...     widget_names.push(i);
     ... }
 
     >>> import pprint
-    >>> pprint.pprint(JS('return widget_names'))
+    >>> pprint.pprint(browser.execute_script('return widget_names'))
     [u'dijit_form_Form_0',
      u'zc_dojoform_List_0',
      u'dojox_grid_EnhancedGrid_0',
@@ -104,11 +106,11 @@ The data presented is an accurate representation of our input value with
 respect to the record schema. Note that the street values are not returned
 since they are not included in the schema.
 
-    js> widget = dijit.byId('zc_dojoform_List_0')
+    js! widget = dijit.byId('zc_dojoform_List_0')
 
     >>> import json
     >>> def wid_val():
-    ...     return pprint.pprint(json.loads(JS(
+    ...     return pprint.pprint(json.loads(browser.execute_script(
     ...         "return widget.get('value')")))
 
     >>> wid_val()
@@ -119,9 +121,9 @@ since they are not included in the schema.
 
 We can modify a record
 
-    js> widget._edit_record(widget.config.name, widget.grid.getItem(0), widget.order);
-    js> dijit.byId('addresses.awesomeness').set("value", 10)
-    js> dijit.byId('addresses.dojo.save.btn').onClick()
+    js! widget._edit_record(widget.config.name, widget.grid.getItem(0), widget.order);
+    js! dijit.byId('addresses.awesomeness').set("value", 10)
+    js! dijit.byId('addresses.dojo.save.btn').onClick()
 
     >>> wid_val()
     {u'addresses.awesomeness.0': 10,
@@ -131,10 +133,10 @@ We can modify a record
 
 And add one
 
-    js> dijit.byId('addresses.dojo.new.btn').onClick()
-    js> dijit.byId('addresses.city').set("value", 'new city')
-    js> dijit.byId('addresses.awesomeness').set("value", 1)
-    js> dijit.byId('addresses.dojo.save.btn').onClick()
+    js! dijit.byId('addresses.dojo.new.btn').onClick()
+    js! dijit.byId('addresses.city').set("value", 'new city')
+    js! dijit.byId('addresses.awesomeness').set("value", 1)
+    js! dijit.byId('addresses.dojo.save.btn').onClick()
 
     >>> wid_val()
     {u'addresses.awesomeness.0': 10,
@@ -146,8 +148,8 @@ And add one
 
 And delete one
 
-    js> widget.grid.selection.selected = [true]
-    js> dijit.byId('addresses.dojo.delete.btn').onClick()
+    js! widget.grid.selection.selected = [true]
+    js! dijit.byId('addresses.dojo.delete.btn').onClick()
 
     >>> wid_val()
     {u'addresses.awesomeness.0': 9001,
@@ -157,7 +159,7 @@ And delete one
 
 If we reset the form our initial data is returned
 
-    js> dijit.byId('reset').onClick()
+    js! dijit.byId('reset').onClick()
 
     >>> wid_val()
     {u'addresses.awesomeness.0': 9,
@@ -168,30 +170,30 @@ If we reset the form our initial data is returned
 We can also conduct validity tests. Since the validity of this widget's data
 is handled on a per record basis it will always be valid.
 
-    js> return widget.isValid()
+    js> widget.isValid()
     True
 
-    js> return widget.validate()
+    js> widget.validate()
 
 We can focus on the widget, which will direct focus to the first available
 cell in the grid.
 
-    js> return widget.grid.focus.rowIndex
+    js> widget.grid.focus.rowIndex
     -1
 
-    js> widget.focus()
+    js! widget.focus()
 
-    js> return widget.grid.focus.rowIndex
+    js> widget.grid.focus.rowIndex
     0
 
 We can assign an onChange function and it will fire when the underlying
 data of the widget is modified.
 
-    js> dojo.connect(widget, 'onChange', function (value) {
+    js! dojo.connect(widget, 'onChange', function (value) {
     ...     result = value;
     ... });
-    js> new_value = [{'awesomeness': 2, 'city': 'newest city'}]
-    js> widget.set('value', new_value)
+    js! new_value = [{'awesomeness': 2, 'city': 'newest city'}]
+    js! widget.set('value', new_value)
 
-    >>> pprint.pprint(JS("return result"))
+    js> result
     u'{"addresses.city.0":"newest city","addresses.awesomeness.0":2}'

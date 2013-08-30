@@ -47,11 +47,9 @@ setup(
     extras_require = dict(
         test=[
             'bobo',
-            'manuel',
-            'zc.customdoctests',
-            'selenium',
-            'BeautifulSoup',
-            'zope.testing',
+            'zc.wsgidriver',
+            'zc.htmlchecker',
+            'html5lib',
             ]
         ),
     zip_safe = False,
